@@ -20,6 +20,18 @@ async function request(query) {
     });
 }
 
+export async function createGarden(session, fields) {
+  return await session.create(fields, { schemaId: GARDEN_SCHEMA_ID });
+}
+
+export async function createPlant(session, fields) {
+  return await session.create(fields, { schemaId: PLANT_SCHEMA_ID });
+}
+
+export async function createSpecies(session, fields) {
+  return await session.create(fields, { schemaId: SPECIES_SCHEMA_ID });
+}
+
 export async function getAllGardens() {
   const query_name = `all_${GARDEN_SCHEMA_ID}`;
   const query = `
