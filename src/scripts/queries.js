@@ -1,18 +1,23 @@
-import { GARDEN_SCHEMA_ID, PLANT_SCHEMA_ID, SPECIES_SCHEMA_ID, ENDPOINT } from "./constants.js"
+import {
+  GARDEN_SCHEMA_ID,
+  PLANT_SCHEMA_ID,
+  SPECIES_SCHEMA_ID,
+  ENDPOINT,
+} from './constants.js';
 
 async function request(query) {
   return fetch(ENDPOINT, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       query: query,
       variables: {},
     }),
   })
     .then((res) => res.json())
-    .then((result) => { return result });
+    .then((result) => {
+      return result;
+    });
 }
 
 export async function getAllGardens() {
