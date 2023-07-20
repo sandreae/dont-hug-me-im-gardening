@@ -1,0 +1,24 @@
+[garden]
+description = "A garden where plants can be grown"
+
+[garden.fields]
+name = { type = "str" }
+width = { type = "int" }
+height = { type = "int" }
+
+[plant]
+description = "A plant which grows in a garden"
+
+[plant.fields]
+garden = { type = "relation", schema = { name = "garden" } }
+pos_x = { type = "int" }
+pos_y = { type = "int" }
+species = { type = "pinned_relation", schema = { name = "species" } }
+planted_at = { type = "int" }
+
+[species]
+description = "The species of a plant which grows in a garden"
+
+[species.fields]
+name = { type = "str" }
+vec_img = { type = "str" }
