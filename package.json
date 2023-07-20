@@ -1,0 +1,16 @@
+{
+  "name": "p2panda-garden",
+  "version": "1.0.0",
+  "description": "Your very own p2p garden",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "contact@samandreae.com",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "eslint": "^8.45.0",
+    "eslint-config-prettier": "^8.8.0",
+    "prettier": "3.0.0"
+  }
+}
