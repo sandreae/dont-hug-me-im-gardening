@@ -6,7 +6,14 @@
 
     <title>It's gardening time!</title>
 
-    <script type="module" src="scripts/init.js"></script>
+    <script type="module">
+      import { init } from './scripts/init.js';
+      import { initWebAssembly, KeyPair } from './libs/shirokuma.min.js';
+
+      initWebAssembly().then(() => {
+        init();
+      });
+    </script>
     <link href="style.css" rel="stylesheet" />
   </head>
 
