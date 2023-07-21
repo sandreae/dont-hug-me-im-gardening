@@ -86,7 +86,7 @@ async function createDummyData() {
   console.log(gardenId);
 
   let speciesId = await createSpecies({
-    name: 99,
+    name: 'Nettle',
     vec_img: '@',
   });
 
