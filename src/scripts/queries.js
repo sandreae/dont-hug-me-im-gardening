@@ -20,23 +20,27 @@ async function request(query) {
     });
 }
 
-export async function createGarden(session, fields) {
-  return await session.create(fields, { schemaId: GARDEN_SCHEMA_ID });
+export async function createGarden(fields) {
+  return await window.session.create(fields, { schemaId: GARDEN_SCHEMA_ID });
 }
 
-export async function createPlant(session, fields) {
-  return await session.create(fields, { schemaId: PLANT_SCHEMA_ID });
+export async function createPlant(fields) {
+  return await window.session.create(fields, { schemaId: PLANT_SCHEMA_ID });
 }
 
-export async function createSpecies(session, fields) {
-  return await session.create(fields, { schemaId: SPECIES_SCHEMA_ID });
+export async function createSpecies(fields) {
+  return await window.session.create(fields, { schemaId: SPECIES_SCHEMA_ID });
+}
+
+export async function deleteGarden(id) {
+  return await window.session.delete(id, { schemaId: GARDEN_SCHEMA_ID });
 }
 
 export async function getAllGardens() {
   const query_name = `all_${GARDEN_SCHEMA_ID}`;
   const query = `
     query gardens {
-      ${query_name}(first: 20, orderBy: name) {
+      ${query_name}(first: 100, orderBy: name) {
         documents {
           fields {
             name
