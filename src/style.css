@@ -7,7 +7,9 @@ nav {
   display: flex;
 }
 
-button {
+button,
+label,
+input {
   font-size: medium;
   margin: 2px 2px 2px 2px;
 }
@@ -15,6 +17,10 @@ button {
 .garden {
   background-color: green;
   border: 5px solid black;
+}
+
+.species-preview {
+  display: flex;
 }
 
 .hide-page {

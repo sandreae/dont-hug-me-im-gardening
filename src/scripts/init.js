@@ -22,8 +22,7 @@ export async function init() {
 
   initNav();
   initGardenForm();
-
-  await createDummyData();
+  initSpeciesForm();
 
   // Set to true to activate polling.
   localStorage.setItem('doPoll', true);
@@ -33,6 +32,7 @@ export async function init() {
 async function poll() {
   if (localStorage.getItem('doPoll')) {
     await refreshGardens();
+    await refreshSpecies();
   }
 }
 
@@ -45,11 +45,51 @@ function initGardenForm() {
     const width = document.getElementById('garden-width').value;
     const height = document.getElementById('garden-height').value;
 
-    await createGarden({
+    const id = await createGarden({
       name,
       height: Number(height),
       width: Number(width),
     });
+    console.log('Created garden: ', id);
+  };
+  form.oninput = (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById('garden-name').value;
+    const width = document.getElementById('garden-width').value;
+    const height = document.getElementById('garden-height').value;
+
+    let garden = document.getElementById('in-progress-garden');
+    if (garden) {
+      garden.innerHTML = name;
+      garden.style.minWidth = `${width}px`;
+      garden.style.minHeight = `${height}px`;
+      garden.style.width = `${width}px`;
+      garden.style.height = `${height}px`;
+    } else {
+      let garden = createGardenElement(
+        name,
+        width,
+        height,
+        'in-progress-garden',
+      );
+      form.appendChild(garden);
+    }
+  };
+}
+
+function initSpeciesForm() {
+  let form = document.getElementById('species-form');
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+
+    const emoji = document.getElementById('species-emoji').value;
+
+    const id = await createSpecies({
+      name: 'temp name',
+      vec_img: emoji,
+    });
+    console.log('Created species: ', id);
   };
 }
 
@@ -63,16 +103,43 @@ async function refreshGardens() {
     let { name, height, width } = garden.fields;
     let { documentId } = garden.meta;
 
-    const div = document.createElement('div');
-    div.style.minWidth = `${width}px`;
-    div.style.minHeight = `${height}px`;
-    div.style.width = `${width}px`;
-    div.style.height = `${height}px`;
-    div.classList.add('garden');
-    div.innerHTML = name;
-    div.id = documentId;
+    let div = createGardenElement(name, height, width, documentId);
     visitPage.appendChild(div);
   });
+}
+
+async function refreshSpecies() {
+  let species = await getAllSpecies();
+
+  let speciesElement = document.getElementById('species');
+  speciesElement.innerHTML = '';
+
+  species.forEach((item) => {
+    let { vec_img } = item.fields;
+    let { documentId } = item.meta;
+
+    let div = createSpeciesElement(vec_img, documentId);
+    speciesElement.appendChild(div);
+  });
+}
+
+function createGardenElement(name, width, height, id) {
+  const div = document.createElement('div');
+  div.style.minWidth = `${width}px`;
+  div.style.minHeight = `${height}px`;
+  div.style.width = `${width}px`;
+  div.style.height = `${height}px`;
+  div.classList.add('garden');
+  div.innerHTML = name;
+  div.id = id;
+  return div;
+}
+
+function createSpeciesElement(emoji, id) {
+  const div = document.createElement('div');
+  div.innerHTML = emoji;
+  div.id = id;
+  return div;
 }
 
 async function createDummyData() {

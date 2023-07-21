@@ -24,7 +24,63 @@
         <button class="nav-button" name="plant">plant</button>
         <button class="nav-button" name="visit">visit</button>
       </nav>
-      <div id="build"></div>
+      <div id="build">
+        <h2>Garden</h2>
+        <form id="garden-form" class="garden-form">
+          <div>
+            <label for="name">Name: </label>
+            <input
+              type="text"
+              name="name"
+              maxlength="40"
+              minlength="1"
+              id="garden-name"
+              required
+            />
+          </div>
+          <div>
+            <label for="width">width (px): </label>
+            <input
+              type="number"
+              name="width"
+              max="1200"
+              id="garden-width"
+              required
+            />
+          </div>
+          <div>
+            <label for="height">height (px): </label>
+            <input
+              type="number"
+              name="height"
+              max="1200"
+              id="garden-height"
+              required
+            />
+          </div>
+          <div>
+            <input type="submit" value="Create!" />
+          </div>
+        </form>
+        <h2>Species</h2>
+        <form id="species-form" class="species-form">
+          <div>
+            <label for="emoji">emoji: </label>
+            <input
+              type="text"
+              name="emoji"
+              id="species-emoji"
+              minlength="1"
+              maxlength="8"
+              required
+            />
+          </div>
+          <div>
+            <input type="submit" value="Create!" />
+          </div>
+        </form>
+        <div id="species" class="species-preview"></div>
+      </div>
       <div id="plant" class="hide-page"></div>
       <div id="visit" class="hide-page"></div>
     </div>
