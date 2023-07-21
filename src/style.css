@@ -1,0 +1,22 @@
+body {
+  padding: 0px;
+  margin: 0px;
+}
+
+nav {
+  display: flex;
+}
+
+button {
+  font-size: medium;
+  margin: 2px 2px 2px 2px;
+}
+
+.garden {
+  background-color: green;
+  border: 5px solid black;
+}
+
+.hide-page {
+  display: none;
+}
