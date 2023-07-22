@@ -60,22 +60,37 @@ export async function getAllGardens() {
   return result.data[query_name].documents;
 }
 
-export async function getAllPlants() {
+export async function searchGardenByName(searchString) {
+  const query_name = `all_${GARDEN_SCHEMA_ID}`;
+  const query = `
+    query gardens {
+      ${query_name}(first: 1, filter: { name : { contains : "${searchString}" } }) {
+        documents {
+          fields {
+            name
+            width
+            height
+          }
+          meta {
+            documentId
+            viewId
+          }
+        }
+      }
+    }
+  `;
+
+  const result = await request(query);
+  return result.data[query_name].documents;
+}
+
+export async function getPlantsForGarden(gardenId) {
   const query_name = `all_${PLANT_SCHEMA_ID}`;
   const query = `
     query plants {
-      ${query_name}(first: 50, orderBy: garden) {
+      ${query_name}(first: 50, filter: { garden: {eq: "${gardenId}" } }) {
         documents {
           fields {
-            garden {
-              fields {
-                name
-              }
-              meta {
-                documentId
-                viewId
-              }        
-            }
             pos_x
             pos_y
             planted_at

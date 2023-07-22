@@ -81,8 +81,19 @@
         </form>
         <div id="species" class="species-preview"></div>
       </div>
-      <div id="plant" class="hide-page"></div>
-      <div id="visit" class="hide-page"></div>
+      <div id="visit" class="hide-page">
+        <div>
+          <label for="garden-search">Search garden by name: </label>
+          <input
+            id="garden-search"
+            type="text"
+            name="garden-search"
+            id="garden-name"
+            required
+          />
+        </div>
+        <div id="garden-search-results"></div>
+      </div>
     </div>
   </body>
 </html>

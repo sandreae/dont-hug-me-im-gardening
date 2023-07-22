@@ -1,15 +1,13 @@
-import {
-  createGarden,
-  createPlant,
-  createSpecies,
-  getAllGardens,
-  getAllPlants,
-  getAllSpecies,
-} from './queries.js';
-import { Session, OperationFields } from '../libs/shirokuma.min.js';
+import { getAllSpecies, getPlantsForGarden } from './queries.js';
+import { Session } from '../libs/shirokuma.min.js';
 import { getKeyPair } from './key_pair.js';
 import { initNav } from './nav.js';
-import { VISIT_PAGE } from './constants.js';
+import {
+  initGardenForm,
+  initSearchGardenForm,
+  initSpeciesForm,
+} from './forms/index.js';
+import { createPlantElement, createSpeciesElement } from './elements/index.js';
 
 export async function init() {
   const keyPair = getKeyPair();
@@ -22,6 +20,7 @@ export async function init() {
 
   initNav();
   initGardenForm();
+  initSearchGardenForm();
   initSpeciesForm();
 
   // Set to true to activate polling.
@@ -31,81 +30,9 @@ export async function init() {
 
 async function poll() {
   if (localStorage.getItem('doPoll')) {
-    await refreshGardens();
+    await refreshPlants();
     await refreshSpecies();
   }
-}
-
-function initGardenForm() {
-  let form = document.getElementById('garden-form');
-  form.onsubmit = async (e) => {
-    e.preventDefault();
-
-    const name = document.getElementById('garden-name').value;
-    const width = document.getElementById('garden-width').value;
-    const height = document.getElementById('garden-height').value;
-
-    const id = await createGarden({
-      name,
-      height: Number(height),
-      width: Number(width),
-    });
-    console.log('Created garden: ', id);
-  };
-  form.oninput = (e) => {
-    e.preventDefault();
-
-    const name = document.getElementById('garden-name').value;
-    const width = document.getElementById('garden-width').value;
-    const height = document.getElementById('garden-height').value;
-
-    let garden = document.getElementById('in-progress-garden');
-    if (garden) {
-      garden.innerHTML = name;
-      garden.style.minWidth = `${width}px`;
-      garden.style.minHeight = `${height}px`;
-      garden.style.width = `${width}px`;
-      garden.style.height = `${height}px`;
-    } else {
-      let garden = createGardenElement(
-        name,
-        width,
-        height,
-        'in-progress-garden',
-      );
-      form.appendChild(garden);
-    }
-  };
-}
-
-function initSpeciesForm() {
-  let form = document.getElementById('species-form');
-  form.onsubmit = async (e) => {
-    e.preventDefault();
-
-    const emoji = document.getElementById('species-emoji').value;
-
-    const id = await createSpecies({
-      name: 'temp name',
-      vec_img: emoji,
-    });
-    console.log('Created species: ', id);
-  };
-}
-
-async function refreshGardens() {
-  let gardens = await getAllGardens();
-
-  let visitPage = document.getElementById(VISIT_PAGE);
-  visitPage.innerHTML = '';
-
-  gardens.forEach((garden) => {
-    let { name, height, width } = garden.fields;
-    let { documentId } = garden.meta;
-
-    let div = createGardenElement(name, height, width, documentId);
-    visitPage.appendChild(div);
-  });
 }
 
 async function refreshSpecies() {
@@ -123,54 +50,24 @@ async function refreshSpecies() {
   });
 }
 
-function createGardenElement(name, width, height, id) {
-  const div = document.createElement('div');
-  div.style.minWidth = `${width}px`;
-  div.style.minHeight = `${height}px`;
-  div.style.width = `${width}px`;
-  div.style.height = `${height}px`;
-  div.classList.add('garden');
-  div.innerHTML = name;
-  div.id = id;
-  return div;
-}
+async function refreshPlants() {
+  let gardens = document.getElementsByClassName('garden');
+  let gardensWithPlants = [];
 
-function createSpeciesElement(emoji, id) {
-  const div = document.createElement('div');
-  div.innerHTML = emoji;
-  div.id = id;
-  return div;
-}
+  for (const garden of gardens) {
+    let documentId = garden.id;
+    let plants = await getPlantsForGarden(documentId);
+    gardensWithPlants.push({ garden, plants });
+  }
 
-async function createDummyData() {
-  let gardenId = await createGarden({
-    name: 'My Garden',
-    height: 500,
-    width: 400,
+  gardensWithPlants.forEach(({ garden, plants }) => {
+    let plantWrapper = garden.getElementsByClassName('plant-wrapper')[0];
+    plantWrapper.innerHTML = '';
+    plants.forEach((plant) => {
+      let { pos_x, pos_y } = plant.fields;
+      let emoji = plant.fields.species.fields.vec_img;
+      let id = plant.meta.documentId;
+      createPlantElement(plantWrapper, emoji, pos_x, pos_y, id);
+    });
   });
-
-  console.log('Garden created!');
-  console.log(gardenId);
-
-  let speciesId = await createSpecies({
-    name: 'Nettle',
-    vec_img: '@',
-  });
-
-  console.log('Species created!');
-  console.log(gardenId);
-
-  let now = Math.floor(new Date().getTime() / 1000.0);
-  let plant_fields = new OperationFields({
-    pos_x: 50,
-    pos_y: 50,
-    planted_at: now,
-    garden: `${gardenId}`,
-  });
-
-  plant_fields.insert('species', 'pinned_relation', [speciesId]);
-
-  let plantId = await createPlant(plant_fields);
-  console.log('Plant created!');
-  console.log(plantId);
 }

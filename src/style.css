@@ -14,9 +14,26 @@ input {
   margin: 2px 2px 2px 2px;
 }
 
-.garden {
+.garden,
+.preview-garden {
+  overflow: hidden;
+  position: relative;
+  contain: contain;
   background-color: green;
   border: 5px solid black;
+}
+
+.preview-garden {
+  width: 100px;
+  height: 100px;
+}
+
+.garden h2,
+.preview-garden h2 {
+  position: fixed;
+  pointer-events: none;
+  padding: 0px;
+  margin: 0px 0px 0px 0px;
 }
 
 .species-preview {
@@ -25,4 +42,23 @@ input {
 
 .hide-page {
   display: none;
+}
+
+.plant-wrapper {
+  position: sticky;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.plant {
+  position: sticky;
+  max-width: 0px;
+  max-height: 0px;
+}
+
+.plant div {
+  position: absolute;
+  left: -20px;
+  top: -20px;
 }
