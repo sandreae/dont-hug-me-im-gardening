@@ -15,16 +15,15 @@ export function initGardenForm() {
 
 async function onGardenSubmit(e) {
   e.preventDefault();
-
-  const name = document.getElementById('garden-name').value;
-
+  const input = document.getElementById('garden-name');
   const id = await createGarden({
-    name,
+    name: input.value,
     width: GARDEN_WIDTH,
     height: GARDEN_HEIGHT,
   });
 
   console.log('Created garden: ', id);
+  input.value = '';
 }
 
 export function initSpeciesForm() {
@@ -39,7 +38,7 @@ async function onSpeciesSubmit(e) {
 
   const id = await createSpecies({
     name: 'temp name',
-    vec_img: emoji,
+    vec_img: `${emoji}`,
   });
 
   console.log('Created species: ', id);
