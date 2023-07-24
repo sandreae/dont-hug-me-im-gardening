@@ -1,64 +1,106 @@
 body {
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
   padding: 0px;
   margin: 0px;
-}
-
-nav {
-  display: flex;
+  background-color: palegreen;
 }
 
 button,
 label,
 input {
-  font-size: medium;
-  margin: 2px 2px 2px 2px;
+  font-size: large;
+  margin: 2px;
 }
 
-.garden,
-.preview-garden {
-  overflow: hidden;
-  position: relative;
-  contain: contain;
+input[type='radio'] {
+  width: 20px;
+  height: 20px;
+}
+
+#app {
+  display: grid;
+  height: 100vh;
+  width: 100%;
+  grid-template-columns: 300px 1fr 300px;
+  grid-auto-rows: 100px auto;
+}
+
+#header {
+  text-align: center;
+  background-color: blueviolet;
+  color: palegreen;
+  grid-column: 1 / 4;
+  grid-row: 1;
+}
+
+#header h1 {
+  font-size: 2.5em;
+}
+
+#left-bar {
+  border: 5px solid black;
+  border-radius: 3%;
+  padding: 20px;
+  margin: 5px;
+  background-color: palegreen;
+  grid-column: 1;
+  grid-row: 2;
+}
+
+#center {
+  display: grid;
+  background-color: palegreen;
+  grid-column: 2;
+  grid-row: 2;
+}
+
+#right-bar {
+  border: 5px solid black;
+  border-radius: 3%;
+  padding: 20px;
+  margin: 5px;
+  background-color: palegreen;
+  grid-column: 3;
+  grid-row: 2;
+}
+
+#garden {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 50px);
+  grid-auto-rows: 50px;
+  width: 800px;
+  height: 600px;
+  margin: 100px auto;
   background-color: green;
   border: 5px solid black;
-}
-
-.preview-garden {
-  width: 100px;
-  height: 100px;
-}
-
-.garden h2,
-.preview-garden h2 {
-  position: fixed;
-  pointer-events: none;
-  padding: 0px;
-  margin: 0px 0px 0px 0px;
-}
-
-.species-preview {
-  display: flex;
-}
-
-.hide-page {
-  display: none;
-}
-
-.plant-wrapper {
-  position: sticky;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
+  font-size: larger;
 }
 
 .plant {
-  position: sticky;
-  max-width: 0px;
-  max-height: 0px;
+  border: 1px dotted gray;
+  font-size: 45px;
+  text-align: center;
+  overflow: hidden;
+  font-family: fantasy;
 }
 
-.plant div {
-  position: absolute;
-  left: -20px;
-  top: -20px;
+#species-form input[type='text'] {
+  width: 45px;
+  font-family: fantasy;
+}
+
+#right-bar input[type='text'] {
+  width: 80%;
+}
+
+#species-list {
+  font-family: fantasy;
+}
+
+#garden-list {
+  word-wrap: break-word;
+}
+
+.clickable {
+  cursor: pointer;
 }

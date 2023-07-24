@@ -7,11 +7,11 @@
     <title>It's gardening time!</title>
 
     <script type="module">
-      import { init } from './scripts/init.js';
+      import { app } from './scripts/app.js';
       import { initWebAssembly, KeyPair } from './libs/shirokuma.min.js';
 
       initWebAssembly().then(() => {
-        init();
+        app();
       });
     </script>
     <link href="style.css" rel="stylesheet" />
@@ -19,80 +19,54 @@
 
   <body>
     <div id="app">
-      <nav>
-        <button class="nav-button" name="build">build</button>
-        <button class="nav-button" name="plant">plant</button>
-        <button class="nav-button" name="visit">visit</button>
-      </nav>
-      <div id="build">
-        <h2>Garden</h2>
+      <div id="header">
+        <h1>p2p garden</h1>
+      </div>
+      <div id="left-bar">
+        <h2>species</h2>
+        <form id="species-form">
+          <div>
+            <input
+              type="text"
+              name="emoji"
+              id="species-emoji"
+              minlength="1"
+              maxlength="2"
+              required
+            />
+            <input type="submit" value="+" />
+          </div>
+        </form>
+        <div id="species-list"></div>
+      </div>
+      <div id="center">
+        <div id="garden"></div>
+      </div>
+      <div id="right-bar">
+        <h2>gardens</h2>
         <form id="garden-form" class="garden-form">
           <div>
             <label for="name">Name: </label>
             <input
               type="text"
               name="name"
-              maxlength="40"
+              maxlength="60"
               minlength="1"
               id="garden-name"
               required
             />
-          </div>
-          <div>
-            <label for="width">width (px): </label>
-            <input
-              type="number"
-              name="width"
-              max="1200"
-              id="garden-width"
-              required
-            />
-          </div>
-          <div>
-            <label for="height">height (px): </label>
-            <input
-              type="number"
-              name="height"
-              max="1200"
-              id="garden-height"
-              required
-            />
-          </div>
-          <div>
-            <input type="submit" value="Create!" />
+            <input type="submit" value="+" />
           </div>
         </form>
-        <h2>Species</h2>
-        <form id="species-form" class="species-form">
-          <div>
-            <label for="emoji">emoji: </label>
-            <input
-              type="text"
-              name="emoji"
-              id="species-emoji"
-              minlength="1"
-              maxlength="8"
-              required
-            />
-          </div>
-          <div>
-            <input type="submit" value="Create!" />
-          </div>
-        </form>
-        <div id="species" class="species-preview"></div>
-      </div>
-      <div id="visit" class="hide-page">
-        <div>
-          <label for="garden-search">Search garden by name: </label>
+        <div id="gardens-list">
           <input
+            placeholder="search"
             id="garden-search"
             type="text"
             name="garden-search"
-            id="garden-name"
-            required
           />
+          <div id="garden-list"></div>
         </div>
-        <div id="garden-search-results"></div>
       </div>
     </div>
   </body>
