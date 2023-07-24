@@ -104,7 +104,7 @@ async function refreshPlants() {
     const { vec_img } = newPlant.fields.species.fields;
 
     if (vec_img !== currentPlant.innerHTML) {
-      currentPlant.innerHTML = vec_img;
+      currentPlant.textContent = vec_img;
     }
   });
 }
