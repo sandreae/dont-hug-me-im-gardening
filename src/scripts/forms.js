@@ -15,7 +15,7 @@ export function initGardenForm() {
 
 async function onGardenSubmit(e) {
   e.preventDefault();
-  const input = document.getElementById('garden-name');
+  const input = e.srcElement.elements['name'];
   const id = await createGarden({
     name: input.value,
     width: GARDEN_WIDTH,
@@ -33,8 +33,8 @@ export function initSpeciesForm() {
 
 async function onSpeciesSubmit(e) {
   e.preventDefault();
-
-  const emoji = e.target.value;
+  let input = e.srcElement.elements['emoji'];
+  const emoji = input.value;
 
   const id = await createSpecies({
     name: 'temp name',
@@ -42,6 +42,7 @@ async function onSpeciesSubmit(e) {
   });
 
   console.log('Created species: ', id);
+  input.value = '';
 }
 
 export function initSearchGardenForm() {
