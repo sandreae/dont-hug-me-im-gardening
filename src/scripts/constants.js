@@ -9,9 +9,5 @@ export const SPECIES_SCHEMA_ID =
 // URL of your local aquadoggo node
 export const ENDPOINT = 'http://localhost:2020/graphql';
 
-// App page ID's
-export const BUILD_PAGE = 'build';
-export const VISIT_PAGE = 'visit';
-
 export const GARDEN_WIDTH = 800;
 export const GARDEN_HEIGHT = 600;
