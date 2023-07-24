@@ -11,5 +11,7 @@ export const ENDPOINT = 'http://localhost:2020/graphql';
 
 // App page ID's
 export const BUILD_PAGE = 'build';
-export const PLANT_PAGE = 'plant';
 export const VISIT_PAGE = 'visit';
+
+export const GARDEN_WIDTH = 800;
+export const GARDEN_HEIGHT = 600;

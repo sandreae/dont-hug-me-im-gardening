@@ -40,7 +40,7 @@ export async function getAllGardens() {
   const query_name = `all_${GARDEN_SCHEMA_ID}`;
   const query = `
     query gardens {
-      ${query_name}(first: 100, orderBy: name) {
+      ${query_name}(first: 20, orderBy: name) {
         documents {
           fields {
             name
@@ -64,7 +64,7 @@ export async function searchGardenByName(searchString) {
   const query_name = `all_${GARDEN_SCHEMA_ID}`;
   const query = `
     query gardens {
-      ${query_name}(first: 1, filter: { name : { contains : "${searchString}" } }) {
+      ${query_name}(first: 20, filter: { name : { contains : "${searchString}" } }) {
         documents {
           fields {
             name
@@ -84,11 +84,32 @@ export async function searchGardenByName(searchString) {
   return result.data[query_name].documents;
 }
 
+export async function getGardenById(documentId) {
+  const query = `
+    query garden {
+      ${GARDEN_SCHEMA_ID}(id: "${documentId}" }) {
+        fields {
+          name
+          width
+          height
+        }
+        meta {
+          documentId
+          viewId
+        }
+      }
+    }
+  `;
+
+  const result = await request(query);
+  return result.data[GARDEN_SCHEMA_ID];
+}
+
 export async function getPlantsForGarden(gardenId) {
   const query_name = `all_${PLANT_SCHEMA_ID}`;
   const query = `
     query plants {
-      ${query_name}(first: 50, filter: { garden: {eq: "${gardenId}" } }) {
+      ${query_name}(first: 50, orderBy: planted_at, orderDirection: DESC, filter: { garden: {eq: "${gardenId}" } }) {
         documents {
           fields {
             pos_x
