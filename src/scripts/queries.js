@@ -1,3 +1,4 @@
+import { OperationFields } from '../libs/shirokuma.min.js';
 import {
   GARDEN_SCHEMA_ID,
   PLANT_SCHEMA_ID,
@@ -24,7 +25,16 @@ export async function createGarden(fields) {
   return await window.session.create(fields, { schemaId: GARDEN_SCHEMA_ID });
 }
 
-export async function createPlant(fields) {
+export async function createPlant(index, plantedAt, speciesId, gardenId) {
+  let fields = new OperationFields({
+    pos_x: Math.floor(index),
+    pos_y: Math.floor(0),
+    planted_at: plantedAt,
+    garden: `${gardenId}`,
+  });
+
+  fields.insert('species', 'pinned_relation', [speciesId]);
+
   return await window.session.create(fields, { schemaId: PLANT_SCHEMA_ID });
 }
 

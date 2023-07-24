@@ -1,4 +1,3 @@
-import { OperationFields } from '../libs/shirokuma.min.js';
 import { createPlant } from './queries.js';
 import {
   getCurrentGarden,
@@ -22,24 +21,20 @@ async function onClick(e) {
   const target = e.target;
 
   const gardenId = getCurrentGarden();
-  const x = target.id;
+  const index = target.id;
 
   if (!gardenId) {
     return;
   }
 
-  const now = Math.floor(new Date().getTime() / 1000.0);
-  let plant_fields = new OperationFields({
-    pos_x: Math.floor(x),
-    pos_y: Math.floor(0),
-    planted_at: now,
-    garden: `${gardenId}`,
-  });
-
+  const createdAt = Math.floor(new Date().getTime() / 1000.0);
   const currentSpeciesId = getCurrentSpeciesId();
-  plant_fields.insert('species', 'pinned_relation', [currentSpeciesId]);
-
-  const plantId = await createPlant(plant_fields);
+  const plantId = await createPlant(
+    index,
+    createdAt,
+    currentSpeciesId,
+    gardenId,
+  );
 
   const currentSpeciesChar = getCurrentSpeciesChar();
   target.textContent = currentSpeciesChar;
