@@ -5,7 +5,6 @@ import {
   getAllGardens,
   searchGardenByName,
 } from './queries.js';
-import { getCurrentGarden } from './store.js';
 
 export class GardenForm extends HTMLElement {
   constructor() {
@@ -83,36 +82,15 @@ export class GardenSearch extends HTMLElement {
     const input = this.shadow.querySelector('input');
     input.oninput = async (e) => {
       e.preventDefault();
-      this.fetchGardens();
+      const list = this.shadow.querySelector('selectable-list');
+      list.refresh = true;
     };
 
-    setInterval(this.fetchGardens.bind(this), 1000);
+    const list = this.shadow.querySelector('selectable-list');
+    list.fetchItems = this.fetchGardenItems.bind(this);
   }
 
-  get refresh() {
-    return this.hasAttribute('refresh');
-  }
-
-  set refresh(val) {
-    if (val) {
-      this.setAttribute('refresh', val);
-    } else {
-      this.removeAttribute('refresh');
-    }
-  }
-
-  static get observedAttributes() {
-    return ['refresh'];
-  }
-
-  attributeChangedCallback(name, oldValue, newValue) {
-    console.log(name, newValue);
-    if (name === 'refresh' && newValue) {
-      this.renderList();
-    }
-  }
-
-  async fetchGardens() {
+  async fetchGardenItems() {
     const input = this.shadow.querySelector('input');
     const searchString = input.value;
 
@@ -121,34 +99,11 @@ export class GardenSearch extends HTMLElement {
         ? await getAllGardens()
         : await searchGardenByName(searchString);
 
-    if (JSON.stringify(this.gardens) !== JSON.stringify(newGardens)) {
-      this.gardens = newGardens;
-      this.refresh = true;
-    } else {
-      this.refresh = false;
-    }
-  }
-
-  renderList() {
-    const list = this.shadow.querySelector('ul');
-    list.innerHTML = '';
-
-    this.gardens.forEach((garden) => {
+    return newGardens.map((garden) => {
       const { name } = garden.fields;
       const { documentId } = garden.meta;
 
-      const item = document.createElement('select-item');
-      item.checked = documentId === this.currentGarden;
-      item.name = name;
-      item.id = documentId;
-
-      item.onclick = (e) => {
-        const gardenId = e.target.id;
-        this.currentGarden = gardenId;
-        this.renderList();
-      };
-
-      list.appendChild(item);
+      return { name: name, id: documentId };
     });
   }
 }

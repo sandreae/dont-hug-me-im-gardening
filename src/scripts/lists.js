@@ -1,9 +1,3 @@
-import {
-  setCurrentSpeciesId,
-  setCurrentSpeciesChar,
-  setCurrentGarden,
-} from './store.js';
-
 import { getAllSpecies } from './queries.js';
 
 export class SelectItem extends HTMLElement {
@@ -33,47 +27,6 @@ export class SelectItem extends HTMLElement {
   }
 }
 
-// export function createGardenListItem(gardenId, value, currentGardenId) {
-//   const checked = currentGardenId === gardenId ? true : false;
-//   return createListItem(gardenId, value, 'garden', checked, onClickGarden);
-// }
-//
-// export function createSpeciesListItem(speciesId, value, currentSpeciesId) {
-//   const checked = currentSpeciesId === speciesId ? true : false;
-//   return createListItem(speciesId, value, 'species', checked, onClickSpecies);
-// }
-//
-// function onClickGarden(e) {
-//   const gardenId = e.target.id;
-//   setCurrentGarden(gardenId);
-// }
-//
-// function onClickSpecies(e) {
-//   const speciesId = e.target.id;
-//   const speciesChar = e.target.value;
-//   setCurrentSpeciesId(speciesId);
-//   setCurrentSpeciesChar(speciesChar);
-// }
-//
-// export function createListItem(id, value, name, checked, onClick) {
-//   let div = document.createElement('div');
-//   let input = document.createElement('input');
-//   input.checked = checked;
-//   input.type = 'radio';
-//   input.name = name;
-//   input.value = value;
-//   input.id = id;
-//
-//   let label = document.createElement('label');
-//   label.for = id;
-//   label.textContent = value;
-//
-//   input.onclick = onClick;
-//   div.appendChild(input);
-//   div.appendChild(label);
-//   return div;
-// }
-
 export class SpeciesList extends HTMLElement {
   constructor() {
     super();
@@ -86,31 +39,94 @@ export class SpeciesList extends HTMLElement {
   }
 
   connectedCallback() {
-    setInterval(this.refreshSpecies.bind(this), 1000);
+    const list = this.shadow.querySelector('selectable-list');
+    list.fetchItems = this.fetchSpeciesItems.bind(this);
   }
 
-  async refreshSpecies() {
-    const currentSpecies = this.currentSpecies;
+  async fetchSpeciesItems() {
     const species = await getAllSpecies();
 
-    const list = this.shadow.querySelector('ul');
-    list.innerHTML = '';
-
-    species.forEach((species) => {
+    return species.map((species) => {
       const { vec_img } = species.fields;
       const { documentId } = species.meta;
 
-      const item = document.createElement('select-item');
-      item.checked = documentId === currentSpecies;
-      item.name = vec_img;
-      item.id = documentId;
-      item.onclick = (e) => {
-        const speciesId = e.target.id;
-        this.currentSpecies = speciesId;
-        this.refreshSpecies();
+      return { name: vec_img, id: documentId };
+    });
+  }
+}
+
+export class SelectableList extends HTMLElement {
+  constructor() {
+    super();
+
+    const template = document.getElementById('selectable-list');
+    const templateContent = template.content;
+
+    this.shadow = this.attachShadow({ mode: 'open' });
+    this.shadow.appendChild(templateContent.cloneNode(true));
+
+    this.items = [];
+  }
+
+  connectedCallback() {
+    setInterval(this._refreshItems.bind(this), 1000);
+  }
+
+  get refresh() {
+    return this.hasAttribute('refresh');
+  }
+
+  set refresh(val) {
+    if (val) {
+      this.setAttribute('refresh', val);
+    } else {
+      this.removeAttribute('refresh');
+    }
+  }
+
+  static get observedAttributes() {
+    return ['refresh'];
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    console.log(name, newValue);
+    if (name === 'refresh' && newValue) {
+      this._refreshItems();
+    }
+  }
+
+  async _refreshItems() {
+    if (!this.fetchItems) {
+      return;
+    }
+
+    const items = await this.fetchItems();
+
+    if (JSON.stringify(this.items) !== JSON.stringify(items)) {
+      this.items = items;
+      this._renderItems();
+    }
+    this.refresh = false;
+  }
+
+  _renderItems() {
+    const list = this.shadow.querySelector('ul');
+    list.innerHTML = '';
+
+    this.items.forEach((item) => {
+      const { name, id } = item;
+
+      const selectItem = document.createElement('select-item');
+      selectItem.checked = id === this.selected;
+      selectItem.name = name;
+      selectItem.id = id;
+
+      selectItem.onclick = (e) => {
+        this.selected = e.target.id;
+        this._renderItems();
       };
 
-      list.appendChild(item);
+      list.appendChild(selectItem);
     });
   }
 }
