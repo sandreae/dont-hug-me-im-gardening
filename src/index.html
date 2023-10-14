@@ -48,6 +48,45 @@
   </style>
 </template>
 
+<template id="garden-form">
+  <form>
+    <label for="name">Name: </label>
+    <input type="text" name="name" maxlength="60" minlength="1" required />
+    <input type="submit" value="+" />
+  </form>
+</template>
+
+<template id="species-form">
+  <form>
+    <input type="text" name="emoji" minlength="1" maxlength="2" required />
+    <input type="submit" value="+" />
+  </form>
+</template>
+
+<template id="garden-search">
+  <style>
+    label,
+    input {
+      font-size: large;
+      margin: 2px;
+    }
+
+    input[type='radio'] {
+      width: 20px;
+      height: 20px;
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 5px;
+    }
+  </style>
+  <input placeholder="search" type="text" name="garden-search" />
+  <ul>
+    <li>no gardens found...</li>
+  </ul>
+</template>
+
 <body>
   <div id="app">
     <div id="header">
@@ -55,12 +94,7 @@
     </div>
     <div id="left-bar">
       <h2>species</h2>
-      <form id="species-form">
-        <div>
-          <input type="text" name="emoji" id="species-emoji" minlength="1" maxlength="2" required />
-          <input type="submit" value="+" />
-        </div>
-      </form>
+      <species-form></species-form>
       <div id="species-list"></div>
     </div>
     <div id="center">
@@ -68,17 +102,8 @@
     </div>
     <div id="right-bar">
       <h2>gardens</h2>
-      <form id="garden-form" class="garden-form">
-        <div>
-          <label for="name">Name: </label>
-          <input type="text" name="name" maxlength="60" minlength="1" id="garden-name" required />
-          <input type="submit" value="+" />
-        </div>
-      </form>
-      <div id="gardens-list">
-        <input placeholder="search" id="garden-search" type="text" name="garden-search" />
-        <div id="garden-list"></div>
-      </div>
+      <garden-form></garden-form>
+      <garden-search></garden-search>
     </div>
   </div>
 </body>

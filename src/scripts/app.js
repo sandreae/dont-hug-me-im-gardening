@@ -6,13 +6,13 @@ import {
   searchGardenByName,
 } from './queries.js';
 import {
-  initGardenForm,
-  initSearchGardenForm,
-  initSpeciesForm,
-} from './forms.js';
-import { createGardenListItem, createSpeciesListItem } from './lists.js';
+  GardenSelectItem,
+  createGardenListItem,
+  createSpeciesListItem,
+} from './lists.js';
 import { getCurrentGarden, getCurrentSpeciesId, getKeyPair } from './store.js';
 import { Garden, GardenTile } from './garden.js';
+import { GardenForm, SpeciesForm, GardenSearch } from './forms.js';
 
 export async function app() {
   const keyPair = getKeyPair();
@@ -23,16 +23,19 @@ export async function app() {
     keyPair,
   );
 
-  customElements.define("garden-tile", GardenTile);
-  customElements.define("garden-main", Garden);
+  customElements.define('garden-tile', GardenTile);
+  customElements.define('garden-main', Garden);
+  customElements.define('garden-form', GardenForm);
+  customElements.define('species-form', SpeciesForm);
+  customElements.define('garden-search', GardenSearch);
+  customElements.define('garden-select-item', GardenSelectItem);
 
-  initGardenForm();
-  initSearchGardenForm();
-  initSpeciesForm();
-
-  // Set to true to activate polling.
-  localStorage.setItem('doPoll', true);
-  setInterval(poll, 1000);
+  // initSearchGardenForm();
+  // initSpeciesForm();
+  //
+  //   // Set to true to activate polling.
+  //   localStorage.setItem('doPoll', true);
+  //   setInterval(poll, 1000);
 }
 
 async function poll() {

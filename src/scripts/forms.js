@@ -5,69 +5,104 @@ import {
   getAllGardens,
   searchGardenByName,
 } from './queries.js';
-import { createGardenListItem } from './lists.js';
 import { getCurrentGarden } from './store.js';
 
-export function initGardenForm() {
-  let form = document.getElementById('garden-form');
-  form.onsubmit = onGardenSubmit;
+export class GardenForm extends HTMLElement {
+  constructor() {
+    super();
+
+    const template = document.getElementById('garden-form');
+    const templateContent = template.content;
+
+    this.shadow = this.attachShadow({ mode: 'open' });
+    this.shadow.appendChild(templateContent.cloneNode(true));
+  }
+
+  connectedCallback() {
+    const form = this.shadow.querySelector('form');
+
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const input = this.shadow.querySelector('input');
+      const id = await createGarden({
+        name: input.value,
+        width: GARDEN_WIDTH,
+        height: GARDEN_HEIGHT,
+      });
+
+      console.log('Created garden: ', id);
+      input.value = '';
+    };
+  }
 }
 
-async function onGardenSubmit(e) {
-  e.preventDefault();
-  const input = e.srcElement.elements['name'];
-  const id = await createGarden({
-    name: input.value,
-    width: GARDEN_WIDTH,
-    height: GARDEN_HEIGHT,
-  });
+export class SpeciesForm extends HTMLElement {
+  constructor() {
+    super();
 
-  console.log('Created garden: ', id);
-  input.value = '';
+    const template = document.getElementById('species-form');
+    const templateContent = template.content;
+
+    this.shadow = this.attachShadow({ mode: 'open' });
+    this.shadow.appendChild(templateContent.cloneNode(true));
+  }
+
+  connectedCallback() {
+    const form = this.shadow.querySelector('form');
+
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const input = this.shadow.querySelector('input');
+      const emoji = input.value;
+
+      const id = await createSpecies({
+        name: 'temp name',
+        vec_img: `${emoji}`,
+      });
+
+      console.log('Created species: ', id);
+      input.value = '';
+    };
+  }
 }
 
-export function initSpeciesForm() {
-  let form = document.getElementById('species-form');
-  form.onsubmit = onSpeciesSubmit;
-}
+export class GardenSearch extends HTMLElement {
+  constructor() {
+    super();
 
-async function onSpeciesSubmit(e) {
-  e.preventDefault();
-  let input = e.srcElement.elements['emoji'];
-  const emoji = input.value;
+    const template = document.getElementById('garden-search');
+    const templateContent = template.content;
 
-  const id = await createSpecies({
-    name: 'temp name',
-    vec_img: `${emoji}`,
-  });
+    this.shadow = this.attachShadow({ mode: 'open' });
+    this.shadow.appendChild(templateContent.cloneNode(true));
+  }
 
-  console.log('Created species: ', id);
-  input.value = '';
-}
+  connectedCallback() {
+    const input = this.shadow.querySelector('input');
 
-export function initSearchGardenForm() {
-  let input = document.getElementById('garden-search');
-  input.oninput = onSearchGardens;
-}
+    input.oninput = async (e) => {
+      e.preventDefault();
+      // const searchString = e.target.value;
+      const gardens = Array.from([
+        { fields: { name: 'hello' }, meta: { documentId: '0' } },
+        { fields: { name: 'goodbye' }, meta: { documentId: '1' } },
+      ]);
+      // const gardens = !searchString || searchString.length == 0
+      //   ? await getAllGardens()
+      //   : await searchGardenByName(searchString);
+      const list = this.shadow.querySelector('ul');
+      list.innerHTML = '';
 
-async function onSearchGardens(e) {
-  e.preventDefault();
-  const currentGarden = getCurrentGarden();
+      gardens.forEach((garden) => {
+        const { name } = garden.fields;
+        const { documentId } = garden.meta;
 
-  const searchString = e.target.value;
-  const gardens =
-    !searchString || searchString.length == 0
-      ? await getAllGardens()
-      : await searchGardenByName(searchString);
+        const item = document.createElement('garden-select-item');
+        item.name = name;
+        item.id = documentId;
 
-  let searchResults = document.getElementById('garden-list');
-  searchResults.innerHTML = '';
-
-  gardens.forEach((garden) => {
-    const { name } = garden.fields;
-    const { documentId } = garden.meta;
-
-    const listItem = createGardenListItem(documentId, name, currentGarden);
-    searchResults.appendChild(listItem);
-  });
+        list.appendChild(item);
+      });
+    };
+  }
 }
