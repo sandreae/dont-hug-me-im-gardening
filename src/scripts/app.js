@@ -1,18 +1,18 @@
+import { Session } from '../libs/shirokuma.min.js';
 import {
   getAllGardens,
   getAllSpecies,
   getPlantsForGarden,
   searchGardenByName,
 } from './queries.js';
-import { Session } from '../libs/shirokuma.min.js';
 import {
   initGardenForm,
   initSearchGardenForm,
   initSpeciesForm,
 } from './forms.js';
-import { initGarden } from './garden.js';
 import { createGardenListItem, createSpeciesListItem } from './lists.js';
 import { getCurrentGarden, getCurrentSpeciesId, getKeyPair } from './store.js';
+import { Garden, GardenTile } from './garden.js';
 
 export async function app() {
   const keyPair = getKeyPair();
@@ -23,7 +23,9 @@ export async function app() {
     keyPair,
   );
 
-  initGarden();
+  customElements.define("garden-tile", GardenTile);
+  customElements.define("garden-main", Garden);
+
   initGardenForm();
   initSearchGardenForm();
   initSpeciesForm();

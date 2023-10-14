@@ -1,73 +1,86 @@
 <!doctype html>
 <html lang="en-us">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>It's gardening time!</title>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <script type="module">
-      import { app } from './scripts/app.js';
-      import { initWebAssembly, KeyPair } from './libs/shirokuma.min.js';
+  <title>It's gardening time!</title>
 
-      initWebAssembly().then(() => {
-        app();
-      });
-    </script>
-    <link href="style.css" rel="stylesheet" />
-  </head>
+  <script type="module">
+    import { app } from './scripts/app.js';
+    import { initWebAssembly, KeyPair } from './libs/shirokuma.min.js';
 
-  <body>
-    <div id="app">
-      <div id="header">
-        <h1>p2p garden</h1>
-      </div>
-      <div id="left-bar">
-        <h2>species</h2>
-        <form id="species-form">
-          <div>
-            <input
-              type="text"
-              name="emoji"
-              id="species-emoji"
-              minlength="1"
-              maxlength="2"
-              required
-            />
-            <input type="submit" value="+" />
-          </div>
-        </form>
-        <div id="species-list"></div>
-      </div>
-      <div id="center">
-        <div id="garden"></div>
-      </div>
-      <div id="right-bar">
-        <h2>gardens</h2>
-        <form id="garden-form" class="garden-form">
-          <div>
-            <label for="name">Name: </label>
-            <input
-              type="text"
-              name="name"
-              maxlength="60"
-              minlength="1"
-              id="garden-name"
-              required
-            />
-            <input type="submit" value="+" />
-          </div>
-        </form>
-        <div id="gardens-list">
-          <input
-            placeholder="search"
-            id="garden-search"
-            type="text"
-            name="garden-search"
-          />
-          <div id="garden-list"></div>
+    initWebAssembly().then(() => {
+      app();
+    });
+  </script>
+  <link href="style.css" rel="stylesheet" />
+</head>
+
+
+<template id="garden-main">
+  <style>
+    :host {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, 50px);
+      grid-auto-rows: 50px;
+      width: 800px;
+      height: 600px;
+      margin: 100px auto;
+      background-color: green;
+      border: 5px solid black;
+      font-size: larger;
+    }
+  </style>
+</template>
+
+<template id="garden-tile">
+  <style>
+    :host {
+      cursor: pointer;
+      border: 1px dotted gray;
+      font-size: 45px;
+      text-align: center;
+      overflow: hidden;
+      font-family: fantasy;
+    }
+  </style>
+</template>
+
+<body>
+  <div id="app">
+    <div id="header">
+      <h1>p2p garden</h1>
+    </div>
+    <div id="left-bar">
+      <h2>species</h2>
+      <form id="species-form">
+        <div>
+          <input type="text" name="emoji" id="species-emoji" minlength="1" maxlength="2" required />
+          <input type="submit" value="+" />
         </div>
+      </form>
+      <div id="species-list"></div>
+    </div>
+    <div id="center">
+      <garden-main></garden-main>
+    </div>
+    <div id="right-bar">
+      <h2>gardens</h2>
+      <form id="garden-form" class="garden-form">
+        <div>
+          <label for="name">Name: </label>
+          <input type="text" name="name" maxlength="60" minlength="1" id="garden-name" required />
+          <input type="submit" value="+" />
+        </div>
+      </form>
+      <div id="gardens-list">
+        <input placeholder="search" id="garden-search" type="text" name="garden-search" />
+        <div id="garden-list"></div>
       </div>
     </div>
-  </body>
+  </div>
+</body>
+
 </html>

@@ -64,26 +64,6 @@ input[type='radio'] {
   grid-row: 2;
 }
 
-#garden {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 50px);
-  grid-auto-rows: 50px;
-  width: 800px;
-  height: 600px;
-  margin: 100px auto;
-  background-color: green;
-  border: 5px solid black;
-  font-size: larger;
-}
-
-.plant {
-  border: 1px dotted gray;
-  font-size: 45px;
-  text-align: center;
-  overflow: hidden;
-  font-family: fantasy;
-}
-
 #species-form input[type='text'] {
   width: 45px;
   font-family: fantasy;
