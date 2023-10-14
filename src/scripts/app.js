@@ -1,16 +1,7 @@
 import { Session } from '../libs/shirokuma.min.js';
-import {
-  getAllGardens,
-  getAllSpecies,
-  getPlantsForGarden,
-  searchGardenByName,
-} from './queries.js';
-import {
-  GardenSelectItem,
-  createGardenListItem,
-  createSpeciesListItem,
-} from './lists.js';
-import { getCurrentGarden, getCurrentSpeciesId, getKeyPair } from './store.js';
+import { getPlantsForGarden } from './queries.js';
+import { SpeciesList, SelectItem } from './lists.js';
+import { getCurrentGarden, getKeyPair } from './store.js';
 import { Garden, GardenTile } from './garden.js';
 import { GardenForm, SpeciesForm, GardenSearch } from './forms.js';
 
@@ -25,63 +16,11 @@ export async function app() {
 
   customElements.define('garden-tile', GardenTile);
   customElements.define('garden-main', Garden);
-  customElements.define('garden-form', GardenForm);
   customElements.define('species-form', SpeciesForm);
+  customElements.define('species-list', SpeciesList);
+  customElements.define('garden-form', GardenForm);
   customElements.define('garden-search', GardenSearch);
-  customElements.define('garden-select-item', GardenSelectItem);
-
-  // initSearchGardenForm();
-  // initSpeciesForm();
-  //
-  //   // Set to true to activate polling.
-  //   localStorage.setItem('doPoll', true);
-  //   setInterval(poll, 1000);
-}
-
-async function poll() {
-  if (localStorage.getItem('doPoll')) {
-    await refreshPlants();
-    await refreshSpecies();
-    await refreshGardens();
-  }
-}
-
-async function refreshGardens() {
-  const currentGarden = getCurrentGarden();
-  const searchInput = document.getElementById('garden-search');
-  const searchString = searchInput.value;
-
-  const gardens =
-    !searchString || searchString.length == 0
-      ? await getAllGardens()
-      : await searchGardenByName(searchString);
-
-  const searchResults = document.getElementById('garden-list');
-  searchResults.innerHTML = '';
-
-  Array.from(gardens).forEach((garden) => {
-    const { name } = garden.fields;
-    const { documentId } = garden.meta;
-    const listItem = createGardenListItem(documentId, name, currentGarden);
-    searchResults.appendChild(listItem);
-  });
-}
-
-async function refreshSpecies() {
-  const currentSpecies = getCurrentSpeciesId();
-
-  const species = await getAllSpecies();
-
-  let speciesElement = document.getElementById('species-list');
-  speciesElement.innerHTML = '';
-
-  Array.from(species).forEach((item) => {
-    let { vec_img } = item.fields;
-    let { documentId } = item.meta;
-
-    let div = createSpeciesListItem(documentId, vec_img, currentSpecies);
-    speciesElement.appendChild(div);
-  });
+  customElements.define('select-item', SelectItem);
 }
 
 async function refreshPlants() {

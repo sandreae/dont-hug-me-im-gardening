@@ -1,10 +1,10 @@
 // Schema this application uses
 export const GARDEN_SCHEMA_ID =
-  'garden_0020a01f72a5f28f6a559b4942e3525de2bb2413d05897526fe2250e3b57384983a2';
+  'garden_0020286e0fe57400f7974eb5c12300c5eb3bc9f5b633c0a0764209f42e4c6a7d7815';
 export const PLANT_SCHEMA_ID =
-  'plant_0020c11ab63099193a8c8516cc00f88bfc8cdd657b94a99fef2fce86aaaede84f87d';
+  'plant_0020d5d98552977c63c95ac02f9ac0e123bde514c4e2be69a2a6cc18fa47b773a2fb';
 export const SPECIES_SCHEMA_ID =
-  'species_0020c0fadc793bc5ed7b780e0ef5df6777b1a51d454aee0061d28581d728d733002f';
+  'species_0020cd82879cc1a03ee500f07d2ad23214dced368531e0c9861cbda203718c05b159';
 
 // URL of your local aquadoggo node
 export const ENDPOINT = 'http://localhost:2020/graphql';

@@ -75,34 +75,80 @@ export class GardenSearch extends HTMLElement {
 
     this.shadow = this.attachShadow({ mode: 'open' });
     this.shadow.appendChild(templateContent.cloneNode(true));
+
+    this.gardens = [];
   }
 
   connectedCallback() {
     const input = this.shadow.querySelector('input');
-
     input.oninput = async (e) => {
       e.preventDefault();
-      // const searchString = e.target.value;
-      const gardens = Array.from([
-        { fields: { name: 'hello' }, meta: { documentId: '0' } },
-        { fields: { name: 'goodbye' }, meta: { documentId: '1' } },
-      ]);
-      // const gardens = !searchString || searchString.length == 0
-      //   ? await getAllGardens()
-      //   : await searchGardenByName(searchString);
-      const list = this.shadow.querySelector('ul');
-      list.innerHTML = '';
-
-      gardens.forEach((garden) => {
-        const { name } = garden.fields;
-        const { documentId } = garden.meta;
-
-        const item = document.createElement('garden-select-item');
-        item.name = name;
-        item.id = documentId;
-
-        list.appendChild(item);
-      });
+      this.fetchGardens();
     };
+
+    setInterval(this.fetchGardens.bind(this), 1000);
+  }
+
+  get refresh() {
+    return this.hasAttribute('refresh');
+  }
+
+  set refresh(val) {
+    if (val) {
+      this.setAttribute('refresh', val);
+    } else {
+      this.removeAttribute('refresh');
+    }
+  }
+
+  static get observedAttributes() {
+    return ['refresh'];
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    console.log(name, newValue);
+    if (name === 'refresh' && newValue) {
+      this.renderList();
+    }
+  }
+
+  async fetchGardens() {
+    const input = this.shadow.querySelector('input');
+    const searchString = input.value;
+
+    const newGardens =
+      !searchString || searchString.length == 0
+        ? await getAllGardens()
+        : await searchGardenByName(searchString);
+
+    if (JSON.stringify(this.gardens) !== JSON.stringify(newGardens)) {
+      this.gardens = newGardens;
+      this.refresh = true;
+    } else {
+      this.refresh = false;
+    }
+  }
+
+  renderList() {
+    const list = this.shadow.querySelector('ul');
+    list.innerHTML = '';
+
+    this.gardens.forEach((garden) => {
+      const { name } = garden.fields;
+      const { documentId } = garden.meta;
+
+      const item = document.createElement('select-item');
+      item.checked = documentId === this.currentGarden;
+      item.name = name;
+      item.id = documentId;
+
+      item.onclick = (e) => {
+        const gardenId = e.target.id;
+        this.currentGarden = gardenId;
+        this.renderList();
+      };
+
+      list.appendChild(item);
+    });
   }
 }

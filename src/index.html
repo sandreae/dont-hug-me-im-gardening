@@ -87,6 +87,29 @@
   </ul>
 </template>
 
+<template id="species-list">
+  <style>
+    label,
+    input {
+      font-size: large;
+      margin: 2px;
+    }
+
+    input[type='radio'] {
+      width: 20px;
+      height: 20px;
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 5px;
+    }
+  </style>
+  <ul>
+    <li>no species found...</li>
+  </ul>
+</template>
+
 <body>
   <div id="app">
     <div id="header">
@@ -95,7 +118,7 @@
     <div id="left-bar">
       <h2>species</h2>
       <species-form></species-form>
-      <div id="species-list"></div>
+      <species-list></species-list>
     </div>
     <div id="center">
       <garden-main></garden-main>
