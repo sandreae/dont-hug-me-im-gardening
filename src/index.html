@@ -23,12 +23,11 @@
   <style>
     :host {
       display: grid;
-      grid-template-columns: repeat(auto-fill, 50px);
-      grid-auto-rows: 50px;
-      width: 800px;
-      height: 600px;
-      margin: 100px auto;
-      background-color: green;
+      grid-template-columns: repeat(auto-fill, 75px);
+      grid-auto-rows: 75px;
+      width: 1200px;
+      height: 900px;
+      background-color: rgb(168, 248, 93);
       border: 5px solid black;
       font-size: larger;
     }
@@ -39,11 +38,15 @@
   <style>
     :host {
       cursor: pointer;
-      border: 1px dotted gray;
-      font-size: 45px;
+      /* border: 1px solid rgb(154, 205, 50, 0.5); */
+      background-image: url(grass-tile.jpg);
+      background-repeat: no-repeat;
+      background-size: 75px 75px;
       text-align: center;
-      overflow: hidden;
-      font-family: fantasy;
+    }
+
+    img {
+      width: 100%;
     }
   </style>
 </template>
@@ -58,7 +61,7 @@
 
 <template id="species-form">
   <form>
-    <input type="text" name="emoji" minlength="1" maxlength="2" required />
+    <input type="file" id="species" name="species" accept="image/png, image/jpeg" required />
     <input type="submit" value="+" />
   </form>
 </template>
@@ -79,15 +82,13 @@
 
 <template id="species-list">
   <style>
-    label,
-    input {
-      font-size: large;
+    img {
       margin: 2px;
     }
 
-    input[type='radio'] {
-      width: 20px;
-      height: 20px;
+    img[selected] {
+      border: 2px solid black;
+      margin: 0px;
     }
 
     ul {
@@ -103,9 +104,6 @@
 
 <body>
   <div id="app">
-    <div id="header">
-      <h1>p2p garden</h1>
-    </div>
     <div id="left-bar">
       <h2>species</h2>
       <species-form></species-form>
