@@ -24,20 +24,24 @@ export class SpeciesList extends HTMLElement {
     list.innerHTML = '';
 
     this.items.forEach((species) => {
-      const { vec_img } = species.fields;
+      const { img } = species.fields;
       const { documentId } = species.meta;
 
-      const selectItem = document.createElement('select-item');
-      selectItem.checked = documentId === this.selected;
-      selectItem.name = vec_img;
-      selectItem.id = documentId;
+      const image = document.createElement('img');
+      if (documentId === this.selected) {
+        image.setAttribute('selected', true);
+      }
+      image.src = `http://localhost:2020/blobs/${img.meta.documentId}`;
+      image.id = documentId;
 
-      selectItem.onclick = (e) => {
+      image.onclick = (e) => {
         this.selected = e.target.id;
+        window.selectedSpecies = e.target.id;
+        window.selectedSpeciesImgSrc = e.target.src;
         this._renderItems();
       };
 
-      list.appendChild(selectItem);
+      list.appendChild(image);
     });
   }
 }
@@ -88,6 +92,7 @@ export class GardenSearch extends HTMLElement {
 
       selectItem.onclick = (e) => {
         this.selected = e.target.id;
+        window.selectedGarden = e.target.id;
         this._renderItems();
       };
 
