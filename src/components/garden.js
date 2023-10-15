@@ -1,9 +1,4 @@
-import { createPlant } from '../queries.js';
-import {
-  getCurrentGarden,
-  getCurrentSpeciesId,
-  getCurrentSpeciesChar,
-} from '../store.js';
+import { createPlant, getPlantsForGarden } from '../queries.js';
 
 export class GardenTile extends HTMLElement {
   constructor() {
@@ -14,9 +9,8 @@ export class GardenTile extends HTMLElement {
     const template = document.getElementById('garden-tile');
     const templateContent = template.content;
 
-    this.attachShadow({ mode: 'open' }).appendChild(
-      templateContent.cloneNode(true),
-    );
+    this.shadow = this.attachShadow({ mode: 'open' });
+    this.shadow.appendChild(templateContent.cloneNode(true));
   }
 }
 
@@ -37,13 +31,15 @@ export class Garden extends HTMLElement {
       element.onclick = this.onClick;
       this.shadow.appendChild(element);
     }
+
+    setInterval(this.refreshPlants.bind(this), 1000);
   }
 
   async onClick(e) {
     e.preventDefault();
     const target = e.target;
 
-    const gardenId = getCurrentGarden();
+    const gardenId = window.selectedGarden;
     const index = target.id;
 
     if (!gardenId) {
@@ -51,7 +47,7 @@ export class Garden extends HTMLElement {
     }
 
     const createdAt = Math.floor(new Date().getTime() / 1000.0);
-    const currentSpeciesId = getCurrentSpeciesId();
+    const currentSpeciesId = window.selectedSpecies;
     const plantId = await createPlant(
       index,
       createdAt,
@@ -59,9 +55,59 @@ export class Garden extends HTMLElement {
       gardenId,
     );
 
-    const currentSpeciesChar = getCurrentSpeciesChar();
-    target.textContent = currentSpeciesChar;
+    const currentImage = target.shadow.querySelector('img');
+    if (!currentImage) {
+      const newImage = document.createElement('img');
+      newImage.src = window.selectedSpeciesImgSrc;
+      target.shadow.appendChild(newImage);
+      return;
+    } else {
+      currentImage.src = window.selectedSpeciesImgSrc;
+    }
 
     console.log('Created plant: ', plantId);
+  }
+
+  async refreshPlants() {
+    const gardenId = window.selectedGarden;
+
+    if (gardenId === undefined) {
+      return;
+    }
+
+    const newPlants = await getPlantsForGarden(gardenId);
+    let gardenTiles = this.shadow.querySelectorAll('garden-tile');
+
+    Array.from(gardenTiles).forEach((tile) => {
+      let currentPosition = tile.id;
+
+      let newPlant = Array.from(newPlants).find((plant) => {
+        return plant.fields.index === Number(currentPosition);
+      });
+
+      if (!newPlant) {
+        const img = tile.shadow.querySelector('img');
+        if (img) {
+          tile.shadow.removeChild(img);
+        }
+        return;
+      }
+
+      const { img } = newPlant.fields.species.fields;
+      const src = `http://localhost:2020/blobs/${img.meta.documentId}`;
+
+      const currentImage = tile.shadow.querySelector('img');
+      if (!currentImage) {
+        const newImage = document.createElement('img');
+        newImage.src = src;
+        tile.shadow.appendChild(newImage);
+        console.log(tile);
+        return;
+      }
+
+      if (src !== currentImage.src) {
+        currentImage.src = src;
+      }
+    });
   }
 }
