@@ -1,4 +1,4 @@
-import { getAllSpecies } from './queries.js';
+import queries from './queries.js';
 
 export class SelectItem extends HTMLElement {
   constructor() {
@@ -39,37 +39,53 @@ export class SpeciesList extends HTMLElement {
   }
 
   connectedCallback() {
-    const list = this.shadow.querySelector('selectable-list');
-    list.fetchItems = this.fetchSpeciesItems.bind(this);
+    const query = this.shadow.querySelector('p2panda-query');
+    query.onNewItems = this._onNewItems.bind(this);
   }
 
-  async fetchSpeciesItems() {
-    const species = await getAllSpecies();
+  _onNewItems(items) {
+    this.items = items;
+    this._renderItems();
+  }
 
-    return species.map((species) => {
+  _renderItems() {
+    const list = this.shadow.querySelector('ul');
+    list.innerHTML = '';
+
+    this.items.forEach((species) => {
       const { vec_img } = species.fields;
       const { documentId } = species.meta;
 
-      return { name: vec_img, id: documentId };
+      const selectItem = document.createElement('select-item');
+      selectItem.checked = documentId === this.selected;
+      selectItem.name = vec_img;
+      selectItem.id = documentId;
+
+      selectItem.onclick = (e) => {
+        this.selected = e.target.id;
+        this._renderItems();
+      };
+
+      list.appendChild(selectItem);
     });
   }
 }
 
-export class SelectableList extends HTMLElement {
+export class P2pandaQuery extends HTMLElement {
   constructor() {
     super();
 
-    const template = document.getElementById('selectable-list');
-    const templateContent = template.content;
-
     this.shadow = this.attachShadow({ mode: 'open' });
-    this.shadow.appendChild(templateContent.cloneNode(true));
-
     this.items = [];
+    this.query = queries[this.getAttribute('schema')];
   }
 
   connectedCallback() {
-    setInterval(this._refreshItems.bind(this), 1000);
+    setInterval(this._query.bind(this), 1000);
+  }
+
+  static get observedAttributes() {
+    return ['refresh'];
   }
 
   get refresh() {
@@ -84,49 +100,37 @@ export class SelectableList extends HTMLElement {
     }
   }
 
-  static get observedAttributes() {
-    return ['refresh'];
-  }
+  attributeChangedCallback(name) {
+    switch (name) {
+      case 'refresh':
+        this._query();
+        this.refresh = false;
+        break;
 
-  attributeChangedCallback(name, oldValue, newValue) {
-    console.log(name, newValue);
-    if (name === 'refresh' && newValue) {
-      this._refreshItems();
+      default:
+        break;
     }
   }
 
-  async _refreshItems() {
-    if (!this.fetchItems) {
+  async _query() {
+    if (!this.query) {
       return;
     }
 
-    const items = await this.fetchItems();
+    const items = await this.query();
 
     if (JSON.stringify(this.items) !== JSON.stringify(items)) {
       this.items = items;
-      this._renderItems();
+      this._onNewItems(items);
+      // this._renderItems();
     }
-    this.refresh = false;
   }
 
-  _renderItems() {
-    const list = this.shadow.querySelector('ul');
-    list.innerHTML = '';
-
-    this.items.forEach((item) => {
-      const { name, id } = item;
-
-      const selectItem = document.createElement('select-item');
-      selectItem.checked = id === this.selected;
-      selectItem.name = name;
-      selectItem.id = id;
-
-      selectItem.onclick = (e) => {
-        this.selected = e.target.id;
-        this._renderItems();
-      };
-
-      list.appendChild(selectItem);
-    });
+  _onNewItems(items) {
+    if (!this.onNewItems) {
+      console.log('New items fetched:', items);
+      return;
+    }
+    this.onNewItems(items);
   }
 }

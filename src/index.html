@@ -71,14 +71,13 @@
     }
   </style>
   <input placeholder="search" type="text" name="garden-search" />
-  <selectable-list></selectable-list>
+  <p2panda-query schema="gardens"></p2panda-query>
+  <ul>
+    <li>no gardens found...</li>
+  </ul>
 </template>
 
 <template id="species-list">
-  <selectable-list></selectable-list>
-</template>
-
-<template id="selectable-list">
   <style>
     label,
     input {
@@ -96,6 +95,7 @@
       padding-left: 5px;
     }
   </style>
+  <p2panda-query schema="species"></p2panda-query>
   <ul>
     <li>no species found...</li>
   </ul>

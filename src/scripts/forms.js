@@ -1,10 +1,5 @@
 import { GARDEN_HEIGHT, GARDEN_WIDTH } from './constants.js';
-import {
-  createGarden,
-  createSpecies,
-  getAllGardens,
-  searchGardenByName,
-} from './queries.js';
+import { createGarden, createSpecies } from './queries.js';
 
 export class GardenForm extends HTMLElement {
   constructor() {
@@ -80,30 +75,41 @@ export class GardenSearch extends HTMLElement {
 
   connectedCallback() {
     const input = this.shadow.querySelector('input');
+
     input.oninput = async (e) => {
       e.preventDefault();
-      const list = this.shadow.querySelector('selectable-list');
-      list.refresh = true;
+      const query = this.shadow.querySelector('p2panda-query');
+      query.refresh = true;
     };
 
-    const list = this.shadow.querySelector('selectable-list');
-    list.fetchItems = this.fetchGardenItems.bind(this);
+    const query = this.shadow.querySelector('p2panda-query');
+    query.onNewItems = this._onNewItems.bind(this);
   }
 
-  async fetchGardenItems() {
-    const input = this.shadow.querySelector('input');
-    const searchString = input.value;
+  _onNewItems(items) {
+    this.items = items;
+    this._renderItems();
+  }
 
-    const newGardens =
-      !searchString || searchString.length == 0
-        ? await getAllGardens()
-        : await searchGardenByName(searchString);
+  _renderItems() {
+    const list = this.shadow.querySelector('ul');
+    list.innerHTML = '';
 
-    return newGardens.map((garden) => {
+    this.items.forEach((garden) => {
       const { name } = garden.fields;
       const { documentId } = garden.meta;
 
-      return { name: name, id: documentId };
+      const selectItem = document.createElement('select-item');
+      selectItem.checked = documentId === this.selected;
+      selectItem.name = name;
+      selectItem.id = documentId;
+
+      selectItem.onclick = (e) => {
+        this.selected = e.target.id;
+        this._renderItems();
+      };
+
+      list.appendChild(selectItem);
     });
   }
 }

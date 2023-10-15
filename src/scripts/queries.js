@@ -171,3 +171,5 @@ export async function getAllSpecies() {
   const result = await request(query);
   return result.data[query_name].documents;
 }
+
+export default { species: getAllSpecies, gardens: getAllGardens };

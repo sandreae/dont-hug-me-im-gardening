@@ -1,6 +1,10 @@
 import { Session } from '../libs/shirokuma.min.js';
 import { getPlantsForGarden } from './queries.js';
-import { SpeciesList, SelectItem, SelectableList } from './lists.js';
+import {
+  SpeciesList,
+  SelectItem,
+  P2pandaQuery,
+} from './lists.js';
 import { getCurrentGarden, getKeyPair } from './store.js';
 import { Garden, GardenTile } from './garden.js';
 import { GardenForm, SpeciesForm, GardenSearch } from './forms.js';
@@ -21,7 +25,7 @@ export async function app() {
   customElements.define('garden-form', GardenForm);
   customElements.define('garden-search', GardenSearch);
   customElements.define('select-item', SelectItem);
-  customElements.define('selectable-list', SelectableList);
+  customElements.define('p2panda-query', P2pandaQuery);
 }
 
 async function refreshPlants() {
