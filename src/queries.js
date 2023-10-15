@@ -1,4 +1,4 @@
-import { OperationFields } from '../libs/shirokuma.min.js';
+import { OperationFields } from './libs/shirokuma.min.js';
 import {
   GARDEN_SCHEMA_ID,
   PLANT_SCHEMA_ID,

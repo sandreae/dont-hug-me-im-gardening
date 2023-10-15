@@ -1,9 +1,9 @@
-import { createPlant } from './queries.js';
+import { createPlant } from '../queries.js';
 import {
   getCurrentGarden,
   getCurrentSpeciesId,
   getCurrentSpeciesChar,
-} from './store.js';
+} from '../store.js';
 
 export class GardenTile extends HTMLElement {
   constructor() {

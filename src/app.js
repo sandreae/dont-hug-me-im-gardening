@@ -1,13 +1,10 @@
-import { Session } from '../libs/shirokuma.min.js';
+import { Session } from './libs/shirokuma.min.js';
 import { getPlantsForGarden } from './queries.js';
-import {
-  SpeciesList,
-  SelectItem,
-  P2pandaQuery,
-} from './lists.js';
 import { getCurrentGarden, getKeyPair } from './store.js';
-import { Garden, GardenTile } from './garden.js';
-import { GardenForm, SpeciesForm, GardenSearch } from './forms.js';
+import { SpeciesList, SelectItem, GardenSearch } from './components/lists.js';
+import { Garden, GardenTile } from './components/garden.js';
+import { GardenForm, SpeciesForm } from './components/forms.js';
+import { P2pandaQuery } from './components/query.js';
 
 export async function app() {
   const keyPair = getKeyPair();

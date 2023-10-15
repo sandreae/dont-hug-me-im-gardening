@@ -1,4 +1,4 @@
-import { KeyPair } from '../libs/shirokuma.min.js';
+import { KeyPair } from './libs/shirokuma.min.js';
 
 const LOCAL_STORAGE_KEY = 'privateKey';
 

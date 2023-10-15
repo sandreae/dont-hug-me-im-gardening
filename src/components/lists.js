@@ -1,11 +1,8 @@
-import { GARDEN_HEIGHT, GARDEN_WIDTH } from './constants.js';
-import { createGarden, createSpecies } from './queries.js';
-
-export class GardenForm extends HTMLElement {
+export class SpeciesList extends HTMLElement {
   constructor() {
     super();
 
-    const template = document.getElementById('garden-form');
+    const template = document.getElementById('species-list');
     const templateContent = template.content;
 
     this.shadow = this.attachShadow({ mode: 'open' });
@@ -13,50 +10,35 @@ export class GardenForm extends HTMLElement {
   }
 
   connectedCallback() {
-    const form = this.shadow.querySelector('form');
-
-    form.onsubmit = async (e) => {
-      e.preventDefault();
-      const input = this.shadow.querySelector('input');
-      const id = await createGarden({
-        name: input.value,
-        width: GARDEN_WIDTH,
-        height: GARDEN_HEIGHT,
-      });
-
-      console.log('Created garden: ', id);
-      input.value = '';
-    };
-  }
-}
-
-export class SpeciesForm extends HTMLElement {
-  constructor() {
-    super();
-
-    const template = document.getElementById('species-form');
-    const templateContent = template.content;
-
-    this.shadow = this.attachShadow({ mode: 'open' });
-    this.shadow.appendChild(templateContent.cloneNode(true));
+    const query = this.shadow.querySelector('p2panda-query');
+    query.onNewItems = this._onNewItems.bind(this);
   }
 
-  connectedCallback() {
-    const form = this.shadow.querySelector('form');
+  _onNewItems(items) {
+    this.items = items;
+    this._renderItems();
+  }
 
-    form.onsubmit = async (e) => {
-      e.preventDefault();
-      const input = this.shadow.querySelector('input');
-      const emoji = input.value;
+  _renderItems() {
+    const list = this.shadow.querySelector('ul');
+    list.innerHTML = '';
 
-      const id = await createSpecies({
-        name: 'temp name',
-        vec_img: `${emoji}`,
-      });
+    this.items.forEach((species) => {
+      const { vec_img } = species.fields;
+      const { documentId } = species.meta;
 
-      console.log('Created species: ', id);
-      input.value = '';
-    };
+      const selectItem = document.createElement('select-item');
+      selectItem.checked = documentId === this.selected;
+      selectItem.name = vec_img;
+      selectItem.id = documentId;
+
+      selectItem.onclick = (e) => {
+        this.selected = e.target.id;
+        this._renderItems();
+      };
+
+      list.appendChild(selectItem);
+    });
   }
 }
 
@@ -111,5 +93,32 @@ export class GardenSearch extends HTMLElement {
 
       list.appendChild(selectItem);
     });
+  }
+}
+
+export class SelectItem extends HTMLElement {
+  constructor() {
+    super();
+
+    this.shadow = this.attachShadow({ mode: 'open' });
+  }
+
+  connectedCallback() {
+    const input = document.createElement('input');
+    input.checked = this.checked;
+    input.type = 'radio';
+    input.value = this.name;
+    input.id = this.id;
+
+    input.onclick = this.onclick;
+
+    const label = document.createElement('label');
+    label.for = this.id;
+    label.textContent = this.name;
+
+    const li = document.createElement('li');
+    li.appendChild(input);
+    li.appendChild(label);
+    this.shadow.appendChild(li);
   }
 }
