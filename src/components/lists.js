@@ -15,16 +15,12 @@ export class SpeciesList extends HTMLElement {
   }
 
   connectedCallback() {
-    this.fetch();
+    this.refresh();
   }
 
   async fetch() {
     const { documents } = await getAllSpecies(20);
-
-    if (JSON.stringify(this.documents) !== JSON.stringify(documents)) {
-      this.documents = documents;
-      this.render();
-    }
+    this.documents = documents;
   }
 
   render() {
@@ -52,6 +48,11 @@ export class SpeciesList extends HTMLElement {
       list.appendChild(image);
     });
   }
+
+  async refresh() {
+    await this.fetch();
+    this.render();
+  }
 }
 
 export class GardenSearch extends HTMLElement {
@@ -68,7 +69,6 @@ export class GardenSearch extends HTMLElement {
   }
 
   connectedCallback() {
-    console.log('connected callback');
     const input = this.shadow.querySelector('input');
 
     input.oninput = async (e) => {

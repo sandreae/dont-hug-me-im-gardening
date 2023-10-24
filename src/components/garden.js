@@ -12,40 +12,41 @@ export class GardenTile extends HTMLElement {
     this.shadow = this.attachShadow({ mode: 'open' });
     this.shadow.appendChild(templateContent.cloneNode(true));
 
-    this.onclick = this._onclick;
+    this.onclick = async (e) => {
+      e.preventDefault();
+
+      if (!window.GARDEN_ID || !window.SPECIES_ID || !window.SPECIES_IMG) {
+        window.alert(
+          'Oops! Create a garden and choose a species before planting.',
+        );
+        return;
+      }
+
+      const target = e.target;
+      const index = target.id;
+      const createdAt = Math.floor(new Date().getTime() / 1000.0);
+      const currentSpeciesId = window.SPECIES_ID;
+      const plantId = await createPlant(
+        index,
+        createdAt,
+        currentSpeciesId,
+        window.GARDEN_ID,
+      );
+
+      console.log('Created plant: ', plantId);
+
+      const currentImage = target.shadow.querySelector('img');
+
+      if (!currentImage) {
+        const newImage = document.createElement('img');
+        newImage.src = window.SPECIES_IMG;
+        target.shadow.appendChild(newImage);
+        return;
+      } else {
+        currentImage.src = window.SPECIES_IMG;
+      }
+    };
   }
-
-  _onclick = async (e) => {
-    e.preventDefault();
-    const target = e.target;
-    const index = target.id;
-
-    if (!window.GARDEN_ID) {
-      return;
-    }
-
-    const createdAt = Math.floor(new Date().getTime() / 1000.0);
-    const currentSpeciesId = window.SPECIES_ID;
-    const plantId = await createPlant(
-      index,
-      createdAt,
-      currentSpeciesId,
-      window.GARDEN_ID,
-    );
-
-    console.log('Created plant: ', plantId);
-
-    const currentImage = target.shadow.querySelector('img');
-
-    if (!currentImage) {
-      const newImage = document.createElement('img');
-      newImage.src = window.SPECIES_IMG;
-      target.shadow.appendChild(newImage);
-      return;
-    } else {
-      currentImage.src = window.SPECIES_IMG;
-    }
-  };
 }
 
 export class Garden extends HTMLElement {
