@@ -109,9 +109,9 @@ export class GardenSearch extends HTMLElement {
 
   attributeChangedCallback(name, oldValue, newValue) {
     if (name == 'selected' && oldValue != newValue) {
-      const selectItems = this.shadow.querySelectorAll('input');
-      selectItems.forEach((item) => {
-        item.checked = item.id == newValue;
+      const inputs = this.shadow.querySelectorAll('input');
+      inputs.forEach((input) => {
+        input.checked = input.id == newValue;
       });
     } else if (name == 'search' && oldValue != newValue) {
       this.refresh();
@@ -125,10 +125,7 @@ export class GardenSearch extends HTMLElement {
     }
 
     const { documents } = await getAllGardens(options);
-
-    if (JSON.stringify(this.documents) !== JSON.stringify(documents)) {
-      this.documents = documents;
-    }
+    this.documents = documents;
   }
 
   render() {
