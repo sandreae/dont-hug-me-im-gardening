@@ -1,6 +1,5 @@
 import { GARDEN_HEIGHT, GARDEN_WIDTH } from '../constants.js';
 import { createGarden, createSpecies } from '../queries.js';
-import { OperationFields } from '../libs/shirokuma.min.js';
 
 export class GardenForm extends HTMLElement {
   constructor() {
@@ -48,23 +47,10 @@ export class SpeciesForm extends HTMLElement {
     form.onsubmit = async (e) => {
       e.preventDefault();
       const input = this.shadow.querySelector('input');
+      const id = await createSpecies(input.files[0]);
 
-      const reader = new FileReader();
-      reader.readAsArrayBuffer(input.files[0]);
-      reader.onloadend = async (e) => {
-        if (e.target.readyState === FileReader.DONE) {
-          const arrayBuffer = e.target.result;
-          const array = new Uint8Array(arrayBuffer);
-          const blobId = await window.session.createBlob('image/jpeg', array);
-
-          const fields = new OperationFields();
-          fields.insert('img', 'relation', blobId);
-          const id = await createSpecies(fields);
-
-          console.log('Created species: ', id);
-          input.value = '';
-        }
-      };
+      console.log('Created species: ', id);
+      input.value = '';
     };
   }
 }

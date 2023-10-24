@@ -1,9 +1,8 @@
 import { Session } from './libs/shirokuma.min.js';
 import { getKeyPair } from './store.js';
-import { SpeciesList, SelectItem, GardenSearch } from './components/lists.js';
+import { SpeciesList, GardenSearch } from './components/lists.js';
 import { Garden, GardenTile } from './components/garden.js';
 import { GardenForm, SpeciesForm } from './components/forms.js';
-import { P2pandaQuery } from './components/query.js';
 
 export async function app() {
   const keyPair = getKeyPair();
@@ -20,6 +19,4 @@ export async function app() {
   customElements.define('species-list', SpeciesList);
   customElements.define('garden-form', GardenForm);
   customElements.define('garden-search', GardenSearch);
-  customElements.define('select-item', SelectItem);
-  customElements.define('p2panda-query', P2pandaQuery);
 }

@@ -61,7 +61,7 @@
 
 <template id="species-form">
   <form>
-    <input type="file" id="species" name="species" accept="image/png, image/jpeg" required />
+    <input type="file" id="species" name="species" accept="image/*" required />
     <input type="submit" value="+" />
   </form>
 </template>
@@ -74,7 +74,6 @@
     }
   </style>
   <input placeholder="search" type="text" name="garden-search" />
-  <p2panda-query schema="gardens"></p2panda-query>
   <ul>
     <li>no gardens found...</li>
   </ul>
@@ -96,7 +95,6 @@
       padding-left: 5px;
     }
   </style>
-  <p2panda-query schema="species"></p2panda-query>
   <ul>
     <li>no species found...</li>
   </ul>

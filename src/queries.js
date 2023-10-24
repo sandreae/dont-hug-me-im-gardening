@@ -37,7 +37,10 @@ export async function createPlant(index, plantedAt, speciesId, gardenId) {
   return await window.session.create(fields, { schemaId: PLANT_SCHEMA_ID });
 }
 
-export async function createSpecies(fields) {
+export async function createSpecies(blob, fields) {
+  const blobId = await window.session.createBlob(blob);
+  fields.insert('img', 'relation', blobId);
+
   return await window.session.create(fields, { schemaId: SPECIES_SCHEMA_ID });
 }
 
@@ -45,135 +48,99 @@ export async function deleteGarden(id) {
   return await window.session.delete(id, { schemaId: GARDEN_SCHEMA_ID });
 }
 
-export async function getAllGardens() {
-  const query_name = `all_${GARDEN_SCHEMA_ID}`;
-  const query = `
-    query gardens {
-      ${query_name}(first: 20, orderBy: name) {
-        documents {
-          fields {
-            name
-            width
-            height
-          }
-          meta {
-            documentId
-            viewId
-          }
-        }
-      }
+export async function getAllGardens(options) {
+  options.schema = GARDEN_SCHEMA_ID;
+  options.orderBy = `name`;
+  options.fields = `{
+    fields {
+      name
+      width
+      height
     }
-  `;
+    meta {
+      documentId
+      viewId
+    }
+  }`;
 
-  const result = await request(query);
-  return result.data[query_name].documents;
+  return await paginatedQuery(options);
 }
 
-export async function searchGardenByName(searchString) {
-  const query_name = `all_${GARDEN_SCHEMA_ID}`;
-  const query = `
-    query gardens {
-      ${query_name}(first: 20, filter: { name : { contains : "${searchString}" } }) {
-        documents {
-          fields {
-            name
-            width
-            height
-          }
-          meta {
-            documentId
-            viewId
-          }
-        }
-      }
-    }
-  `;
-
-  const result = await request(query);
-  return result.data[query_name].documents;
-}
-
-export async function getGardenById(documentId) {
-  const query = `
-    query garden {
-      ${GARDEN_SCHEMA_ID}(id: "${documentId}" }) {
-        fields {
-          name
-          width
-          height
-        }
-        meta {
-          documentId
-          viewId
-        }
-      }
-    }
-  `;
-
-  const result = await request(query);
-  return result.data[GARDEN_SCHEMA_ID];
-}
-
-export async function getPlantsForGarden(gardenId) {
-  const query_name = `all_${PLANT_SCHEMA_ID}`;
-  const query = `
-    query plants {
-      ${query_name}(first: 1000, orderBy: planted_at, orderDirection: DESC, filter: { garden: {eq: "${gardenId}" } }) {
-        documents {
-          fields {
-            index
-            planted_at
-            species {
-              fields {
-                img {
-                  meta {
-                    documentId
-                  }
-                }
-              }
-              meta {
-                documentId
-                viewId
-              }        
-            }
-          }
-          meta {
-            documentId
-            viewId
-          }
-        }
-      }
-    }
-  `;
-
-  const result = await request(query);
-  return result.data[query_name].documents;
-}
-
-export async function getAllSpecies() {
-  const query_name = `all_${SPECIES_SCHEMA_ID}`;
-  const query = `
-    query species {
-      ${query_name} {
-        documents {
+export async function getPlantsForGarden(gardenId, first, after) {
+  const options = {
+    schema: PLANT_SCHEMA_ID,
+    first,
+    after,
+    orderBy: `planted_at`,
+    orderDirection: `DESC`,
+    filter: `{ garden: { eq: "${gardenId}" } }`,
+    fields: `{
+      cursor
+      fields {
+        index
+        species {
           fields {
             img {
               meta {
                 documentId
               }
             }
-      }
-          meta {
-            documentId
-            viewId
           }
         }
+      }
+      meta {
+        documentId
+        viewId
+      }
+    }`,
+  };
+  return await paginatedQuery(options);
+}
+
+export async function getAllSpecies(first, after) {
+  const options = {
+    schema: SPECIES_SCHEMA_ID,
+    first,
+    after,
+    fields: `{
+      fields {
+        img {
+          meta {
+            documentId
+          }
+        }
+      } 
+      meta {
+        documentId
+        viewId
+      }
+    }`,
+  };
+  return await paginatedQuery(options);
+}
+
+export async function paginatedQuery(options) {
+  const { schema, first, after, orderBy, orderDirection, filter, fields } =
+    options;
+
+  const queryName = `all_${schema}`;
+  const query = `
+    query {
+      ${queryName}(
+        ${first ? `first: ${first},` : ''} 
+        ${after ? `after: "${after}",` : ''} 
+        ${orderBy ? `orderBy: ${orderBy},` : ''} 
+        ${orderDirection ? `orderDirection: ${orderDirection},` : ''} 
+        ${filter ? `filter: ${filter},` : ''} 
+      ) {
+        totalCount
+        hasNextPage
+        endCursor
+        documents ${fields}
       }
     }
   `;
 
   const result = await request(query);
-  return result.data[query_name].documents;
+  return result.data[queryName];
 }
-
-export default { species: getAllSpecies, gardens: getAllGardens };

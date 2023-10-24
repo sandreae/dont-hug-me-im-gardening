@@ -18,7 +18,7 @@ body {
 
 #left-bar {
   border: 5px solid red;
-  border-radius: 3%;
+  border-radius: 15px;
   padding: 10px;
   margin-left: 20px;
   background-color: rgb(152, 251, 152, 0.5);
@@ -34,30 +34,9 @@ body {
 
 #right-bar {
   border: 5px solid red;
-  border-radius: 3%;
+  border-radius: 15px;
   padding: 10px;
   margin-right: 20px;
   background-color: rgb(152, 251, 152, 0.5);
   grid-column: 3;
-}
-
-#species-form input[type='text'] {
-  width: 45px;
-  font-family: fantasy;
-}
-
-#right-bar input[type='text'] {
-  width: 80%;
-}
-
-#species-list {
-  font-family: fantasy;
-}
-
-#garden-list {
-  word-wrap: break-word;
-}
-
-.clickable {
-  cursor: pointer;
 }

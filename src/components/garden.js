@@ -11,7 +11,41 @@ export class GardenTile extends HTMLElement {
 
     this.shadow = this.attachShadow({ mode: 'open' });
     this.shadow.appendChild(templateContent.cloneNode(true));
+
+    this.onclick = this._onclick;
   }
+
+  _onclick = async (e) => {
+    e.preventDefault();
+    const target = e.target;
+    const index = target.id;
+
+    if (!window.GARDEN_ID) {
+      return;
+    }
+
+    const createdAt = Math.floor(new Date().getTime() / 1000.0);
+    const currentSpeciesId = window.SPECIES_ID;
+    const plantId = await createPlant(
+      index,
+      createdAt,
+      currentSpeciesId,
+      window.GARDEN_ID,
+    );
+
+    console.log('Created plant: ', plantId);
+
+    const currentImage = target.shadow.querySelector('img');
+
+    if (!currentImage) {
+      const newImage = document.createElement('img');
+      newImage.src = window.SPECIES_IMG;
+      target.shadow.appendChild(newImage);
+      return;
+    } else {
+      currentImage.src = window.SPECIES_IMG;
+    }
+  };
 }
 
 export class Garden extends HTMLElement {
@@ -22,66 +56,67 @@ export class Garden extends HTMLElement {
 
     this.shadow = this.attachShadow({ mode: 'open' });
     this.shadow.appendChild(templateContent.cloneNode(true));
+
+    this.plants = [];
   }
 
   connectedCallback() {
     for (let index = 0; index < 192; index++) {
-      let element = document.createElement('garden-tile');
-      element.id = index;
-      element.onclick = this.onClick;
-      this.shadow.appendChild(element);
+      let tile = document.createElement('garden-tile');
+      tile.id = index;
+      this.shadow.appendChild(tile);
     }
-
-    setInterval(this.refreshPlants.bind(this), 1000);
   }
 
-  async onClick(e) {
-    e.preventDefault();
-    const target = e.target;
+  get id() {
+    return this.getAttribute('id');
+  }
 
-    const gardenId = window.selectedGarden;
-    const index = target.id;
-
-    if (!gardenId) {
-      return;
-    }
-
-    const createdAt = Math.floor(new Date().getTime() / 1000.0);
-    const currentSpeciesId = window.selectedSpecies;
-    const plantId = await createPlant(
-      index,
-      createdAt,
-      currentSpeciesId,
-      gardenId,
-    );
-
-    const currentImage = target.shadow.querySelector('img');
-    if (!currentImage) {
-      const newImage = document.createElement('img');
-      newImage.src = window.selectedSpeciesImgSrc;
-      target.shadow.appendChild(newImage);
-      return;
+  set id(val) {
+    if (val && val.length != 0) {
+      this.setAttribute('id', val);
     } else {
-      currentImage.src = window.selectedSpeciesImgSrc;
+      this.removeAttribute('id');
     }
-
-    console.log('Created plant: ', plantId);
   }
 
-  async refreshPlants() {
-    const gardenId = window.selectedGarden;
+  static get observedAttributes() {
+    return ['id'];
+  }
 
-    if (gardenId === undefined) {
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name == 'id') {
+      if (newValue) {
+        this.refresh();
+      }
+    }
+  }
+
+  async fetch() {
+    if (!this.id) {
       return;
     }
 
-    const newPlants = await getPlantsForGarden(gardenId);
+    const response = await getPlantsForGarden(this.id, 100);
+    let { hasNextPage, endCursor, documents } = response;
+    let plants = documents;
+
+    while (hasNextPage) {
+      const response = await getPlantsForGarden(this.id, 100, endCursor);
+      ({ hasNextPage, endCursor, documents } = response);
+      plants = plants.concat(documents);
+    }
+
+    this.plants = plants;
+  }
+
+  render() {
     let gardenTiles = this.shadow.querySelectorAll('garden-tile');
 
     Array.from(gardenTiles).forEach((tile) => {
       let currentPosition = tile.id;
 
-      let newPlant = Array.from(newPlants).find((plant) => {
+      let newPlant = this.plants.find((plant) => {
         return plant.fields.index === Number(currentPosition);
       });
 
@@ -97,17 +132,22 @@ export class Garden extends HTMLElement {
       const src = `http://localhost:2020/blobs/${img.meta.documentId}`;
 
       const currentImage = tile.shadow.querySelector('img');
+
       if (!currentImage) {
         const newImage = document.createElement('img');
         newImage.src = src;
         tile.shadow.appendChild(newImage);
-        console.log(tile);
-        return;
-      }
-
-      if (src !== currentImage.src) {
-        currentImage.src = src;
+      } else if (src !== currentImage.src) {
+        tile.shadow.removeChild(currentImage);
+        const newImage = document.createElement('img');
+        newImage.src = src;
+        tile.shadow.appendChild(newImage);
       }
     });
+  }
+
+  async refresh() {
+    await this.fetch();
+    this.render();
   }
 }
