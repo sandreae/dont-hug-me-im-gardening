@@ -26,6 +26,8 @@ export class GardenForm extends HTMLElement {
 
       console.log('Created garden: ', id);
       input.value = '';
+
+      document.querySelector('garden-search').refresh();
     };
   }
 }
@@ -51,6 +53,8 @@ export class SpeciesForm extends HTMLElement {
 
       console.log('Created species: ', id);
       input.value = '';
+
+      document.querySelector('species-list').refresh();
     };
   }
 }
