@@ -37,8 +37,9 @@ export async function createPlant(index, plantedAt, speciesId, gardenId) {
   return await window.session.create(fields, { schemaId: PLANT_SCHEMA_ID });
 }
 
-export async function createSpecies(blob, fields) {
+export async function createSpecies(blob) {
   const blobId = await window.session.createBlob(blob);
+  let fields = new OperationFields();
   fields.insert('img', 'relation', blobId);
 
   return await window.session.create(fields, { schemaId: SPECIES_SCHEMA_ID });
