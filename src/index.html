@@ -72,17 +72,24 @@
       font-size: large;
       margin: 2px;
     }
+
+    button {
+      display: none;
+    }
   </style>
   <input placeholder="search" type="text" name="garden-search" />
+  <button id="previous-button">previous</button>
   <ul>
     <li>no gardens found...</li>
   </ul>
+  <button id="next-button">next</button>
 </template>
 
 <template id="species-list">
   <style>
     img {
       margin: 2px;
+      width: 100px;
     }
 
     img[selected] {
@@ -94,10 +101,16 @@
       list-style: none;
       padding-left: 5px;
     }
+
+    button {
+      display: none;
+    }
   </style>
+  <button id="previous-button">previous</button>
   <ul>
     <li>no species found...</li>
   </ul>
+  <button id="next-button">next</button>
 </template>
 
 <body>

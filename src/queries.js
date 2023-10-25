@@ -53,6 +53,7 @@ export async function getAllGardens(options) {
   options.schema = GARDEN_SCHEMA_ID;
   options.orderBy = `name`;
   options.fields = `{
+    cursor
     fields {
       name
       width
@@ -98,12 +99,10 @@ export async function getPlantsForGarden(gardenId, first, after) {
   return await paginatedQuery(options);
 }
 
-export async function getAllSpecies(first, after) {
-  const options = {
-    schema: SPECIES_SCHEMA_ID,
-    first,
-    after,
-    fields: `{
+export async function getAllSpecies(options) {
+  options.schema = SPECIES_SCHEMA_ID;
+  options.fields = `{
+      cursor
       fields {
         img {
           meta {
@@ -115,8 +114,7 @@ export async function getAllSpecies(first, after) {
         documentId
         viewId
       }
-    }`,
-  };
+    }`;
   return await paginatedQuery(options);
 }
 
@@ -141,6 +139,8 @@ export async function paginatedQuery(options) {
       }
     }
   `;
+
+  console.log(query);
 
   const result = await request(query);
   return result.data[queryName];
