@@ -191,14 +191,14 @@ export class GardenSearch extends PaginatedList {
         break;
       }
       case 'has-previous-page': {
-        const displayStr = newValue ? 'inline' : 'none';
-        this.shadow.querySelector('#previous-button').style.display =
+        const displayStr = newValue ? 'visible' : 'hidden';
+        this.shadow.querySelector('#previous-button').style.visibility =
           displayStr;
         break;
       }
       case 'has-next-page': {
-        const displayStr = newValue ? 'inline' : 'none';
-        this.shadow.querySelector('#next-button').style.display = displayStr;
+        const displayStr = newValue ? 'visible' : 'hidden';
+        this.shadow.querySelector('#next-button').style.visibility = displayStr;
         break;
       }
     }
@@ -215,6 +215,13 @@ export class GardenSearch extends PaginatedList {
       }
       div.textContent = name;
       div.id = documentId;
+      div.style.height = '100%';
+      div.style.width = '100%';
+      div.style.display = 'flex';
+      div.style.flexDirection = 'column';
+      div.style.alignItems = 'center';
+      div.style.justifyContent = 'center';
+
       div.onclick = (e) => {
         e.preventDefault();
         const list = this.shadow.querySelector('animated-list');
@@ -306,14 +313,14 @@ export class SpeciesList extends PaginatedList {
         break;
       }
       case 'has-previous-page': {
-        const displayStr = newValue ? 'inline' : 'none';
-        this.shadow.querySelector('#previous-button').style.display =
+        const displayStr = newValue ? 'visible' : 'hidden';
+        this.shadow.querySelector('#previous-button').style.visibility =
           displayStr;
         break;
       }
       case 'has-next-page': {
-        const displayStr = newValue ? 'inline' : 'none';
-        this.shadow.querySelector('#next-button').style.display = displayStr;
+        const displayStr = newValue ? 'visible' : 'hidden';
+        this.shadow.querySelector('#next-button').style.visibility = displayStr;
         break;
       }
     }
@@ -330,6 +337,8 @@ export class SpeciesList extends PaginatedList {
       }
       image.src = `http://localhost:2020/blobs/${img.meta.documentId}`;
       image.id = documentId;
+      image.style.height = '100%';
+      image.style.width = '100%';
 
       image.onclick = (e) => {
         e.preventDefault();

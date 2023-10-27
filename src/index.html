@@ -54,21 +54,29 @@
   <form>
     <label for="name">Name: </label>
     <input type="text" name="name" maxlength="60" minlength="1" required />
-    <input type="submit" value="+" />
+    <input type="submit" value="create garden" />
   </form>
 </template>
 
 <template id="species-form">
   <form>
     <input type="file" id="species" name="species" accept="image/*" required />
-    <input type="submit" value="+" />
+    <input type="submit" value="add garden item" />
   </form>
 </template>
 
 <template id="garden-search">
   <style>
+    :host {
+      display: flex;
+      flex-direction: column;
+      font-size: large;
+      text-align: center;
+    }
+
     button {
-      display: none;
+      visibility: 'hidden';
+      height: 40px;
     }
 
     .disabled {
@@ -78,14 +86,21 @@
   </style>
   <input placeholder="search" type="text" name="garden-search" />
   <button id="previous-button">previous</button>
-  <animated-list height="400"></animated-list>
+  <animated-list height="400" width="200"></animated-list>
   <button id="next-button">next</button>
 </template>
 
 <template id="species-list">
   <style>
+    :host {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
     button {
-      display: none;
+      visibility: hidden;
+      height: 40px;
     }
 
     .disabled {
@@ -121,30 +136,17 @@
       padding: 0px;
       border: 3px solid black;
     }
-
-    .item>* {
-      width: 100%;
-      height: 100%;
-    }
   </style>
   <div></div>
 </template>
 
 <body>
   <div id="app">
-    <div id="left-bar">
-      <h2>species</h2>
-      <species-form></species-form>
-      <species-list></species-list>
-    </div>
-    <div id="center">
-      <garden-main></garden-main>
-    </div>
-    <div id="right-bar">
-      <h2>gardens</h2>
-      <garden-form></garden-form>
-      <garden-search></garden-search>
-    </div>
+    <species-form class="menu-container"></species-form>
+    <species-list class="menu-container"></species-list>
+    <garden-main></garden-main>
+    <garden-form class="menu-container"></garden-form>
+    <garden-search class="menu-container"></garden-search>
   </div>
 </body>
 

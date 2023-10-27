@@ -8,35 +8,51 @@ body {
 
 #app {
   display: grid;
+  grid-template-columns: 300px 1fr 300px;
+  grid-template-rows: 25vh;
+  grid-template-areas:
+    'species-form garden garden-form'
+    'species-list garden garden-list'
+    'species-list garden garden-list';
+  gap: 20px;
+  box-sizing: border-box;
   height: 100vh;
   width: 100%;
-  grid-template-columns: 300px 1fr 300px;
-  grid-auto-rows: auto;
-  justify-content: center;
-  align-content: center;
+  padding: 20px;
 }
 
-#left-bar {
-  border: 5px solid red;
-  border-radius: 15px;
-  padding: 10px;
-  margin-left: 20px;
-  background-color: rgb(152, 251, 152, 0.5);
-  grid-column: 1;
+#app > species-form {
+  grid-area: species-form;
+  text-align: center;
 }
 
-#center {
+#app > species-list {
+  grid-area: species-list;
+}
+
+#app > garden-main {
   display: grid;
-  grid-column: 2;
-  justify-content: center;
-  align-content: center;
+  grid-area: garden;
+  justify-self: center;
+  align-self: center;
 }
 
-#right-bar {
+#app > garden-form {
+  grid-area: garden-form;
+  text-align: center;
+}
+
+#app > garden-search {
+  grid-area: garden-list;
+}
+
+.menu-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  box-sizing: border-box;
   border: 5px solid red;
   border-radius: 15px;
-  padding: 10px;
-  margin-right: 20px;
   background-color: rgb(152, 251, 152, 0.5);
-  grid-column: 3;
 }
