@@ -110,24 +110,29 @@ export class GardenSearch extends PaginatedList {
     };
 
     const nextButton = this.shadow.querySelector('#next-button');
+    const previousButton = this.shadow.querySelector('#previous-button');
+    const list = this.shadow.querySelector('animated-list');
+
+    list.pageSize = this.pageSize;
+    list.addEventListener('animationend', () => {
+      this.loading = false;
+    });
+
     nextButton.onclick = async (e) => {
       e.preventDefault();
-      if (this.hasNextPage == 'true') {
-        await this.nextPage();
-        this.render();
-      }
+      this.loading = true;
+      await this.nextPage();
+      list.pushBack(this.items());
     };
 
-    const previousButton = this.shadow.querySelector('#previous-button');
     previousButton.onclick = async (e) => {
       e.preventDefault();
+      this.loading = true;
       await this.previousPage();
-      this.render();
+      list.pushFront(this.items());
     };
 
-    this.nextPage().then(() => {
-      this.render();
-    });
+    this.refresh();
   }
 
   get selected() {
@@ -154,21 +159,35 @@ export class GardenSearch extends PaginatedList {
     }
   }
 
+  get loading() {
+    return this.getAttribute('loading');
+  }
+
+  set loading(val) {
+    if (val) {
+      this.setAttribute('loading', val);
+    } else {
+      this.removeAttribute('loading');
+    }
+  }
+
   static get observedAttributes() {
-    return ['selected', 'search', 'has-previous-page', 'has-next-page'];
+    return ['search', 'has-previous-page', 'has-next-page', 'loading'];
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
     switch (name) {
-      case 'selected': {
-        const inputs = this.shadow.querySelectorAll('input');
-        inputs.forEach((input) => {
-          input.checked = input.id == newValue;
-        });
-        break;
-      }
       case 'search': {
         this.refresh();
+        break;
+      }
+      case 'loading': {
+        const buttons = this.shadow.querySelectorAll('button');
+        if (newValue) {
+          buttons.forEach((e) => e.classList.add('disabled'));
+        } else {
+          buttons.forEach((e) => e.classList.remove('disabled'));
+        }
         break;
       }
       case 'has-previous-page': {
@@ -185,34 +204,32 @@ export class GardenSearch extends PaginatedList {
     }
   }
 
-  render() {
-    const list = this.shadow.querySelector('ul');
-    list.innerHTML = '';
-
-    this.documents.forEach((garden) => {
+  items() {
+    return this.documents.map((garden) => {
       const { name } = garden.fields;
       const { documentId } = garden.meta;
 
-      const label = document.createElement('label');
-      label.for = documentId;
-      label.textContent = name;
-
-      const input = document.createElement('input');
-      input.checked = documentId === this.selected;
-      input.name = name;
-      input.id = documentId;
-      input.type = 'radio';
-      input.onclick = (e) => {
-        this.selected = e.target.id;
+      const div = document.createElement('div');
+      if (documentId === this.selected) {
+        div.setAttribute('selected', true);
+      }
+      div.textContent = name;
+      div.id = documentId;
+      div.onclick = (e) => {
+        e.preventDefault();
+        const list = this.shadow.querySelector('animated-list');
+        list.selected = e.target.id;
         setGardenId(e.target.id);
       };
-      input.onclick.bind(this);
-
-      const li = document.createElement('li');
-      li.appendChild(input);
-      li.appendChild(label);
-      list.appendChild(li);
+      return div;
     });
+  }
+
+  render() {
+    const list = this.shadow.querySelector('animated-list');
+    list.pageSize = this.pageSize;
+    list.clearItems();
+    list.addItems(this.items());
   }
 
   async refresh() {
@@ -222,7 +239,7 @@ export class GardenSearch extends PaginatedList {
   }
 }
 
-export class SpeciesListV2 extends PaginatedList {
+export class SpeciesList extends PaginatedList {
   constructor() {
     super();
 
@@ -236,24 +253,124 @@ export class SpeciesListV2 extends PaginatedList {
     this.setPageSize(SPECIES_PAGE_SIZE);
   }
 
+  static get observedAttributes() {
+    return ['has-previous-page', 'has-next-page', 'loading'];
+  }
+
+  get loading() {
+    return this.getAttribute('loading');
+  }
+
+  set loading(val) {
+    if (val) {
+      this.setAttribute('loading', val);
+    } else {
+      this.removeAttribute('loading');
+    }
+  }
+
   connectedCallback() {
     const nextButton = this.shadow.querySelector('#next-button');
+    const previousButton = this.shadow.querySelector('#previous-button');
+    const list = this.shadow.querySelector('animated-list');
+
+    list.pageSize = this.pageSize;
+    list.addEventListener('animationend', () => (this.loading = false));
+
     nextButton.onclick = async (e) => {
       e.preventDefault();
-      if (this.hasNextPage == 'true') {
-        await this.nextPage();
-        this.render();
-      }
+      this.loading = true;
+      await this.nextPage();
+      list.pushBack(this.items());
     };
 
-    const previousButton = this.shadow.querySelector('#previous-button');
     previousButton.onclick = async (e) => {
       e.preventDefault();
+      this.loading = true;
       await this.previousPage();
-      this.render();
+      list.pushFront(this.items());
     };
 
     this.refresh();
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    switch (name) {
+      case 'loading': {
+        const buttons = this.shadow.querySelectorAll('button');
+        if (newValue) {
+          buttons.forEach((e) => e.classList.add('disabled'));
+        } else {
+          buttons.forEach((e) => e.classList.remove('disabled'));
+        }
+        break;
+      }
+      case 'has-previous-page': {
+        const displayStr = newValue ? 'inline' : 'none';
+        this.shadow.querySelector('#previous-button').style.display =
+          displayStr;
+        break;
+      }
+      case 'has-next-page': {
+        const displayStr = newValue ? 'inline' : 'none';
+        this.shadow.querySelector('#next-button').style.display = displayStr;
+        break;
+      }
+    }
+  }
+
+  items() {
+    return this.documents.map((species) => {
+      const { img } = species.fields;
+      const { documentId } = species.meta;
+
+      const image = document.createElement('img');
+      if (documentId === this.selected) {
+        image.setAttribute('selected', true);
+      }
+      image.src = `http://localhost:2020/blobs/${img.meta.documentId}`;
+      image.id = documentId;
+
+      image.onclick = (e) => {
+        e.preventDefault();
+        const list = this.shadow.querySelector('animated-list');
+        list.selected = e.target.id;
+        setSpeciesId(e.target.id);
+        setSpeciesImg(e.target.src);
+      };
+
+      return image;
+    });
+  }
+
+  render() {
+    const list = this.shadow.querySelector('animated-list');
+    list.clearItems();
+    list.addItems(this.items());
+  }
+
+  async refresh() {
+    this.reset();
+    await this.nextPage();
+    this.render();
+  }
+}
+
+export class AnimatedList extends HTMLElement {
+  constructor() {
+    super();
+
+    const template = document.getElementById('animated-list');
+    const templateContent = template.content;
+
+    this.shadow = this.attachShadow({ mode: 'open' });
+    this.shadow.appendChild(templateContent.cloneNode(true));
+
+    this.initialItems = [];
+  }
+
+  static get observedAttributes() {
+    return ['selected'];
   }
 
   get selected() {
@@ -268,62 +385,131 @@ export class SpeciesListV2 extends PaginatedList {
     }
   }
 
-  static get observedAttributes() {
-    return ['selected', 'has-previous-page', 'has-next-page'];
+  get height() {
+    return this.getAttribute('height');
+  }
+
+  set height(val) {
+    if (val) {
+      this.setAttribute('height', val);
+    } else {
+      this.removeAttribute('height');
+    }
+  }
+
+  get width() {
+    return this.getAttribute('width');
+  }
+
+  set width(val) {
+    if (val) {
+      this.setAttribute('width', val);
+    } else {
+      this.removeAttribute('width');
+    }
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
     switch (name) {
       case 'selected': {
-        const inputs = this.shadow.querySelectorAll('input');
-        inputs.forEach((input) => {
-          input.checked = input.id == newValue;
+        const items = this.shadow.querySelectorAll('.item');
+
+        items.forEach((item) => {
+          if (item.id == newValue) {
+            item.setAttribute('selected', true);
+          } else {
+            item.removeAttribute('selected');
+          }
         });
-        break;
-      }
-      case 'has-previous-page': {
-        const displayStr = newValue ? 'inline' : 'none';
-        this.shadow.querySelector('#previous-button').style.display =
-          displayStr;
-        break;
-      }
-      case 'has-next-page': {
-        const displayStr = newValue ? 'inline' : 'none';
-        this.shadow.querySelector('#next-button').style.display = displayStr;
         break;
       }
     }
   }
 
-  render() {
-    const list = this.shadow.querySelector('ul');
-    list.innerHTML = '';
+  connectedCallback() {
+    const wrapper = this.shadow.querySelector('div');
 
-    this.documents.forEach((species) => {
-      const { img } = species.fields;
-      const { documentId } = species.meta;
+    wrapper.style.height = `${this.height}px`;
+    wrapper.style.width = this.width ? `${this.width}px` : '100%';
+    this.shadow.appendChild(wrapper);
 
-      const image = document.createElement('img');
-      if (documentId === this.selected) {
-        image.setAttribute('selected', true);
-      }
-      image.src = `http://localhost:2020/blobs/${img.meta.documentId}`;
-      image.id = documentId;
-
-      image.onclick = (e) => {
-        this.selected = e.target.id;
-        setSpeciesId(e.target.id);
-        setSpeciesImg(e.target.src);
-        this.render();
-      };
-
-      list.appendChild(image);
-    });
+    this.addItems(this.initialItems);
   }
 
-  async refresh() {
-    this.reset();
-    await this.nextPage();
-    this.render();
+  pushBack(items) {
+    this.addItems(items);
+    const wrapper = this.shadow.querySelector('div');
+
+    if (wrapper.children.length > 1) {
+      wrapper.children[0].animate(
+        [{ top: '0px' }, { top: `${-this.height}px` }],
+        {
+          fill: 'forwards',
+          duration: 1000,
+        },
+      ).onfinish = (e) => {
+        e.target.effect.target.remove();
+        this.dispatchEvent(new Event('animationend'));
+      };
+
+      wrapper.children[1].animate(
+        [{ top: `${this.height}px` }, { top: '0px' }],
+        {
+          fill: 'forwards',
+          duration: 1000,
+        },
+      );
+    } else {
+      this.dispatchEvent(new Event('animationend'));
+    }
+  }
+
+  pushFront(items) {
+    this.addItems(items);
+    const wrapper = this.shadow.querySelector('div');
+
+    if (wrapper.children.length > 1) {
+      wrapper.children[1].animate(
+        [{ top: `${-this.height}px` }, { top: '0px' }],
+        {
+          fill: 'forwards',
+          duration: 1000,
+        },
+      );
+
+      wrapper.children[0].animate(
+        [{ top: '0px' }, { top: `${this.height}px` }],
+        {
+          fill: 'forwards',
+          duration: 1000,
+        },
+      ).onfinish = (e) => {
+        e.target.effect.target.remove();
+        this.dispatchEvent(new Event('animationend'));
+      };
+    } else {
+      this.dispatchEvent(new Event('animationend'));
+    }
+  }
+
+  addItems(items) {
+    const nextPage = document.createElement('div');
+    nextPage.classList.add('page');
+
+    items.forEach((item) => {
+      const div = document.createElement('div');
+      div.id = item.id;
+      div.classList.add('item');
+      div.style.height = `${this.height / this.pageSize}px`;
+      div.appendChild(item);
+      nextPage.appendChild(div);
+    });
+
+    const wrapper = this.shadow.querySelector('div');
+    wrapper.appendChild(nextPage);
+  }
+
+  clearItems() {
+    this.shadow.querySelector('div').innerHTML = '';
   }
 }

@@ -38,7 +38,6 @@
   <style>
     :host {
       cursor: pointer;
-      /* border: 1px solid rgb(154, 205, 50, 0.5); */
       background-image: url(grass-tile.jpg);
       background-repeat: no-repeat;
       background-size: 75px 75px;
@@ -68,49 +67,67 @@
 
 <template id="garden-search">
   <style>
-    input {
-      font-size: large;
-      margin: 2px;
-    }
-
     button {
       display: none;
+    }
+
+    .disabled {
+      pointer-events: none;
+      color: gray;
     }
   </style>
   <input placeholder="search" type="text" name="garden-search" />
   <button id="previous-button">previous</button>
-  <ul>
-    <li>no gardens found...</li>
-  </ul>
+  <animated-list height="400"></animated-list>
   <button id="next-button">next</button>
 </template>
 
 <template id="species-list">
   <style>
-    img {
-      margin: 2px;
-      width: 100px;
-    }
-
-    img[selected] {
-      border: 2px solid black;
-      margin: 0px;
-    }
-
-    ul {
-      list-style: none;
-      padding-left: 5px;
-    }
-
     button {
       display: none;
     }
+
+    .disabled {
+      pointer-events: none;
+      color: gray;
+    }
   </style>
   <button id="previous-button">previous</button>
-  <ul>
-    <li>no species found...</li>
-  </ul>
+  <animated-list height="600" width="150"></animated-list>
   <button id="next-button">next</button>
+</template>
+
+<template id="animated-list">
+  <style>
+    :host>div {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page {
+      position: absolute;
+      height: 100%;
+      width: 100%;
+    }
+
+    .item {
+      box-sizing: border-box;
+      padding: 3px;
+      cursor: pointer;
+    }
+
+    .item[selected] {
+      padding: 0px;
+      border: 3px solid black;
+    }
+
+    .item>* {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+  <div></div>
 </template>
 
 <body>

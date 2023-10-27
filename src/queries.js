@@ -140,8 +140,6 @@ export async function paginatedQuery(options) {
     }
   `;
 
-  console.log(query);
-
   const result = await request(query);
   return result.data[queryName];
 }

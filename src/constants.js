@@ -12,5 +12,5 @@ export const ENDPOINT = 'http://localhost:2020/graphql';
 export const GARDEN_WIDTH = 800;
 export const GARDEN_HEIGHT = 600;
 
-export const GARDENS_PAGE_SIZE = 4;
+export const GARDENS_PAGE_SIZE = 6;
 export const SPECIES_PAGE_SIZE = 4;
