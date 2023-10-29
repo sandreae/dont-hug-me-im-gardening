@@ -1,0 +1,32 @@
+arrow-button {
+  box-sizing: border-box;
+  border: none;
+  background: none;
+  cursor: pointer;
+  height: 60px;
+}
+
+arrow-button:hover {
+  border: 3px dotted red;
+}
+
+img {
+  height: 100%;
+  width: 100%;
+}
+
+.disabled {
+  pointer-events: none;
+}
+
+.disabled > img {
+  filter: grayscale(100%);
+}
+
+.loading {
+  pointer-events: none;
+}
+
+.loading > img {
+  filter: grayscale(100%);
+}

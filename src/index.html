@@ -15,7 +15,8 @@
       app();
     });
   </script>
-  <link href="style.css" rel="stylesheet" />
+  <link href="assets/style.css" rel="stylesheet" />
+  <link href="assets/button.css" rel="stylesheet" />
 </head>
 
 
@@ -38,7 +39,7 @@
   <style>
     :host {
       cursor: pointer;
-      background-image: url(grass-tile.jpg);
+      background-image: url(assets/grass-tile.jpg);
       background-repeat: no-repeat;
       background-size: 75px 75px;
       text-align: center;
@@ -66,51 +67,18 @@
 </template>
 
 <template id="garden-search">
-  <style>
-    :host {
-      display: flex;
-      flex-direction: column;
-      font-size: large;
-      text-align: center;
-    }
-
-    button {
-      visibility: 'hidden';
-      height: 40px;
-    }
-
-    .disabled {
-      pointer-events: none;
-      color: gray;
-    }
-  </style>
+  <link href="assets/button.css" rel="stylesheet" />
   <input placeholder="search" type="text" name="garden-search" />
-  <button id="previous-button">previous</button>
+  <arrow-button id="previous-button"></arrow-button>
   <animated-list height="400" width="200"></animated-list>
-  <button id="next-button">next</button>
+  <arrow-button id="next-button" down></arrow-button>
 </template>
 
 <template id="species-list">
-  <style>
-    :host {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    button {
-      visibility: hidden;
-      height: 40px;
-    }
-
-    .disabled {
-      pointer-events: none;
-      color: gray;
-    }
-  </style>
-  <button id="previous-button">previous</button>
-  <animated-list height="600" width="150"></animated-list>
-  <button id="next-button">next</button>
+  <link href="assets/button.css" rel="stylesheet" />
+  <arrow-button id="previous-button"></arrow-button>
+  <animated-list height="500" width="125"></animated-list>
+  <arrow-button id="next-button" down></arrow-button>
 </template>
 
 <template id="animated-list">
@@ -134,7 +102,11 @@
 
     .item[selected] {
       padding: 0px;
-      border: 3px solid black;
+      border: 3px solid black !important;
+    }
+
+    .item:hover {
+      border: 3px dotted red;
     }
   </style>
   <div></div>

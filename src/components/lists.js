@@ -184,21 +184,28 @@ export class GardenSearch extends PaginatedList {
       case 'loading': {
         const buttons = this.shadow.querySelectorAll('button');
         if (newValue) {
-          buttons.forEach((e) => e.classList.add('disabled'));
+          buttons.forEach((e) => e.classList.add('loading'));
         } else {
-          buttons.forEach((e) => e.classList.remove('disabled'));
+          buttons.forEach((e) => e.classList.remove('loading'));
         }
         break;
       }
       case 'has-previous-page': {
-        const displayStr = newValue ? 'visible' : 'hidden';
-        this.shadow.querySelector('#previous-button').style.visibility =
-          displayStr;
+        const button = this.shadow.querySelector('#previous-button');
+        if (!newValue) {
+          button.classList.add('disabled');
+        } else {
+          button.classList.remove('disabled');
+        }
         break;
       }
       case 'has-next-page': {
-        const displayStr = newValue ? 'visible' : 'hidden';
-        this.shadow.querySelector('#next-button').style.visibility = displayStr;
+        const button = this.shadow.querySelector('#next-button');
+        if (!newValue) {
+          button.classList.add('disabled');
+        } else {
+          button.classList.remove('disabled');
+        }
         break;
       }
     }
@@ -306,21 +313,28 @@ export class SpeciesList extends PaginatedList {
       case 'loading': {
         const buttons = this.shadow.querySelectorAll('button');
         if (newValue) {
-          buttons.forEach((e) => e.classList.add('disabled'));
+          buttons.forEach((e) => e.classList.add('loading'));
         } else {
-          buttons.forEach((e) => e.classList.remove('disabled'));
+          buttons.forEach((e) => e.classList.remove('loading'));
         }
         break;
       }
       case 'has-previous-page': {
-        const displayStr = newValue ? 'visible' : 'hidden';
-        this.shadow.querySelector('#previous-button').style.visibility =
-          displayStr;
+        const button = this.shadow.querySelector('#previous-button');
+        if (!newValue) {
+          button.classList.add('disabled');
+        } else {
+          button.classList.remove('disabled');
+        }
         break;
       }
       case 'has-next-page': {
-        const displayStr = newValue ? 'visible' : 'hidden';
-        this.shadow.querySelector('#next-button').style.visibility = displayStr;
+        const button = this.shadow.querySelector('#next-button');
+        if (!newValue) {
+          button.classList.add('disabled');
+        } else {
+          button.classList.remove('disabled');
+        }
         break;
       }
     }

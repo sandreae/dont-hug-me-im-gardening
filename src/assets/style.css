@@ -49,7 +49,7 @@ body {
 .menu-container {
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
   box-sizing: border-box;
   border: 5px solid red;
