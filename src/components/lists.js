@@ -6,7 +6,7 @@ class PaginatedList extends HTMLElement {
     super();
 
     this.query = null;
-    this.documents = [];
+    this.currentPage = [];
     this.hasNextPage = false;
     this.hasPreviousPage = false;
   }
@@ -22,8 +22,8 @@ class PaginatedList extends HTMLElement {
   async nextPage() {
     let options = {
       first: this.pageSize,
-      after: this.documents[this.pageSize - 1]
-        ? this.documents[this.pageSize - 1]['cursor']
+      after: this.currentPage[this.pageSize - 1]
+        ? this.currentPage[this.pageSize - 1]['cursor']
         : null,
     };
 
@@ -34,14 +34,15 @@ class PaginatedList extends HTMLElement {
     const { documents, hasNextPage } = await this.query(options);
 
     this.hasNextPage = hasNextPage;
-    this.hasPreviousPage = this.documents.length > 0;
-    this.documents = documents;
+    this.hasPreviousPage = this.currentPage.length > 0;
+    this.currentPage = documents;
+    return this.currentPage;
   }
 
   async previousPage() {
     let options = {
       first: this.pageSize,
-      after: this.documents[0]['cursor'],
+      after: this.currentPage[0]['cursor'],
       orderDirection: 'DESC',
     };
 
@@ -52,11 +53,12 @@ class PaginatedList extends HTMLElement {
     const { documents, hasNextPage } = await this.query(options);
     this.hasPreviousPage = hasNextPage;
     this.hasNextPage = true;
-    this.documents = Array.from(documents).reverse();
+    this.currentPage = Array.from(documents).reverse();
+    return this.currentPage;
   }
 
   reset() {
-    this.documents = [];
+    this.currentPage = [];
     this.hasNextPage = false;
     this.hasPreviousPage = false;
   }
@@ -306,24 +308,25 @@ export class AnimatedList extends PaginatedList {
     nextButton.onclick = async (e) => {
       e.preventDefault();
       this.loading = true;
-      await this.nextPage();
-      this.pushBack(this.items());
+      const newDocuments = await this.nextPage();
+      const newPage = this.createNewPage(newDocuments);
+      this.pushBack(newPage);
     };
 
     previousButton.onclick = async (e) => {
       e.preventDefault();
       this.loading = true;
-      await this.previousPage();
-      this.pushFront(this.items());
+      const newDocuments = await this.previousPage();
+      const newPage = this.createNewPage(newDocuments);
+      this.pushFront(newPage);
     };
 
     this.refresh();
   }
 
-  pushBack(items) {
-    this.addItems(items);
+  pushBack(newPage) {
     const wrapper = this.shadow.querySelector('#list-wrapper');
-    this.loading = true;
+    wrapper.appendChild(newPage);
 
     if (wrapper.children.length > 1) {
       wrapper.children[0].animate(
@@ -349,10 +352,9 @@ export class AnimatedList extends PaginatedList {
     }
   }
 
-  pushFront(items) {
-    this.addItems(items);
+  pushFront(newPage) {
     const wrapper = this.shadow.querySelector('#list-wrapper');
-    this.loading = true;
+    wrapper.appendChild(newPage);
 
     if (wrapper.children.length > 1) {
       wrapper.children[1].animate(
@@ -378,25 +380,11 @@ export class AnimatedList extends PaginatedList {
     }
   }
 
-  addItems(items) {
-    const nextPage = document.createElement('div');
-    nextPage.classList.add('page');
+  createNewPage(documents) {
+    const newPage = document.createElement('div');
+    newPage.classList.add('page');
 
-    items.forEach((item) => {
-      const div = document.createElement('div');
-      div.id = item.id;
-      div.classList.add('item');
-      div.style.height = `${this.height / this.pageSize}px`;
-      div.appendChild(item);
-      nextPage.appendChild(div);
-    });
-
-    const wrapper = this.shadow.querySelector('#list-wrapper');
-    wrapper.appendChild(nextPage);
-  }
-
-  items() {
-    return this.documents.map((doc) => {
+    documents.forEach((doc) => {
       const { documentId } = doc.meta;
 
       const item = document.createElement(this.itemTag);
@@ -411,22 +399,24 @@ export class AnimatedList extends PaginatedList {
         this.selected = e.target.id;
       };
 
-      return item;
+      const div = document.createElement('div');
+      div.id = item.id;
+      div.classList.add('item');
+      div.style.height = `${this.height / this.pageSize}px`;
+      div.appendChild(item);
+
+      newPage.appendChild(div);
     });
-  }
 
-  clearItems() {
-    this.shadow.querySelector('#list-wrapper').innerHTML = '';
-  }
-
-  render() {
-    this.clearItems();
-    this.addItems(this.items());
+    return newPage;
   }
 
   async refresh() {
+    this.loading = true;
     this.reset();
-    await this.nextPage();
-    this.render();
+    this.shadow.querySelector('#list-wrapper').innerHTML = '';
+    const newDocuments = await this.nextPage();
+    const newPage = this.createNewPage(newDocuments);
+    this.pushBack(newPage);
   }
 }
