@@ -1,20 +1,18 @@
-import { GARDENS_PAGE_SIZE, SPECIES_PAGE_SIZE } from '../constants.js';
 import { setGardenId, setSpeciesId, setSpeciesImg } from '../globals.js';
-import { getAllGardens, getAllSpecies } from '../queries.js';
+import queries from '../queries.js';
 
 class PaginatedList extends HTMLElement {
   constructor() {
     super();
 
-    this.request = null;
-    this.pageSize = 20;
+    this.query = null;
     this.documents = [];
     this.hasNextPage = false;
     this.hasPreviousPage = false;
   }
 
-  setRequest(request) {
-    this.request = request;
+  setQuery(query) {
+    this.query = query;
   }
 
   setPageSize(pageSize) {
@@ -33,7 +31,7 @@ class PaginatedList extends HTMLElement {
       options.filter = `{ name: { contains: "${this.search}" } }`;
     }
 
-    const { documents, hasNextPage } = await this.request(options);
+    const { documents, hasNextPage } = await this.query(options);
 
     this.hasNextPage = hasNextPage;
     this.hasPreviousPage = this.documents.length > 0;
@@ -51,7 +49,7 @@ class PaginatedList extends HTMLElement {
       options.filter = `{ name: { contains: "${this.search}" } }`;
     }
 
-    const { documents, hasNextPage } = await this.request(options);
+    const { documents, hasNextPage } = await this.query(options);
     this.hasPreviousPage = hasNextPage;
     this.hasNextPage = true;
     this.documents = Array.from(documents).reverse();
@@ -88,186 +86,44 @@ class PaginatedList extends HTMLElement {
   }
 }
 
-export class GardenSearch extends PaginatedList {
+export class SearchInput extends HTMLInputElement {
   constructor() {
-    super();
-
-    const template = document.getElementById('garden-search');
-    const templateContent = template.content;
-
-    this.shadow = this.attachShadow({ mode: 'open' });
-    this.shadow.appendChild(templateContent.cloneNode(true));
-
-    this.setRequest(getAllGardens);
-    this.setPageSize(GARDENS_PAGE_SIZE);
+    // eslint-disable-next-line no-global-assign
+    self = super();
   }
 
   connectedCallback() {
-    const input = this.shadow.querySelector('input');
-    input.oninput = (e) => {
+    const listId = this.getAttribute('list-id');
+    this.oninput = (e) => {
       e.preventDefault();
-      this.search = e.target.value;
+      const list = document.getElementById(listId);
+      list.search = e.target.value;
     };
-
-    const nextButton = this.shadow.querySelector('#next-button');
-    const previousButton = this.shadow.querySelector('#previous-button');
-    const list = this.shadow.querySelector('animated-list');
-
-    list.pageSize = this.pageSize;
-    list.addEventListener('animationend', () => {
-      this.loading = false;
-    });
-
-    nextButton.onclick = async (e) => {
-      e.preventDefault();
-      this.loading = true;
-      await this.nextPage();
-      list.pushBack(this.items());
-    };
-
-    previousButton.onclick = async (e) => {
-      e.preventDefault();
-      this.loading = true;
-      await this.previousPage();
-      list.pushFront(this.items());
-    };
-
-    this.refresh();
-  }
-
-  get selected() {
-    return this.getAttribute('selected');
-  }
-
-  set selected(val) {
-    if (val) {
-      this.setAttribute('selected', val);
-    } else {
-      this.removeAttribute('selected');
-    }
-  }
-
-  get search() {
-    return this.getAttribute('search');
-  }
-
-  set search(val) {
-    if (val && val.length > 0) {
-      this.setAttribute('search', val);
-    } else {
-      this.removeAttribute('search');
-    }
-  }
-
-  get loading() {
-    return this.getAttribute('loading');
-  }
-
-  set loading(val) {
-    if (val) {
-      this.setAttribute('loading', val);
-    } else {
-      this.removeAttribute('loading');
-    }
-  }
-
-  static get observedAttributes() {
-    return ['search', 'has-previous-page', 'has-next-page', 'loading'];
-  }
-
-  attributeChangedCallback(name, oldValue, newValue) {
-    switch (name) {
-      case 'search': {
-        this.refresh();
-        break;
-      }
-      case 'loading': {
-        const buttons = this.shadow.querySelectorAll('button');
-        if (newValue) {
-          buttons.forEach((e) => e.classList.add('loading'));
-        } else {
-          buttons.forEach((e) => e.classList.remove('loading'));
-        }
-        break;
-      }
-      case 'has-previous-page': {
-        const button = this.shadow.querySelector('#previous-button');
-        if (!newValue) {
-          button.classList.add('disabled');
-        } else {
-          button.classList.remove('disabled');
-        }
-        break;
-      }
-      case 'has-next-page': {
-        const button = this.shadow.querySelector('#next-button');
-        if (!newValue) {
-          button.classList.add('disabled');
-        } else {
-          button.classList.remove('disabled');
-        }
-        break;
-      }
-    }
-  }
-
-  items() {
-    return this.documents.map((garden) => {
-      const div = document.createElement('garden-list-item');
-      div.document = garden;
-
-      if (garden.meta.documentId === this.selected) {
-        div.setAttribute('selected', true);
-      }
-
-      div.onclick = (e) => {
-        e.preventDefault();
-        const list = this.shadow.querySelector('animated-list');
-        list.selected = e.target.id;
-        setGardenId(e.target.id);
-      };
-      return div;
-    });
-  }
-
-  render() {
-    const list = this.shadow.querySelector('animated-list');
-    list.pageSize = this.pageSize;
-    list.clearItems();
-    list.addItems(this.items());
-  }
-
-  async refresh() {
-    this.reset();
-    await this.nextPage();
-    this.render();
   }
 }
 
 export class GardenListItem extends HTMLElement {
   constructor() {
     super();
+    const template = document.getElementById('garden-list-item');
+    const templateContent = template.content;
+
     this.shadow = this.attachShadow({ mode: 'open' });
+    this.shadow.appendChild(templateContent.cloneNode(true));
   }
 
   connectedCallback() {
-    this.style = `
-      height: 100%;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    `;
-
-    if (!this.document) {
-      this.shadow.textContent = 'No document provided';
-    } else {
+    const div = this.shadow.querySelector('div');
+    if (this.document) {
       const { name } = this.document.fields;
       const { documentId } = this.document.meta;
 
-      this.id = documentId;
-      this.shadow.textContent = name;
+      div.textContent = name;
+      div.id = documentId;
+
+      div.onclick = (e) => {
+        setGardenId(e.target.id);
+      };
     }
   }
 }
@@ -276,148 +132,29 @@ export class SpeciesListItem extends HTMLElement {
   constructor() {
     super();
 
-    this.shadow = this.attachShadow({ mode: 'open' });
-  }
-
-  connectedCallback() {
-    console.log('connected');
-    const { img } = this.document.fields;
-    const { documentId } = this.document.meta;
-
-    const image = document.createElement('img');
-    image.style = `
-      height: 100%;
-      width: 100%;
-    `;
-    image.src = `http://localhost:2020/blobs/${img.meta.documentId}`;
-    this.shadow.appendChild(image);
-    this.id = documentId;
-  }
-}
-
-export class SpeciesList extends PaginatedList {
-  constructor() {
-    super();
-
-    const template = document.getElementById('species-list');
+    const template = document.getElementById('species-list-item');
     const templateContent = template.content;
 
     this.shadow = this.attachShadow({ mode: 'open' });
     this.shadow.appendChild(templateContent.cloneNode(true));
-
-    this.setRequest(getAllSpecies);
-    this.setPageSize(SPECIES_PAGE_SIZE);
-  }
-
-  static get observedAttributes() {
-    return ['has-previous-page', 'has-next-page', 'loading'];
-  }
-
-  get loading() {
-    return this.getAttribute('loading');
-  }
-
-  set loading(val) {
-    if (val) {
-      this.setAttribute('loading', val);
-    } else {
-      this.removeAttribute('loading');
-    }
   }
 
   connectedCallback() {
-    const nextButton = this.shadow.querySelector('#next-button');
-    const previousButton = this.shadow.querySelector('#previous-button');
-    const list = this.shadow.querySelector('animated-list');
+    const { img } = this.document.fields;
+    const { documentId } = this.document.meta;
 
-    list.pageSize = this.pageSize;
-    list.addEventListener('animationend', () => (this.loading = false));
-
-    nextButton.onclick = async (e) => {
-      e.preventDefault();
-      this.loading = true;
-      await this.nextPage();
-      list.pushBack(this.items());
+    const image = this.shadow.querySelector('img');
+    image.src = `http://localhost:2020/blobs/${img.meta.documentId}`;
+    image.alt = 'The image for garden item species';
+    image.id = documentId;
+    image.onclick = (e) => {
+      setSpeciesId(e.target.id);
+      setSpeciesImg(e.target.src);
     };
-
-    previousButton.onclick = async (e) => {
-      e.preventDefault();
-      this.loading = true;
-      await this.previousPage();
-      list.pushFront(this.items());
-    };
-
-    this.refresh();
-  }
-
-  attributeChangedCallback(name, oldValue, newValue) {
-    switch (name) {
-      case 'loading': {
-        const buttons = this.shadow.querySelectorAll('button');
-        if (newValue) {
-          buttons.forEach((e) => e.classList.add('loading'));
-        } else {
-          buttons.forEach((e) => e.classList.remove('loading'));
-        }
-        break;
-      }
-      case 'has-previous-page': {
-        const button = this.shadow.querySelector('#previous-button');
-        if (!newValue) {
-          button.classList.add('disabled');
-        } else {
-          button.classList.remove('disabled');
-        }
-        break;
-      }
-      case 'has-next-page': {
-        const button = this.shadow.querySelector('#next-button');
-        if (!newValue) {
-          button.classList.add('disabled');
-        } else {
-          button.classList.remove('disabled');
-        }
-        break;
-      }
-    }
-  }
-
-  items() {
-    return this.documents.map((species) => {
-      const { documentId } = species.meta;
-
-      const item = document.createElement('species-list-item');
-      item.document = species;
-      if (documentId === this.selected) {
-        item.setAttribute('selected', true);
-      }
-
-      item.onclick = (e) => {
-        e.preventDefault();
-        const list = this.shadow.querySelector('animated-list');
-        list.selected = e.target.id;
-        setSpeciesId(e.target.id);
-        setSpeciesImg(e.target.src);
-      };
-
-      return item;
-    });
-  }
-
-  render() {
-    const list = this.shadow.querySelector('animated-list');
-    list.clearItems();
-    list.addItems(this.items());
-  }
-
-  async refresh() {
-    this.reset();
-    await this.nextPage();
-    this.render();
   }
 }
 
-export class AnimatedList extends HTMLElement {
+export class AnimatedList extends PaginatedList {
   constructor() {
     super();
 
@@ -427,11 +164,22 @@ export class AnimatedList extends HTMLElement {
     this.shadow = this.attachShadow({ mode: 'open' });
     this.shadow.appendChild(templateContent.cloneNode(true));
 
+    this.itemTag = this.getAttribute('item-tag');
+    this.setQuery(queries[this.getAttribute('query')]);
+    this.setPageSize(this.getAttribute('page-size'));
+
     this.initialItems = [];
   }
 
   static get observedAttributes() {
-    return ['selected'];
+    return [
+      'selected',
+      'search',
+      'loading',
+      'has-next-page',
+      'has-previous-page',
+      'type',
+    ];
   }
 
   get selected() {
@@ -443,6 +191,30 @@ export class AnimatedList extends HTMLElement {
       this.setAttribute('selected', val);
     } else {
       this.removeAttribute('selected');
+    }
+  }
+
+  get loading() {
+    return this.getAttribute('loading');
+  }
+
+  set loading(val) {
+    if (val) {
+      this.setAttribute('loading', val);
+    } else {
+      this.removeAttribute('loading');
+    }
+  }
+
+  get search() {
+    return this.getAttribute('search');
+  }
+
+  set search(val) {
+    if (val) {
+      this.setAttribute('search', val);
+    } else {
+      this.removeAttribute('search');
     }
   }
 
@@ -484,22 +256,74 @@ export class AnimatedList extends HTMLElement {
         });
         break;
       }
+      case 'search': {
+        this.refresh();
+        break;
+      }
+      case 'loading': {
+        const buttons = this.shadow.querySelectorAll('arrow-button');
+        if (newValue) {
+          buttons.forEach((e) => e.classList.add('loading'));
+        } else {
+          buttons.forEach((e) => e.classList.remove('loading'));
+        }
+        break;
+      }
+      case 'has-previous-page': {
+        const button = this.shadow.querySelector('#previous-button');
+        if (!newValue) {
+          button.classList.add('disabled');
+        } else {
+          button.classList.remove('disabled');
+        }
+        break;
+      }
+      case 'has-next-page': {
+        const button = this.shadow.querySelector('#next-button');
+        if (!newValue) {
+          button.classList.add('disabled');
+        } else {
+          button.classList.remove('disabled');
+        }
+        break;
+      }
     }
   }
 
   connectedCallback() {
-    const wrapper = this.shadow.querySelector('div');
+    const wrapper = this.shadow.querySelector('#list-wrapper');
 
     wrapper.style.height = `${this.height}px`;
     wrapper.style.width = this.width ? `${this.width}px` : '100%';
-    this.shadow.appendChild(wrapper);
 
-    this.addItems(this.initialItems);
+    const nextButton = this.shadow.querySelector('#next-button');
+    const previousButton = this.shadow.querySelector('#previous-button');
+
+    this.addEventListener('animationend', () => {
+      this.loading = false;
+    });
+
+    nextButton.onclick = async (e) => {
+      e.preventDefault();
+      this.loading = true;
+      await this.nextPage();
+      this.pushBack(this.items());
+    };
+
+    previousButton.onclick = async (e) => {
+      e.preventDefault();
+      this.loading = true;
+      await this.previousPage();
+      this.pushFront(this.items());
+    };
+
+    this.refresh();
   }
 
   pushBack(items) {
     this.addItems(items);
-    const wrapper = this.shadow.querySelector('div');
+    const wrapper = this.shadow.querySelector('#list-wrapper');
+    this.loading = true;
 
     if (wrapper.children.length > 1) {
       wrapper.children[0].animate(
@@ -510,7 +334,7 @@ export class AnimatedList extends HTMLElement {
         },
       ).onfinish = (e) => {
         e.target.effect.target.remove();
-        this.dispatchEvent(new Event('animationend'));
+        this.loading = false;
       };
 
       wrapper.children[1].animate(
@@ -521,13 +345,14 @@ export class AnimatedList extends HTMLElement {
         },
       );
     } else {
-      this.dispatchEvent(new Event('animationend'));
+      this.loading = false;
     }
   }
 
   pushFront(items) {
     this.addItems(items);
-    const wrapper = this.shadow.querySelector('div');
+    const wrapper = this.shadow.querySelector('#list-wrapper');
+    this.loading = true;
 
     if (wrapper.children.length > 1) {
       wrapper.children[1].animate(
@@ -546,10 +371,10 @@ export class AnimatedList extends HTMLElement {
         },
       ).onfinish = (e) => {
         e.target.effect.target.remove();
-        this.dispatchEvent(new Event('animationend'));
+        this.loading = false;
       };
     } else {
-      this.dispatchEvent(new Event('animationend'));
+      this.loading = false;
     }
   }
 
@@ -566,11 +391,42 @@ export class AnimatedList extends HTMLElement {
       nextPage.appendChild(div);
     });
 
-    const wrapper = this.shadow.querySelector('div');
+    const wrapper = this.shadow.querySelector('#list-wrapper');
     wrapper.appendChild(nextPage);
   }
 
+  items() {
+    return this.documents.map((doc) => {
+      const { documentId } = doc.meta;
+
+      const item = document.createElement(this.itemTag);
+      item.id = documentId;
+      item.document = doc;
+      if (documentId === this.selected) {
+        item.setAttribute('selected', true);
+      }
+
+      item.onclick = (e) => {
+        e.preventDefault();
+        this.selected = e.target.id;
+      };
+
+      return item;
+    });
+  }
+
   clearItems() {
-    this.shadow.querySelector('div').innerHTML = '';
+    this.shadow.querySelector('#list-wrapper').innerHTML = '';
+  }
+
+  render() {
+    this.clearItems();
+    this.addItems(this.items());
+  }
+
+  async refresh() {
+    this.reset();
+    await this.nextPage();
+    this.render();
   }
 }

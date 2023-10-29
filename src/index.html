@@ -16,9 +16,44 @@
     });
   </script>
   <link href="assets/style.css" rel="stylesheet" />
-  <link href="assets/button.css" rel="stylesheet" />
 </head>
 
+<template id="garden-list-item">
+  <style>
+    :host {
+      height: 100%;
+      width: 100%;
+    }
+
+    div {
+      background-color: aquamarine;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+    }
+  </style>
+  <div>
+    Oops, no garden provided
+  </div>
+</template>
+
+<template id="species-list-item">
+  <style>
+    :host {
+      height: 100%;
+      width: 100%;
+    }
+
+    img {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+  <img src="" alt="No image provided">
+</template>
 
 <template id="garden-main">
   <style>
@@ -67,18 +102,7 @@
 </template>
 
 <template id="garden-search">
-  <link href="assets/button.css" rel="stylesheet" />
   <input placeholder="search" type="text" name="garden-search" />
-  <arrow-button id="previous-button"></arrow-button>
-  <animated-list height="400" width="200"></animated-list>
-  <arrow-button id="next-button" down></arrow-button>
-</template>
-
-<template id="species-list">
-  <link href="assets/button.css" rel="stylesheet" />
-  <arrow-button id="previous-button"></arrow-button>
-  <animated-list height="500" width="125"></animated-list>
-  <arrow-button id="next-button" down></arrow-button>
 </template>
 
 <template id="animated-list">
@@ -106,19 +130,55 @@
     }
 
     .item:hover {
+      padding: 0px;
       border: 3px dotted red;
     }
+
+    arrow-button {
+      box-sizing: border-box;
+      border: none;
+      background: none;
+      cursor: pointer;
+      height: 60px;
+    }
+
+    arrow-button:hover {
+      border: 3px dotted red;
+    }
+
+    arrow-button>img {
+      height: 100%;
+      width: 100%;
+    }
+
+    .disabled,
+    .loading {
+      pointer-events: none;
+    }
+
+    .disabled>img,
+    .loading>img {
+      filter: grayscale(100%);
+    }
   </style>
-  <div></div>
+  <arrow-button id="previous-button"></arrow-button>
+  <div id="list-wrapper">
+    "Oops, no items found!"
+  </div>
+  <arrow-button id="next-button" down></arrow-button>
+
 </template>
 
 <body>
   <div id="app">
     <species-form class="menu-container"></species-form>
-    <species-list class="menu-container"></species-list>
+    <animated-list id="species-list" class="menu-container" height="500" width="125" page-size="4"
+      item-tag="species-list-item" query="species"></animated-list>
     <garden-main></garden-main>
     <garden-form class="menu-container"></garden-form>
-    <garden-search class="menu-container"></garden-search>
+    <input is="search-input" list-id="garden-list">
+    <animated-list id="garden-list" class="menu-container" height="500" width="125" page-size="8"
+      item-tag="garden-list-item" query="gardens"></animated-list>
   </div>
 </body>
 

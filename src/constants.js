@@ -1,3 +1,5 @@
+export const LOCAL_STORAGE_KEY = 'privateKey';
+
 // Schema this application uses
 export const GARDEN_SCHEMA_ID =
   'garden_00200a4d753b6cc6c0e8de7b3bcac1cff774a1448cc098b93c9defa0e4043bc80250';

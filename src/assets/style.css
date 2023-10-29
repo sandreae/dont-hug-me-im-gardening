@@ -26,7 +26,7 @@ body {
   text-align: center;
 }
 
-#app > species-list {
+#app > #species-list {
   grid-area: species-list;
 }
 

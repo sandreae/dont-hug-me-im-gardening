@@ -5,11 +5,10 @@ export class Button extends HTMLButtonElement {
   }
 
   connectedCallback() {
+    this.classList.add('disabled');
     const img = document.createElement('img');
     img.src = '/assets/arrow-up.png';
-    img.style.transform = this.hasAttribute('down')
-      ? 'rotate(180deg)'
-      : '';
+    img.style.transform = this.hasAttribute('down') ? 'rotate(180deg)' : '';
 
     this.appendChild(img);
   }

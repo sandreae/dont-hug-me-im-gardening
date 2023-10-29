@@ -143,3 +143,5 @@ export async function paginatedQuery(options) {
   const result = await request(query);
   return result.data[queryName];
 }
+
+export default { species: getAllSpecies, gardens: getAllGardens };
