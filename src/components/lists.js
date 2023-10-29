@@ -213,21 +213,12 @@ export class GardenSearch extends PaginatedList {
 
   items() {
     return this.documents.map((garden) => {
-      const { name } = garden.fields;
-      const { documentId } = garden.meta;
+      const div = document.createElement('garden-list-item');
+      div.document = garden;
 
-      const div = document.createElement('div');
-      if (documentId === this.selected) {
+      if (garden.meta.documentId === this.selected) {
         div.setAttribute('selected', true);
       }
-      div.textContent = name;
-      div.id = documentId;
-      div.style.height = '100%';
-      div.style.width = '100%';
-      div.style.display = 'flex';
-      div.style.flexDirection = 'column';
-      div.style.alignItems = 'center';
-      div.style.justifyContent = 'center';
 
       div.onclick = (e) => {
         e.preventDefault();
@@ -250,6 +241,57 @@ export class GardenSearch extends PaginatedList {
     this.reset();
     await this.nextPage();
     this.render();
+  }
+}
+
+export class GardenListItem extends HTMLElement {
+  constructor() {
+    super();
+    this.shadow = this.attachShadow({ mode: 'open' });
+  }
+
+  connectedCallback() {
+    this.style = `
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    `;
+
+    if (!this.document) {
+      this.shadow.textContent = 'No document provided';
+    } else {
+      const { name } = this.document.fields;
+      const { documentId } = this.document.meta;
+
+      this.id = documentId;
+      this.shadow.textContent = name;
+    }
+  }
+}
+
+export class SpeciesListItem extends HTMLElement {
+  constructor() {
+    super();
+
+    this.shadow = this.attachShadow({ mode: 'open' });
+  }
+
+  connectedCallback() {
+    console.log('connected');
+    const { img } = this.document.fields;
+    const { documentId } = this.document.meta;
+
+    const image = document.createElement('img');
+    image.style = `
+      height: 100%;
+      width: 100%;
+    `;
+    image.src = `http://localhost:2020/blobs/${img.meta.documentId}`;
+    this.shadow.appendChild(image);
+    this.id = documentId;
   }
 }
 
@@ -342,19 +384,15 @@ export class SpeciesList extends PaginatedList {
 
   items() {
     return this.documents.map((species) => {
-      const { img } = species.fields;
       const { documentId } = species.meta;
 
-      const image = document.createElement('img');
+      const item = document.createElement('species-list-item');
+      item.document = species;
       if (documentId === this.selected) {
-        image.setAttribute('selected', true);
+        item.setAttribute('selected', true);
       }
-      image.src = `http://localhost:2020/blobs/${img.meta.documentId}`;
-      image.id = documentId;
-      image.style.height = '100%';
-      image.style.width = '100%';
 
-      image.onclick = (e) => {
+      item.onclick = (e) => {
         e.preventDefault();
         const list = this.shadow.querySelector('animated-list');
         list.selected = e.target.id;
@@ -362,7 +400,7 @@ export class SpeciesList extends PaginatedList {
         setSpeciesImg(e.target.src);
       };
 
-      return image;
+      return item;
     });
   }
 
