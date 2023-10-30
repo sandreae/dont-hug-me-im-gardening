@@ -105,6 +105,37 @@
   <input placeholder="search" type="text" name="garden-search" />
 </template>
 
+<template id="arrow-button-style">
+  <style>
+    arrow-button {
+      box-sizing: border-box;
+      border: none;
+      background: none;
+      cursor: pointer;
+      height: 60px;
+    }
+
+    arrow-button:hover {
+      border: 3px dotted red;
+    }
+
+    arrow-button>img {
+      height: 100%;
+      width: 100%;
+    }
+
+    .disabled,
+    .loading {
+      pointer-events: none;
+    }
+
+    .disabled>img,
+    .loading>img {
+      filter: grayscale(100%);
+    }
+  </style>
+</template>
+
 <template id="animated-list">
   <style>
     :host>div {
@@ -132,23 +163,6 @@
     .item:hover {
       padding: 0px;
       border: 3px dotted red;
-    }
-
-    arrow-button {
-      box-sizing: border-box;
-      border: none;
-      background: none;
-      cursor: pointer;
-      height: 60px;
-    }
-
-    arrow-button:hover {
-      border: 3px dotted red;
-    }
-
-    arrow-button>img {
-      height: 100%;
-      width: 100%;
     }
 
     .disabled,
