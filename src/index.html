@@ -36,11 +36,11 @@
     }
   </style>
   <div>
-    Oops, no garden provided
+    Oops, no garden provided!
   </div>
 </template>
 
-<template id="species-list-item">
+<template id="sprite-list-item">
   <style>
     :host {
       height: 100%;
@@ -94,9 +94,9 @@
   </form>
 </template>
 
-<template id="species-form">
+<template id="sprite-form">
   <form>
-    <input type="file" id="species" name="species" accept="image/*" required />
+    <input type="file" id="sprite" name="sprite" accept="image/*" required />
     <input type="submit" value="add garden item" />
   </form>
 </template>
@@ -163,7 +163,7 @@
   </style>
   <arrow-button id="previous-button"></arrow-button>
   <div id="list-wrapper">
-    "Oops, no items found!"
+    No items found yet!
   </div>
   <arrow-button id="next-button" down></arrow-button>
 
@@ -171,9 +171,9 @@
 
 <body>
   <div id="app">
-    <species-form class="menu-container"></species-form>
-    <animated-list id="species-list" class="menu-container" height="500" width="125" page-size="4"
-      item-tag="species-list-item" query="species"></animated-list>
+    <sprite-form class="menu-container"></sprite-form>
+    <animated-list id="sprite-list" class="menu-container" height="500" width="125" page-size="4"
+      item-tag="sprite-list-item" query="sprites"></animated-list>
     <garden-main></garden-main>
     <garden-form class="menu-container"></garden-form>
     <input is="search-input" list-id="garden-list">

@@ -12,8 +12,8 @@ body {
   grid-template-rows: 25vh;
   grid-template-areas:
     'species-form garden garden-form'
-    'species-list garden garden-list'
-    'species-list garden garden-list';
+    'sprite-list garden garden-list'
+    'sprite-list garden garden-list';
   gap: 20px;
   box-sizing: border-box;
   height: 100vh;
@@ -26,8 +26,8 @@ body {
   text-align: center;
 }
 
-#app > #species-list {
-  grid-area: species-list;
+#app > #sprite-list {
+  grid-area: sprite-list;
 }
 
 #app > garden-main {

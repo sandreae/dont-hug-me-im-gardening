@@ -1,49 +1,51 @@
-import { createPlant, getPlantsForGarden } from '../queries.js';
+import { createTile, getGardenTiles } from '../queries.js';
 
 export class GardenTile extends HTMLElement {
   constructor() {
     super();
-  }
 
-  connectedCallback() {
     const template = document.getElementById('garden-tile');
     const templateContent = template.content;
 
     this.shadow = this.attachShadow({ mode: 'open' });
     this.shadow.appendChild(templateContent.cloneNode(true));
+  }
 
+  connectedCallback() {
     this.onclick = async (e) => {
       e.preventDefault();
 
-      if (!window.GARDEN_ID || !window.SPECIES_ID || !window.SPECIES_IMG) {
+      if (!window.GARDEN_ID || !window.SPRITE_ID || !window.SPRITE_IMG) {
         window.alert(
-          'Oops! Create a garden and choose a species before planting.',
+          'Oops! Create a garden and choose a sprite before placing tiles.',
         );
         return;
       }
 
       const target = e.target;
-      const index = target.id;
-      const createdAt = Math.floor(new Date().getTime() / 1000.0);
-      const currentSpeciesId = window.SPECIES_ID;
-      const plantId = await createPlant(
-        index,
-        createdAt,
+      const pos_x = target.pos_x;
+      const pos_y = target.pos_y;
+      const timestamp = Math.floor(new Date().getTime() / 1000.0);
+      const currentSpeciesId = window.SPRITE_ID;
+      const tileId = await createTile(
+        pos_x,
+        pos_y,
+        timestamp,
         currentSpeciesId,
         window.GARDEN_ID,
       );
 
-      console.log('Created plant: ', plantId);
+      console.log('Created tile: ', tileId);
 
       const currentImage = target.shadow.querySelector('img');
 
       if (!currentImage) {
         const newImage = document.createElement('img');
-        newImage.src = window.SPECIES_IMG;
+        newImage.src = window.SPRITE_IMG;
         target.shadow.appendChild(newImage);
         return;
       } else {
-        currentImage.src = window.SPECIES_IMG;
+        currentImage.src = window.SPRITE_IMG;
       }
     };
   }
@@ -58,14 +60,20 @@ export class Garden extends HTMLElement {
     this.shadow = this.attachShadow({ mode: 'open' });
     this.shadow.appendChild(templateContent.cloneNode(true));
 
-    this.plants = [];
+    this.tiles = [];
+    this.width = 16;
+    this.height = 12;
   }
 
   connectedCallback() {
-    for (let index = 0; index < 192; index++) {
-      let tile = document.createElement('garden-tile');
-      tile.id = index;
-      this.shadow.appendChild(tile);
+    for (let pos_x = 0; pos_x < this.width; pos_x++) {
+
+      for (let pos_y = 0; pos_y < this.height; pos_y++) {
+        let tile = document.createElement('garden-tile');
+        tile.pos_x = pos_x;
+        tile.pos_y = pos_y;
+        this.shadow.appendChild(tile);
+      }
     }
   }
 
@@ -98,30 +106,34 @@ export class Garden extends HTMLElement {
       return;
     }
 
-    const response = await getPlantsForGarden(this.id, 100);
+    const response = await getGardenTiles(this.id, 100);
     let { hasNextPage, endCursor, documents } = response;
-    let plants = documents;
+    let tiles = documents;
 
     while (hasNextPage) {
-      const response = await getPlantsForGarden(this.id, 100, endCursor);
+      const response = await getGardenTiles(this.id, 100, endCursor);
       ({ hasNextPage, endCursor, documents } = response);
-      plants = plants.concat(documents);
+      tiles = tiles.concat(documents);
     }
 
-    this.plants = plants;
+    this.tiles = tiles;
   }
 
   render() {
     let gardenTiles = this.shadow.querySelectorAll('garden-tile');
 
     Array.from(gardenTiles).forEach((tile) => {
-      let currentPosition = tile.id;
+      let pos_x = tile.pos_x;
+      let pos_y = tile.pos_y;
 
-      let newPlant = this.plants.find((plant) => {
-        return plant.fields.index === Number(currentPosition);
+      let newTile = this.tiles.find((tile) => {
+        return (
+          tile.fields.pos_x === Number(pos_x) &&
+          tile.fields.pos_y === Number(pos_y)
+        );
       });
 
-      if (!newPlant) {
+      if (!newTile) {
         const img = tile.shadow.querySelector('img');
         if (img) {
           tile.shadow.removeChild(img);
@@ -129,7 +141,7 @@ export class Garden extends HTMLElement {
         return;
       }
 
-      const { img } = newPlant.fields.species.fields;
+      const { img } = newTile.fields.sprite.fields;
       const src = `http://localhost:2020/blobs/${img.meta.documentId}`;
 
       const currentImage = tile.shadow.querySelector('img');

@@ -1,5 +1,5 @@
 import { GARDEN_HEIGHT, GARDEN_WIDTH } from '../constants.js';
-import { createGarden, createSpecies } from '../queries.js';
+import { createGarden, createSprite } from '../queries.js';
 
 export class GardenForm extends HTMLElement {
   constructor() {
@@ -27,16 +27,16 @@ export class GardenForm extends HTMLElement {
       console.log('Created garden: ', id);
       input.value = '';
 
-      document.querySelector('garden-search').refresh();
+      document.querySelector('#garden-list').refresh();
     };
   }
 }
 
-export class SpeciesForm extends HTMLElement {
+export class SpriteForm extends HTMLElement {
   constructor() {
     super();
 
-    const template = document.getElementById('species-form');
+    const template = document.getElementById('sprite-form');
     const templateContent = template.content;
 
     this.shadow = this.attachShadow({ mode: 'open' });
@@ -49,12 +49,12 @@ export class SpeciesForm extends HTMLElement {
     form.onsubmit = async (e) => {
       e.preventDefault();
       const input = this.shadow.querySelector('input');
-      const id = await createSpecies(input.files[0]);
+      const id = await createSprite("My cute sprite", input.files[0]);
 
-      console.log('Created species: ', id);
+      console.log('Created sprite: ', id);
       input.value = '';
 
-      document.querySelector('species-list').refresh();
+      document.querySelector('#sprite-list').refresh();
     };
   }
 }

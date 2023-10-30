@@ -1,4 +1,4 @@
-import { setGardenId, setSpeciesId, setSpeciesImg } from '../globals.js';
+import { setGardenId, setSpriteId, setSpriteImg } from '../globals.js';
 import queries from '../queries.js';
 
 class PaginatedList extends HTMLElement {
@@ -134,7 +134,7 @@ export class SpeciesListItem extends HTMLElement {
   constructor() {
     super();
 
-    const template = document.getElementById('species-list-item');
+    const template = document.getElementById('sprite-list-item');
     const templateContent = template.content;
 
     this.shadow = this.attachShadow({ mode: 'open' });
@@ -147,11 +147,11 @@ export class SpeciesListItem extends HTMLElement {
 
     const image = this.shadow.querySelector('img');
     image.src = `http://localhost:2020/blobs/${img.meta.documentId}`;
-    image.alt = 'The image for garden item species';
+    image.alt = 'The image for garden sprite';
     image.id = documentId;
     image.onclick = (e) => {
-      setSpeciesId(e.target.id);
-      setSpeciesImg(e.target.src);
+      setSpriteId(e.target.id);
+      setSpriteImg(e.target.src);
     };
   }
 }
@@ -414,9 +414,11 @@ export class AnimatedList extends PaginatedList {
   async refresh() {
     this.loading = true;
     this.reset();
-    this.shadow.querySelector('#list-wrapper').innerHTML = '';
     const newDocuments = await this.nextPage();
-    const newPage = this.createNewPage(newDocuments);
-    this.pushBack(newPage);
+    if (newDocuments.length > 0) {
+      this.shadow.querySelector('#list-wrapper').innerHTML = '';
+      const newPage = this.createNewPage(newDocuments);
+      this.pushBack(newPage);
+    }
   }
 }

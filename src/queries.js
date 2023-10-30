@@ -1,8 +1,8 @@
 import { OperationFields } from './libs/shirokuma.min.js';
 import {
   GARDEN_SCHEMA_ID,
-  PLANT_SCHEMA_ID,
-  SPECIES_SCHEMA_ID,
+  TILE_SCHEMA_ID,
+  SPRITE_SCHEMA_ID,
   ENDPOINT,
 } from './constants.js';
 
@@ -25,24 +25,26 @@ export async function createGarden(fields) {
   return await window.session.create(fields, { schemaId: GARDEN_SCHEMA_ID });
 }
 
-export async function createPlant(index, plantedAt, speciesId, gardenId) {
+export async function createTile(pos_x, pos_y, timestamp, spriteId, gardenId) {
   let fields = new OperationFields({
-    index: Math.floor(index),
-    planted_at: plantedAt,
+    pos_x: Math.floor(pos_x),
+    pos_y: Math.floor(pos_y),
+    timestamp,
   });
 
   fields.insert('garden', 'relation', gardenId);
-  fields.insert('species', 'pinned_relation', [speciesId]);
+  fields.insert('sprite', 'pinned_relation', [spriteId]);
 
-  return await window.session.create(fields, { schemaId: PLANT_SCHEMA_ID });
+  return await window.session.create(fields, { schemaId: TILE_SCHEMA_ID });
 }
 
-export async function createSpecies(blob) {
+export async function createSprite(description, blob) {
   const blobId = await window.session.createBlob(blob);
   let fields = new OperationFields();
   fields.insert('img', 'relation', blobId);
+  fields.insert('description', 'str', description);
 
-  return await window.session.create(fields, { schemaId: SPECIES_SCHEMA_ID });
+  return await window.session.create(fields, { schemaId: SPRITE_SCHEMA_ID });
 }
 
 export async function deleteGarden(id) {
@@ -68,19 +70,20 @@ export async function getAllGardens(options) {
   return await paginatedQuery(options);
 }
 
-export async function getPlantsForGarden(gardenId, first, after) {
+export async function getGardenTiles(gardenId, first, after) {
   const options = {
-    schema: PLANT_SCHEMA_ID,
+    schema: TILE_SCHEMA_ID,
     first,
     after,
-    orderBy: `planted_at`,
+    orderBy: `timestamp`,
     orderDirection: `DESC`,
     filter: `{ garden: { eq: "${gardenId}" } }`,
     fields: `{
       cursor
       fields {
-        index
-        species {
+        pos_x
+        pos_y
+        sprite {
           fields {
             img {
               meta {
@@ -99,11 +102,12 @@ export async function getPlantsForGarden(gardenId, first, after) {
   return await paginatedQuery(options);
 }
 
-export async function getAllSpecies(options) {
-  options.schema = SPECIES_SCHEMA_ID;
+export async function getAllSprites(options) {
+  options.schema = SPRITE_SCHEMA_ID;
   options.fields = `{
       cursor
       fields {
+        description
         img {
           meta {
             documentId
@@ -144,4 +148,4 @@ export async function paginatedQuery(options) {
   return result.data[queryName];
 }
 
-export default { species: getAllSpecies, gardens: getAllGardens };
+export default { sprites: getAllSprites, gardens: getAllGardens };

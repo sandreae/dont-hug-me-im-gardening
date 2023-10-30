@@ -3,10 +3,10 @@ export const setGardenId = (id) => {
   document.querySelector('garden-main').setAttribute('id', id);
 };
 
-export const setSpeciesId = (id) => {
-  window.SPECIES_ID = id;
+export const setSpriteId = (id) => {
+  window.SPRITE_ID = id;
 };
 
-export const setSpeciesImg = (url) => {
-  window.SPECIES_IMG = url;
+export const setSpriteImg = (url) => {
+  window.SPRITE_IMG = url;
 };
