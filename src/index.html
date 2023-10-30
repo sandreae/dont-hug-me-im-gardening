@@ -26,6 +26,7 @@
     }
 
     div {
+      position: relative;
       background-color: aquamarine;
       height: 100%;
       width: 100%;
@@ -33,6 +34,12 @@
       flex-direction: column;
       justify-content: center;
       text-align: center;
+    }
+
+    button {
+      position: absolute;
+      top: 0px;
+      right: 0px;
     }
   </style>
   <div>
@@ -52,12 +59,15 @@
       width: 100%;
     }
   </style>
-  <img src="" alt="No image provided">
+  <div>
+    <img src="" alt="No image provided">
+  </div>
 </template>
 
 <template id="garden-main">
   <style>
     :host {
+      position: relative;
       display: grid;
       grid-template-columns: repeat(auto-fill, 75px);
       grid-auto-rows: 75px;
@@ -67,7 +77,18 @@
       border: 5px solid black;
       font-size: larger;
     }
+
+    #welcome-message {
+      display: none;
+      text-align: center;
+      position: absolute;
+      width: 1200px;
+      height: 900px;
+    }
   </style>
+  <div id="welcome-message">
+    WELCOME TO YOUR GARDEN ADVENTURE! VISIT OR CREATE A GARDEN TO BEGIN.
+  </div>
 </template>
 
 <template id="garden-tile">

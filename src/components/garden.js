@@ -66,8 +66,11 @@ export class Garden extends HTMLElement {
   }
 
   connectedCallback() {
-    for (let pos_x = 0; pos_x < this.width; pos_x++) {
+    if (!this.id) {
+      this.shadow.querySelector('#welcome-message').style.display = 'block';
+    }
 
+    for (let pos_x = 0; pos_x < this.width; pos_x++) {
       for (let pos_y = 0; pos_y < this.height; pos_y++) {
         let tile = document.createElement('garden-tile');
         tile.pos_x = pos_x;
@@ -93,16 +96,15 @@ export class Garden extends HTMLElement {
     return ['id'];
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
+  attributeChangedCallback(name) {
     if (name == 'id') {
-      if (newValue) {
-        this.refresh();
-      }
+      this.refresh();
     }
   }
 
   async fetch() {
     if (!this.id) {
+      this.tiles = [];
       return;
     }
 
@@ -120,6 +122,7 @@ export class Garden extends HTMLElement {
   }
 
   render() {
+    this.shadow.querySelector('#welcome-message').style.display = 'none';
     let gardenTiles = this.shadow.querySelectorAll('garden-tile');
 
     Array.from(gardenTiles).forEach((tile) => {

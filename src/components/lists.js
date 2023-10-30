@@ -344,12 +344,14 @@ export class AnimatedList extends PaginatedList {
 
   async refresh() {
     this.loading = true;
+    this.shadow.querySelector('#list-wrapper').innerHTML = '';
     this.reset();
     const newDocuments = await this.nextPage();
     if (newDocuments.length > 0) {
-      this.shadow.querySelector('#list-wrapper').innerHTML = '';
       const newPage = this.createNewPage(newDocuments);
       this.pushBack(newPage);
+    } else {
+      this.shadow.querySelector('#list-wrapper').innerHTML = 'No items found..';
     }
   }
 }

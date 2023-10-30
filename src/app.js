@@ -3,7 +3,7 @@ import { getKeyPair } from './store.js';
 import { AnimatedList } from './components/lists.js';
 import { Garden, GardenTile } from './components/garden.js';
 import { GardenForm, SearchInput, SpriteForm } from './components/forms.js';
-import { ArrowButton } from './components/buttons.js';
+import { ArrowButton, DeleteButton } from './components/buttons.js';
 import { SpriteListItem, GardenListItem } from './components/list-items.js';
 
 export async function app() {
@@ -22,6 +22,7 @@ export async function app() {
   customElements.define('animated-list', AnimatedList);
   customElements.define('sprite-list-item', SpriteListItem);
   customElements.define('garden-list-item', GardenListItem);
+  customElements.define('delete-button', DeleteButton, { extends: 'button' });
   customElements.define('arrow-button', ArrowButton, { extends: 'button' });
   customElements.define('search-input', SearchInput, { extends: 'input' });
 }
