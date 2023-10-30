@@ -1,12 +1,37 @@
-import { Session } from './libs/shirokuma.min.js';
-import { getKeyPair } from './store.js';
+import { KeyPair, Session } from './libs/shirokuma.min.js';
 import { AnimatedList } from './components/lists.js';
 import { Garden, GardenTile } from './components/garden.js';
 import { GardenForm, SearchInput, SpriteForm } from './components/forms.js';
 import { ArrowButton, DeleteButton } from './components/buttons.js';
 import { SpriteListItem, GardenListItem } from './components/list-items.js';
 
-export async function app() {
+const LOCAL_STORAGE_KEY = 'privateKey';
+
+export const getKeyPair = () => {
+  const privateKey = window.localStorage.getItem(LOCAL_STORAGE_KEY);
+  if (privateKey) {
+    return new KeyPair(privateKey);
+  }
+
+  const keyPair = new KeyPair();
+  window.localStorage.setItem(LOCAL_STORAGE_KEY, keyPair.privateKey());
+  return keyPair;
+};
+
+export const setGardenId = (id) => {
+  window.GARDEN_ID = id;
+  document.querySelector('garden-main').setAttribute('id', id);
+};
+
+export const setSpriteId = (id) => {
+  window.SPRITE_ID = id;
+};
+
+export const setSpriteImg = (url) => {
+  window.SPRITE_IMG = url;
+};
+
+export const app = async () => {
   const keyPair = getKeyPair();
 
   // Open a long running connection to a p2panda node and configure it so all
@@ -25,17 +50,4 @@ export async function app() {
   customElements.define('delete-button', DeleteButton, { extends: 'button' });
   customElements.define('arrow-button', ArrowButton, { extends: 'button' });
   customElements.define('search-input', SearchInput, { extends: 'input' });
-}
-
-export const setGardenId = (id) => {
-  window.GARDEN_ID = id;
-  document.querySelector('garden-main').setAttribute('id', id);
-};
-
-export const setSpriteId = (id) => {
-  window.SPRITE_ID = id;
-};
-
-export const setSpriteImg = (url) => {
-  window.SPRITE_IMG = url;
 };
