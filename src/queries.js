@@ -47,8 +47,26 @@ export async function createSprite(description, blob) {
   return await window.session.create(fields, { schemaId: SPRITE_SCHEMA_ID });
 }
 
-export async function deleteGarden(id) {
-  return await window.session.delete(id, { schemaId: GARDEN_SCHEMA_ID });
+export async function deleteGarden(gardenId) {
+  let hasNextPage = true;
+  let endCursor = null;
+  let tileDocuments = [];
+
+  while (hasNextPage) {
+    const response = await getGardenTiles(gardenId, 100, endCursor);
+    ({ hasNextPage, endCursor } = response);
+    tileDocuments = tileDocuments.concat(response.documents);
+  }
+
+  for (const document of tileDocuments) {
+    await deleteTile(document.meta.viewId);
+  }
+
+  return await window.session.delete(gardenId, { schemaId: GARDEN_SCHEMA_ID });
+}
+
+export async function deleteTile(id) {
+  return await window.session.delete(id, { schemaId: TILE_SCHEMA_ID });
 }
 
 export async function getAllGardens(options) {
