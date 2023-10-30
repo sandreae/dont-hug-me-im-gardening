@@ -1,4 +1,4 @@
-import { setGardenId, setSpriteId, setSpriteImg } from '../globals.js';
+import { setGardenId, setSpriteId, setSpriteImg } from '../app.js';
 
 export class GardenListItem extends HTMLElement {
   constructor() {

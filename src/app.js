@@ -25,3 +25,16 @@ export async function app() {
   customElements.define('arrow-button', Button, { extends: 'button' });
   customElements.define('search-input', SearchInput, { extends: 'input' });
 }
+
+export const setGardenId = (id) => {
+  window.GARDEN_ID = id;
+  document.querySelector('garden-main').setAttribute('id', id);
+};
+
+export const setSpriteId = (id) => {
+  window.SPRITE_ID = id;
+};
+
+export const setSpriteImg = (url) => {
+  window.SPRITE_IMG = url;
+};
