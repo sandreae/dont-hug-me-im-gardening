@@ -58,3 +58,19 @@ export class SpriteForm extends HTMLElement {
     };
   }
 }
+
+export class SearchInput extends HTMLInputElement {
+  constructor() {
+    // eslint-disable-next-line no-global-assign
+    self = super();
+  }
+
+  connectedCallback() {
+    const listId = this.getAttribute('list-id');
+    this.oninput = (e) => {
+      e.preventDefault();
+      const list = document.getElementById(listId);
+      list.search = e.target.value;
+    };
+  }
+}

@@ -1,14 +1,10 @@
 import { Session } from './libs/shirokuma.min.js';
 import { getKeyPair } from './store.js';
-import {
-  AnimatedList,
-  GardenListItem,
-  SearchInput,
-  SpeciesListItem,
-} from './components/lists.js';
+import { AnimatedList } from './components/lists.js';
 import { Garden, GardenTile } from './components/garden.js';
-import { GardenForm, SpriteForm } from './components/forms.js';
+import { GardenForm, SearchInput, SpriteForm } from './components/forms.js';
 import { Button } from './components/button.js';
+import { SpriteListItem, GardenListItem } from './components/list-items.js';
 
 export async function app() {
   const keyPair = getKeyPair();
@@ -24,7 +20,7 @@ export async function app() {
   customElements.define('sprite-form', SpriteForm);
   customElements.define('garden-form', GardenForm);
   customElements.define('animated-list', AnimatedList);
-  customElements.define('sprite-list-item', SpeciesListItem);
+  customElements.define('sprite-list-item', SpriteListItem);
   customElements.define('garden-list-item', GardenListItem);
   customElements.define('arrow-button', Button, { extends: 'button' });
   customElements.define('search-input', SearchInput, { extends: 'input' });

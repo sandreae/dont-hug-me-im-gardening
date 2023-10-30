@@ -1,4 +1,3 @@
-import { setGardenId, setSpriteId, setSpriteImg } from '../globals.js';
 import queries from '../queries.js';
 
 class PaginatedList extends HTMLElement {
@@ -85,74 +84,6 @@ class PaginatedList extends HTMLElement {
     } else {
       this.removeAttribute('has-next-page');
     }
-  }
-}
-
-export class SearchInput extends HTMLInputElement {
-  constructor() {
-    // eslint-disable-next-line no-global-assign
-    self = super();
-  }
-
-  connectedCallback() {
-    const listId = this.getAttribute('list-id');
-    this.oninput = (e) => {
-      e.preventDefault();
-      const list = document.getElementById(listId);
-      list.search = e.target.value;
-    };
-  }
-}
-
-export class GardenListItem extends HTMLElement {
-  constructor() {
-    super();
-    const template = document.getElementById('garden-list-item');
-    const templateContent = template.content;
-
-    this.shadow = this.attachShadow({ mode: 'open' });
-    this.shadow.appendChild(templateContent.cloneNode(true));
-  }
-
-  connectedCallback() {
-    const div = this.shadow.querySelector('div');
-    if (this.document) {
-      const { name } = this.document.fields;
-      const { documentId } = this.document.meta;
-
-      div.textContent = name;
-      div.id = documentId;
-
-      div.onclick = (e) => {
-        setGardenId(e.target.id);
-      };
-    }
-  }
-}
-
-export class SpeciesListItem extends HTMLElement {
-  constructor() {
-    super();
-
-    const template = document.getElementById('sprite-list-item');
-    const templateContent = template.content;
-
-    this.shadow = this.attachShadow({ mode: 'open' });
-    this.shadow.appendChild(templateContent.cloneNode(true));
-  }
-
-  connectedCallback() {
-    const { img } = this.document.fields;
-    const { documentId } = this.document.meta;
-
-    const image = this.shadow.querySelector('img');
-    image.src = `http://localhost:2020/blobs/${img.meta.documentId}`;
-    image.alt = 'The image for garden sprite';
-    image.id = documentId;
-    image.onclick = (e) => {
-      setSpriteId(e.target.id);
-      setSpriteImg(e.target.src);
-    };
   }
 }
 
