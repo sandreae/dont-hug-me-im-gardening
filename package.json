@@ -1,16 +1,19 @@
 {
-  "name": "p2panda-garden",
-  "version": "1.0.0",
+  "name": "p2p-garden",
+  "version": "0.0.0",
   "description": "Your very own p2p garden",
-  "main": "index.js",
+  "type": "module",
   "scripts": {
+    "tauri": "tauri",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "contact@samandreae.com",
   "license": "UNLICENSED",
   "devDependencies": {
+    "@tauri-apps/cli": "^1.5.0",
     "eslint": "^8.45.0",
     "eslint-config-prettier": "^8.8.0",
-    "prettier": "3.0.0"
+    "prettier": "3.0.0",
+    "toml": "^3.0.0"
   }
 }
