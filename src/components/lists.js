@@ -102,6 +102,14 @@ export class AnimatedList extends PaginatedList {
     this.setPageSize(this.getAttribute('page-size'));
 
     this.initialItems = [];
+    this.height = this.hasAttribute('height')
+      ? this.getAttribute('height')
+      : 500;
+    this.width = this.hasAttribute('width') ? this.getAttribute('width') : 200;
+    this.rows = this.hasAttribute('rows') ? this.getAttribute('rows') : 2;
+    this.pageSize = this.hasAttribute('page-size')
+      ? this.getAttribute('page-size')
+      : 10;
   }
 
   static get observedAttributes() {
@@ -148,30 +156,6 @@ export class AnimatedList extends PaginatedList {
       this.setAttribute('search', val);
     } else {
       this.removeAttribute('search');
-    }
-  }
-
-  get height() {
-    return this.getAttribute('height');
-  }
-
-  set height(val) {
-    if (val) {
-      this.setAttribute('height', val);
-    } else {
-      this.removeAttribute('height');
-    }
-  }
-
-  get width() {
-    return this.getAttribute('width');
-  }
-
-  set width(val) {
-    if (val) {
-      this.setAttribute('width', val);
-    } else {
-      this.removeAttribute('width');
     }
   }
 
@@ -313,6 +297,8 @@ export class AnimatedList extends PaginatedList {
 
   createNewPage(documents) {
     const newPage = document.createElement('div');
+
+    newPage.style.height = `${this.height}px`;
     newPage.classList.add('page');
 
     documents.forEach((doc) => {
@@ -333,7 +319,9 @@ export class AnimatedList extends PaginatedList {
       const div = document.createElement('div');
       div.id = item.id;
       div.classList.add('item');
-      div.style.height = `${this.height / this.pageSize}px`;
+      const height = this.height / (this.pageSize / this.rows);
+      div.style.height = `${height}px`;
+      div.style.width = `${this.width / this.rows}px`;
       div.appendChild(item);
 
       newPage.appendChild(div);

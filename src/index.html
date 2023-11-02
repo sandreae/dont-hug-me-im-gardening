@@ -27,7 +27,7 @@
 
     div {
       position: relative;
-      background-color: aquamarine;
+      background-color: rgb(24, 218, 153, 0.6);
       height: 100%;
       width: 100%;
       display: flex;
@@ -36,7 +36,7 @@
       text-align: center;
     }
 
-    button {
+    delete-garden-button {
       position: absolute;
       top: 0px;
       right: 0px;
@@ -108,6 +108,16 @@
 </template>
 
 <template id="garden-form">
+  <style>
+    form {
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
   <form>
     <label for="name">Name: </label>
     <input type="text" name="name" maxlength="60" minlength="1" required />
@@ -116,6 +126,16 @@
 </template>
 
 <template id="sprite-form">
+  <style>
+    form {
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
   <form>
     <input type="file" id="sprite" name="sprite" accept="image/*" required />
     <input type="submit" value="add garden item" />
@@ -126,40 +146,62 @@
   <input placeholder="search" type="text" name="garden-search" />
 </template>
 
-<template id="arrow-button-style">
+<template id="arrow-button">
   <style>
-    arrow-button {
-      box-sizing: border-box;
-      border: none;
-      background: none;
-      cursor: pointer;
+    :host {
       height: 60px;
     }
 
-    arrow-button:hover {
+    button:hover {
+      padding: 0px;
       border: 3px dotted red;
     }
 
-    arrow-button>img {
+    button>img {
       height: 100%;
       width: 100%;
     }
 
-    .disabled,
-    .loading {
-      pointer-events: none;
-    }
-
-    .disabled>img,
-    .loading>img {
-      filter: grayscale(100%);
+    button {
+      height: 100%;
+      box-sizing: border-box;
+      padding: 3px;
+      border: none;
+      background: none;
+      cursor: pointer;
     }
   </style>
+  <button>
+    <img src="/assets/arrow-up.png" alt="an arrow pointing upwards">
+  </button>
+</template>
+
+
+<template id="delete-garden-button">
+  <style>
+    button {
+      border: none;
+      background: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: red;
+    }
+  </style>
+  <button>x</button>
 </template>
 
 <template id="animated-list">
   <style>
-    :host>div {
+    :host {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+      align-items: center;
+    }
+
+    #list-wrapper {
       position: relative;
       overflow: hidden;
     }
@@ -168,6 +210,9 @@
       position: absolute;
       height: 100%;
       width: 100%;
+      display: flex;
+      flex-direction: column;
+      flex-wrap: wrap;
     }
 
     .item {
@@ -189,30 +234,25 @@
     .disabled,
     .loading {
       pointer-events: none;
-    }
-
-    .disabled>img,
-    .loading>img {
       filter: grayscale(100%);
     }
   </style>
-  <arrow-button id="previous-button"></arrow-button>
+  <arrow-button id="previous-button" class="disabled"></arrow-button>
   <div id="list-wrapper">
     No items found yet!
   </div>
   <arrow-button id="next-button" down></arrow-button>
-
 </template>
 
 <body>
   <div id="app">
-    <sprite-form class="menu-container"></sprite-form>
-    <animated-list id="sprite-list" class="menu-container" height="500" width="125" page-size="4"
+    <sprite-form class="menu"></sprite-form>
+    <animated-list id="sprite-list" class="menu" height="500" width="200" rows=2 page-size="10"
       item-tag="sprite-list-item" query="sprites"></animated-list>
     <garden-main></garden-main>
-    <garden-form class="menu-container"></garden-form>
+    <garden-form class="menu"></garden-form>
     <input is="search-input" list-id="garden-list">
-    <animated-list id="garden-list" class="menu-container" height="500" width="125" page-size="8"
+    <animated-list id="garden-list" class="menu" height="500" width="125" rows="1" page-size="8"
       item-tag="garden-list-item" query="gardens"></animated-list>
   </div>
 </body>

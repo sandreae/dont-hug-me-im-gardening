@@ -19,11 +19,9 @@ export class GardenListItem extends HTMLElement {
       div.textContent = name;
       div.id = documentId;
 
-      const deleteButton = document.createElement('button', {
-        is: 'delete-button',
-      });
+      const deleteButton = document.createElement('delete-garden-button');
       deleteButton.documentId = documentId;
-      
+
       div.appendChild(deleteButton);
 
       div.onclick = (e) => {

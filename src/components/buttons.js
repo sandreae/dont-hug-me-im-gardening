@@ -1,36 +1,39 @@
 import { setGardenId } from '../app.js';
 import { deleteGarden } from '../queries.js';
 
-export class ArrowButton extends HTMLButtonElement {
+export class ArrowButton extends HTMLElement {
   constructor() {
-    // eslint-disable-next-line no-global-assign
-    self = super();
+    super();
+
+    const template = document.getElementById('arrow-button');
+    const templateContent = template.content;
+
+    this.shadow = this.attachShadow({ mode: 'open' });
+    this.shadow.appendChild(templateContent.cloneNode(true));
   }
 
   connectedCallback() {
-    const template = document.querySelector('#arrow-button-style');
-    this.appendChild(template.content);
-
-    this.classList.add('disabled');
-    const img = document.createElement('img');
-    img.src = '/assets/arrow-up.png';
+    const img = this.shadow.querySelector('img');
     img.style.transform = this.hasAttribute('down') ? 'rotate(180deg)' : '';
-
-    this.appendChild(img);
   }
 }
 
-export class DeleteButton extends HTMLButtonElement {
+export class DeleteGardenButton extends HTMLElement {
   constructor() {
-    // eslint-disable-next-line no-global-assign
-    self = super();
+    super();
+
+    const template = document.getElementById('delete-garden-button');
+    const templateContent = template.content;
+
+    this.shadow = this.attachShadow({ mode: 'open' });
+    this.shadow.appendChild(templateContent.cloneNode(true));
   }
 
   connectedCallback() {
-    this.innerText = 'x';
-    this.onclick = async (e) => {
+    const button = this.shadow.querySelector('button');
+    button.onclick = async (e) => {
       e.preventDefault();
-      const result = confirm('Are you sure you want to delete this document?');
+      const result = confirm('Are you sure you want to delete this garden?');
       if (result) {
         await deleteGarden(this.documentId);
         if (window.GARDEN_ID == this.documentId) {
