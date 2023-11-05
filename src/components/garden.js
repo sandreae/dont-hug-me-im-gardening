@@ -61,21 +61,26 @@ export class Garden extends HTMLElement {
     this.shadow.appendChild(templateContent.cloneNode(true));
 
     this.tiles = [];
-    this.width = 16;
-    this.height = 12;
+    this.rows = this.hasAttribute('rows') ? this.getAttribute('rows') : 16;
+    this.columns = this.hasAttribute('columns')
+      ? this.getAttribute('columns')
+      : 16;
+    this.name = this.hasAttribute('name')
+      ? this.getAttribute('name')
+      : 'Select a garden -->';
   }
 
   connectedCallback() {
-    if (!this.id) {
-      this.shadow.querySelector('#welcome-message').style.display = 'block';
-    }
+    this.shadow.querySelector('#heading').textContent = this.name;
 
-    for (let pos_x = 0; pos_x < this.width; pos_x++) {
-      for (let pos_y = 0; pos_y < this.height; pos_y++) {
+    const garden = this.shadow.querySelector('#garden');
+
+    for (let pos_x = 0; pos_x < this.columns; pos_x++) {
+      for (let pos_y = 0; pos_y < this.rows; pos_y++) {
         let tile = document.createElement('garden-tile');
         tile.pos_x = pos_x;
         tile.pos_y = pos_y;
-        this.shadow.appendChild(tile);
+        garden.appendChild(tile);
       }
     }
   }
@@ -92,13 +97,27 @@ export class Garden extends HTMLElement {
     }
   }
 
-  static get observedAttributes() {
-    return ['id'];
+  get name() {
+    return this.getAttribute('name');
   }
 
-  attributeChangedCallback(name) {
+  set name(val) {
+    if (val && val.length != 0) {
+      this.setAttribute('name', val);
+    } else {
+      this.removeAttribute('name');
+    }
+  }
+
+  static get observedAttributes() {
+    return ['id', 'name'];
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
     if (name == 'id') {
       this.refresh();
+    } else if (name == 'name') {
+      this.shadow.querySelector('#header').textContent = newValue;
     }
   }
 
@@ -122,7 +141,8 @@ export class Garden extends HTMLElement {
   }
 
   render() {
-    this.shadow.querySelector('#welcome-message').style.display = 'none';
+    this.shadow.querySelector('#heading').textContent = this.name;
+
     let gardenTiles = this.shadow.querySelectorAll('garden-tile');
 
     Array.from(gardenTiles).forEach((tile) => {

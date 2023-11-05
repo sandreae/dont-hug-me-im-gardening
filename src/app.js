@@ -18,9 +18,12 @@ export const getKeyPair = () => {
   return keyPair;
 };
 
-export const setGardenId = (id) => {
+export const setGardenId = (id, name) => {
   window.GARDEN_ID = id;
-  document.querySelector('garden-main').setAttribute('id', id);
+  window.GARDEN_NAME = name;
+  const garden = document.querySelector('garden-main');
+  garden.setAttribute('name', name);
+  garden.setAttribute('id', id);
 };
 
 export const setSpriteId = (id) => {

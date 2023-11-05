@@ -17,6 +17,7 @@ export class GardenListItem extends HTMLElement {
       const { documentId, owner } = this.document.meta;
 
       div.innerText = name;
+      div.name = name;
       div.id = documentId;
 
       const keyPair = getKeyPair();
@@ -28,7 +29,7 @@ export class GardenListItem extends HTMLElement {
       }
 
       div.onclick = (e) => {
-        setGardenId(e.target.id);
+        setGardenId(e.target.id, e.target.name);
       };
     }
   }

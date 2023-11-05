@@ -70,6 +70,9 @@
 <template id="garden-main">
   <style>
     :host {
+      color: white;
+    }
+    #garden{
       position: relative;
       display: grid;
       grid-template-columns: repeat(auto-fill, 75px);
@@ -81,18 +84,13 @@
       font-size: large;
     }
 
-    #welcome-message {
-      font-size: xx-large;
-      display: none;
+    #heading {
       text-align: center;
-      position: absolute;
       width: 1200px;
-      height: 900px;
     }
   </style>
-  <div id="welcome-message">
-    WELCOME TO YOUR GARDEN ADVENTURE! VISIT OR CREATE A GARDEN TO BEGIN.
-  </div>
+  <h1 id="heading"></h1>
+  <div id="garden"></div>
 </template>
 
 <template id="garden-tile">
@@ -266,7 +264,7 @@
     <sprite-form class="menu"></sprite-form>
     <animated-list id="sprite-list" class="menu" height="500" width="200" rows=2 page-size="10"
       item-tag="sprite-list-item" query="sprites"></animated-list>
-    <garden-main></garden-main>
+    <garden-main columns="16" rows="12"></garden-main>
     <garden-form class="menu"></garden-form>
     <search-input list-id="garden-list"></search-input>
     <animated-list id="garden-list" class="menu" height="500" width="200" rows="1" page-size="8"
