@@ -1,4 +1,4 @@
-import { setGardenId, setSpriteId, setSpriteImg } from '../app.js';
+import { setGardenId, setSpriteId, setSpriteImg, getKeyPair } from '../app.js';
 
 export class GardenListItem extends HTMLElement {
   constructor() {
@@ -14,15 +14,18 @@ export class GardenListItem extends HTMLElement {
     const div = this.shadow.querySelector('div');
     if (this.document) {
       const { name } = this.document.fields;
-      const { documentId } = this.document.meta;
+      const { documentId, owner } = this.document.meta;
 
       div.innerText = name;
       div.id = documentId;
 
-      const deleteButton = document.createElement('delete-garden-button');
-      deleteButton.documentId = documentId;
+      const keyPair = getKeyPair();
+      if (owner == keyPair.publicKey()) {
+        const deleteButton = document.createElement('delete-garden-button');
+        deleteButton.documentId = documentId;
 
-      div.appendChild(deleteButton);
+        div.appendChild(deleteButton);
+      }
 
       div.onclick = (e) => {
         setGardenId(e.target.id);

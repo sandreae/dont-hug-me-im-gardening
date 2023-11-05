@@ -82,6 +82,7 @@ export async function getAllGardens(options) {
     meta {
       documentId
       viewId
+      owner
     }
   }`;
 
