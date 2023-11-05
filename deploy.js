@@ -19,7 +19,7 @@ async function publish(entry, operation) {
     });
 }
 
-fs.readFile('./schemas/schema.lock', 'utf-8', async (err, data) => {
+fs.readFile('./src-tauri/schemas/schema.lock', 'utf-8', async (err, data) => {
   if (err) throw err;
 
   const schemaLock = toml.parse(data);
