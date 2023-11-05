@@ -42,7 +42,7 @@ export const app = async () => {
 
   customElements.define('delete-garden-button', DeleteGardenButton);
   customElements.define('arrow-button', ArrowButton);
-  customElements.define('search-input', SearchInput, { extends: 'input' });
+  customElements.define('search-input', SearchInput);
   customElements.define('garden-tile', GardenTile);
   customElements.define('garden-main', Garden);
   customElements.define('sprite-form', SpriteForm);

@@ -49,7 +49,7 @@ export class SpriteForm extends HTMLElement {
     form.onsubmit = async (e) => {
       e.preventDefault();
       const input = this.shadow.querySelector('input');
-      const id = await createSprite("My cute sprite", input.files[0]);
+      const id = await createSprite('My cute sprite', input.files[0]);
 
       console.log('Created sprite: ', id);
       input.value = '';
@@ -59,15 +59,21 @@ export class SpriteForm extends HTMLElement {
   }
 }
 
-export class SearchInput extends HTMLInputElement {
+export class SearchInput extends HTMLElement {
   constructor() {
-    // eslint-disable-next-line no-global-assign
-    self = super();
+    super();
+
+    const template = document.getElementById('search-input');
+    const templateContent = template.content;
+
+    this.shadow = this.attachShadow({ mode: 'open' });
+    this.shadow.appendChild(templateContent.cloneNode(true));
   }
 
   connectedCallback() {
+    const input = this.shadow.querySelector('input');
     const listId = this.getAttribute('list-id');
-    this.oninput = (e) => {
+    input.oninput = (e) => {
       e.preventDefault();
       const list = document.getElementById(listId);
       list.search = e.target.value;

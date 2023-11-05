@@ -150,6 +150,10 @@
   <input placeholder="search" type="text" name="garden-search" />
 </template>
 
+<template id="search-input">
+  <input type="text" name="" id="">
+</template>
+
 <template id="arrow-button">
   <style>
     :host {
@@ -264,7 +268,7 @@
       item-tag="sprite-list-item" query="sprites"></animated-list>
     <garden-main></garden-main>
     <garden-form class="menu"></garden-form>
-    <input is="search-input" list-id="garden-list">
+    <search-input list-id="garden-list"></search-input>
     <animated-list id="garden-list" class="menu" height="500" width="200" rows="1" page-size="8"
       item-tag="garden-list-item" query="gardens"></animated-list>
   </div>
