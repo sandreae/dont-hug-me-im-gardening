@@ -69,6 +69,25 @@ export async function deleteTile(id) {
   return await window.session.delete(id, { schemaId: TILE_SCHEMA_ID });
 }
 
+export async function getGarden(id) {
+  const query = `query {
+    ${GARDEN_SCHEMA_ID}(id: "${id}") {
+      fields {
+        name
+        width
+        height
+      }
+      meta {
+        documentId
+        owner
+      }
+    }
+  }`;
+
+  const result = await request(query);
+  return result.data[GARDEN_SCHEMA_ID];
+}
+
 export async function getAllGardens(options) {
   options.schema = GARDEN_SCHEMA_ID;
   options.orderBy = `name`;

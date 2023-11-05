@@ -1,4 +1,4 @@
-import { createTile, getGardenTiles } from '../queries.js';
+import { createTile, getGarden, getGardenTiles } from '../queries.js';
 
 export class GardenTile extends HTMLElement {
   constructor() {
@@ -61,7 +61,7 @@ export class Garden extends HTMLElement {
     this.shadow.appendChild(templateContent.cloneNode(true));
 
     this.tiles = [];
-    this.rows = this.hasAttribute('rows') ? this.getAttribute('rows') : 16;
+    this.rows = this.hasAttribute('rows') ? this.getAttribute('rows') : 12;
     this.columns = this.hasAttribute('columns')
       ? this.getAttribute('columns')
       : 16;
@@ -74,6 +74,8 @@ export class Garden extends HTMLElement {
     this.shadow.querySelector('#heading').textContent = this.name;
 
     const garden = this.shadow.querySelector('#garden');
+    garden.style.width = `${this.columns * 75}px`;
+    garden.style.height = `${this.rows * 75}px`;
 
     for (let pos_x = 0; pos_x < this.columns; pos_x++) {
       for (let pos_y = 0; pos_y < this.rows; pos_y++) {
@@ -109,15 +111,37 @@ export class Garden extends HTMLElement {
     }
   }
 
-  static get observedAttributes() {
-    return ['id', 'name'];
+  get columns() {
+    return this.getAttribute('columns');
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
+  set columns(val) {
+    if (val && val.length != 0) {
+      this.setAttribute('columns', val);
+    } else {
+      this.removeAttribute('columns');
+    }
+  }
+
+  get rows() {
+    return this.getAttribute('rows');
+  }
+
+  set rows(val) {
+    if (val && val.length != 0) {
+      this.setAttribute('rows', val);
+    } else {
+      this.removeAttribute('rows');
+    }
+  }
+
+  static get observedAttributes() {
+    return ['id'];
+  }
+
+  attributeChangedCallback(name) {
     if (name == 'id') {
       this.refresh();
-    } else if (name == 'name') {
-      this.shadow.querySelector('#header').textContent = newValue;
     }
   }
 
@@ -127,13 +151,20 @@ export class Garden extends HTMLElement {
       return;
     }
 
-    const response = await getGardenTiles(this.id, 100);
-    let { hasNextPage, endCursor, documents } = response;
+    const gardenResponse = await getGarden(this.id);
+    let { name, width, height } = gardenResponse.fields;
+
+    this.name = name;
+    this.columns = width;
+    this.rows = height;
+
+    const tilesResponse = await getGardenTiles(this.id, 100);
+    let { hasNextPage, endCursor, documents } = tilesResponse;
     let tiles = documents;
 
     while (hasNextPage) {
-      const response = await getGardenTiles(this.id, 100, endCursor);
-      ({ hasNextPage, endCursor, documents } = response);
+      const tilesResponse = await getGardenTiles(this.id, 100, endCursor);
+      ({ hasNextPage, endCursor, documents } = tilesResponse);
       tiles = tiles.concat(documents);
     }
 
@@ -142,6 +173,20 @@ export class Garden extends HTMLElement {
 
   render() {
     this.shadow.querySelector('#heading').textContent = this.name;
+
+    const garden = this.shadow.querySelector('#garden');
+    garden.innerHTML = '';
+    garden.style.width = `${this.columns * 75}px`;
+    garden.style.height = `${this.rows * 75}px`;
+
+    for (let pos_x = 0; pos_x < this.columns; pos_x++) {
+      for (let pos_y = 0; pos_y < this.rows; pos_y++) {
+        let tile = document.createElement('garden-tile');
+        tile.pos_x = pos_x;
+        tile.pos_y = pos_y;
+        garden.appendChild(tile);
+      }
+    }
 
     let gardenTiles = this.shadow.querySelectorAll('garden-tile');
 

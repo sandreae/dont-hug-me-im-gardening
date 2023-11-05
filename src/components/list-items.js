@@ -11,25 +11,30 @@ export class GardenListItem extends HTMLElement {
   }
 
   connectedCallback() {
-    const div = this.shadow.querySelector('div');
     if (this.document) {
-      const { name } = this.document.fields;
+      const { name, width, height } = this.document.fields;
       const { documentId, owner } = this.document.meta;
 
-      div.innerText = name;
-      div.name = name;
-      div.id = documentId;
+      this.shadow.querySelector('#name').innerText = name;
+      this.shadow.querySelector(
+        '#dimensions',
+      ).innerText = `${width} x ${height}`;
+
+      const item = this.shadow.querySelector('div');
+      item.id = documentId;
+      item.name = name;
 
       const keyPair = getKeyPair();
       if (owner == keyPair.publicKey()) {
         const deleteButton = document.createElement('delete-garden-button');
         deleteButton.documentId = documentId;
 
-        div.appendChild(deleteButton);
+        item.appendChild(deleteButton);
       }
 
-      div.onclick = (e) => {
-        setGardenId(e.target.id, e.target.name);
+      item.onclick = (e) => {
+        e.preventDefault();
+        setGardenId(documentId);
       };
     }
   }
