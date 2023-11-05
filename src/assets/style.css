@@ -11,52 +11,49 @@ body {
   background-repeat: repeat;
 }
 
-#app {
-  display: grid;
-  grid-template-columns: 300px 1fr 300px;
-  grid-template-rows: 25vh;
-  grid-template-areas:
-    'species-form garden garden-form'
-    'sprite-list garden garden-search'
-    'sprite-list garden garden-list'
-    'sprite-list garden garden-list';
-  gap: 20px;
-  box-sizing: border-box;
+garden-main {
+  z-index: -1;
+  position: fixed;
+  width: 100vw;
   height: 100vh;
-  width: 100%;
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: scroll;
 }
 
-#app > species-form {
-  grid-area: species-form;
+#left-menu {
+  left: 5px;
+}
+
+#right-menu {
+  right: 5px;
+}
+
+#heading {
+  color: white;
   text-align: center;
-}
-
-#app > animated-list#sprite-list {
-  grid-area: sprite-list;
-}
-
-#app > animated-list#garden-list {
-  grid-area: garden-list;
-}
-
-#app > garden-main {
-  display: grid;
-  grid-area: garden;
-  justify-self: center;
-  align-self: center;
-}
-
-#app > garden-form {
-  grid-area: garden-form;
-  text-align: center;
-}
-
-#app > garden-search {
-  grid-area: garden-search;
+  width: 1200px;
 }
 
 .menu {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: stretch;
+  gap: 20px;
+  box-sizing: border-box;
+  height: 100vh;
+  width: 350px;
+  padding: 20px;
+  overflow: scroll;
+  scrollbar-width: none;
+}
+
+.menu-section {
+  padding: 20px;
   box-sizing: border-box;
   border: 5px solid red;
   border-radius: 15px;

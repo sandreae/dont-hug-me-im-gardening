@@ -1,7 +1,7 @@
 import { KeyPair, Session } from './libs/shirokuma.min.js';
 import { AnimatedList } from './components/lists.js';
 import { Garden, GardenTile } from './components/garden.js';
-import { GardenForm, SearchInput, SpriteForm } from './components/forms.js';
+import { GardenForm, GardenSearch, SpriteForm } from './components/forms.js';
 import { ArrowButton, DeleteGardenButton } from './components/buttons.js';
 import { SpriteListItem, GardenListItem } from './components/list-items.js';
 
@@ -21,7 +21,11 @@ export const getKeyPair = () => {
 export const setGardenId = (id) => {
   window.GARDEN_ID = id;
   const garden = document.querySelector('garden-main');
-  garden.setAttribute('id', id);
+  if (id) {
+    garden.setAttribute('id', id);
+  } else {
+    garden.removeAttribute('id');
+  }
 };
 
 export const setSpriteId = (id) => {
@@ -43,7 +47,7 @@ export const app = async () => {
 
   customElements.define('delete-garden-button', DeleteGardenButton);
   customElements.define('arrow-button', ArrowButton);
-  customElements.define('search-input', SearchInput);
+  customElements.define('garden-search', GardenSearch);
   customElements.define('garden-tile', GardenTile);
   customElements.define('garden-main', Garden);
   customElements.define('sprite-form', SpriteForm);

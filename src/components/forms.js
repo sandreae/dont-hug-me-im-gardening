@@ -1,4 +1,4 @@
-import { GARDEN_HEIGHT, GARDEN_WIDTH } from '../constants.js';
+import { setGardenId } from '../app.js';
 import { createGarden, createSprite } from '../queries.js';
 
 export class GardenForm extends HTMLElement {
@@ -15,17 +15,46 @@ export class GardenForm extends HTMLElement {
   connectedCallback() {
     const form = this.shadow.querySelector('form');
 
+    form.oninput = (e) => {
+      e.preventDefault();
+      setGardenId(null);
+      const garden = document.querySelector('garden-main');
+
+      const name = e.target.name;
+      switch (name) {
+        case 'name': {
+          garden.setAttribute('name', e.target.value);
+          break;
+        }
+        case 'rows': {
+          garden.setAttribute('rows', e.target.value);
+          break;
+        }
+        case 'columns': {
+          garden.setAttribute('columns', e.target.value);
+          break;
+        }
+      }
+      console.log(e.target);
+      console.log(e.target.name);
+    };
+
     form.onsubmit = async (e) => {
       e.preventDefault();
-      const input = this.shadow.querySelector('input');
+      const name = e.target.querySelector('input[name="name"]');
+      const rows = e.target.querySelector('input[name="rows"]');
+      const columns = e.target.querySelector('input[name="columns"]');
+
       const id = await createGarden({
-        name: input.value,
-        width: GARDEN_WIDTH,
-        height: GARDEN_HEIGHT,
+        name: name.value,
+        width: Number(columns.value),
+        height: Number(rows.value),
       });
 
       console.log('Created garden: ', id);
-      input.value = '';
+      name.value = null;
+      rows.value = null;
+      columns.value = null;
 
       document.querySelector('#garden-list').refresh();
     };
@@ -59,11 +88,11 @@ export class SpriteForm extends HTMLElement {
   }
 }
 
-export class SearchInput extends HTMLElement {
+export class GardenSearch extends HTMLElement {
   constructor() {
     super();
 
-    const template = document.getElementById('search-input');
+    const template = document.getElementById('garden-search');
     const templateContent = template.content;
 
     this.shadow = this.attachShadow({ mode: 'open' });

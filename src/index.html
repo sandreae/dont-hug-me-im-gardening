@@ -70,12 +70,6 @@
 
 <template id="garden-main">
   <style>
-    :host {
-      color: white;
-      width: 100%;
-      height: 100%;
-    }
-
     #garden {
       position: relative;
       display: grid;
@@ -87,6 +81,10 @@
     }
 
     #heading {
+      z-index: 1;
+      position: fixed;
+      top: 0px;
+      color: white;
       text-align: center;
       width: 1200px;
     }
@@ -125,6 +123,10 @@
   <form>
     <label for="name">Name: </label>
     <input type="text" name="name" maxlength="60" minlength="1" required />
+    <label for="rows">Rows: </label>
+    <input type="number" min="1" max="1000" name="rows" required />
+    <label for="columns">Columns: </label>
+    <input type="number" min="1" max="1000" name="columns" required />
     <input type="submit" value="create garden" />
   </form>
 </template>
@@ -150,7 +152,7 @@
   <input placeholder="search" type="text" name="garden-search" />
 </template>
 
-<template id="search-input">
+<template id="garden-search">
   <input type="text" name="" id="">
 </template>
 
@@ -263,14 +265,18 @@
 
 <body>
   <div id="app">
-    <sprite-form class="menu"></sprite-form>
-    <animated-list id="sprite-list" class="menu" height="500" width="200" rows=2 page-size="10"
-      item-tag="sprite-list-item" query="sprites"></animated-list>
     <garden-main columns="16" rows="12"></garden-main>
-    <garden-form class="menu"></garden-form>
-    <search-input list-id="garden-list"></search-input>
-    <animated-list id="garden-list" class="menu" height="500" width="200" rows="1" page-size="8"
-      item-tag="garden-list-item" query="gardens"></animated-list>
+    <div id="left-menu" class="menu">
+      <sprite-form class="menu-section"></sprite-form>
+      <animated-list id="sprite-list" class="menu-section" height="500" width="200" rows=2 page-size="10"
+        item-tag="sprite-list-item" query="sprites"></animated-list>
+    </div>
+    <div id="right-menu" class="menu">
+      <garden-form class="menu-section"></garden-form>
+      <garden-search list-id="garden-list" class="menu-section"></garden-search>
+      <animated-list id="garden-list" class="menu-section" height="500" width="200" rows="1" page-size="8"
+        item-tag="garden-list-item" query="gardens"></animated-list>
+    </div>
   </div>
 </body>
 

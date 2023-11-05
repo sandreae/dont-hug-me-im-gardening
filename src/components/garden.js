@@ -72,19 +72,6 @@ export class Garden extends HTMLElement {
 
   connectedCallback() {
     this.shadow.querySelector('#heading').textContent = this.name;
-
-    const garden = this.shadow.querySelector('#garden');
-    garden.style.width = `${this.columns * 75}px`;
-    garden.style.height = `${this.rows * 75}px`;
-
-    for (let pos_x = 0; pos_x < this.columns; pos_x++) {
-      for (let pos_y = 0; pos_y < this.rows; pos_y++) {
-        let tile = document.createElement('garden-tile');
-        tile.pos_x = pos_x;
-        tile.pos_y = pos_y;
-        garden.appendChild(tile);
-      }
-    }
   }
 
   get id() {
@@ -136,12 +123,27 @@ export class Garden extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['id'];
+    return ['id', 'name', 'columns', 'rows'];
   }
 
   attributeChangedCallback(name) {
-    if (name == 'id') {
-      this.refresh();
+    switch (name) {
+      case 'id': {
+        this.refresh();
+        break;
+      }
+      case 'name': {
+        this.render();
+        break;
+      }
+      case 'rows': {
+        this.renderGridTiles();
+        break;
+      }
+      case 'columns': {
+        this.renderGridTiles();
+        break;
+      }
     }
   }
 
@@ -171,9 +173,7 @@ export class Garden extends HTMLElement {
     this.tiles = tiles;
   }
 
-  render() {
-    this.shadow.querySelector('#heading').textContent = this.name;
-
+  renderGridTiles() {
     const garden = this.shadow.querySelector('#garden');
     garden.innerHTML = '';
     garden.style.width = `${this.columns * 75}px`;
@@ -187,7 +187,12 @@ export class Garden extends HTMLElement {
         garden.appendChild(tile);
       }
     }
+  }
 
+  render() {
+    this.shadow.querySelector('#heading').textContent = this.name;
+
+    this.renderGridTiles();
     let gardenTiles = this.shadow.querySelectorAll('garden-tile');
 
     Array.from(gardenTiles).forEach((tile) => {
