@@ -1,5 +1,10 @@
+@font-face {
+  font-family: 'Rainy Heart';
+  src: url('./rainyhearts.ttf');
+}
+
 body {
-  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  font-family: 'Rainy Heart';
   padding: 0px;
   margin: 0px;
   background-image: url('background-tile.gif');
@@ -12,6 +17,7 @@ body {
   grid-template-rows: 25vh;
   grid-template-areas:
     'species-form garden garden-form'
+    'sprite-list garden garden-search'
     'sprite-list garden garden-list'
     'sprite-list garden garden-list';
   gap: 20px;
@@ -26,8 +32,12 @@ body {
   text-align: center;
 }
 
-#app > #sprite-list {
+#app > animated-list#sprite-list {
   grid-area: sprite-list;
+}
+
+#app > animated-list#garden-list {
+  grid-area: garden-list;
 }
 
 #app > garden-main {
@@ -43,7 +53,7 @@ body {
 }
 
 #app > garden-search {
-  grid-area: garden-list;
+  grid-area: garden-search;
 }
 
 .menu {
