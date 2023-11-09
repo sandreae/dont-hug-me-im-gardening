@@ -25,12 +25,10 @@ export class GardenTile extends HTMLElement {
       const target = e.target;
       const pos_x = target.pos_x;
       const pos_y = target.pos_y;
-      const timestamp = Math.floor(new Date().getTime() / 1000.0);
       const currentSpeciesId = window.SPRITE_ID;
       const tileId = await createTile(
         pos_x,
         pos_y,
-        timestamp,
         currentSpeciesId,
         window.GARDEN_ID,
       );
@@ -67,7 +65,7 @@ export class Garden extends HTMLElement {
       : 16;
     this.name = this.hasAttribute('name')
       ? this.getAttribute('name')
-      : 'Select a garden -->';
+      : 'Select or create a garden -->';
   }
 
   connectedCallback() {
@@ -154,11 +152,11 @@ export class Garden extends HTMLElement {
     }
 
     const gardenResponse = await getGarden(this.id);
-    let { name, width, height } = gardenResponse.fields;
+    let { name, columns, rows } = gardenResponse.fields;
 
     this.name = name;
-    this.columns = width;
-    this.rows = height;
+    this.columns = columns;
+    this.rows = rows;
 
     const tilesResponse = await getGardenTiles(this.id, 100);
     let { hasNextPage, endCursor, documents } = tilesResponse;
@@ -233,6 +231,11 @@ export class Garden extends HTMLElement {
   }
 
   async refresh() {
+    if (!this.id) {
+      this.name = '';
+      this.columns = 16;
+      this.rows = 12;
+    }
     await this.fetch();
     this.render();
   }

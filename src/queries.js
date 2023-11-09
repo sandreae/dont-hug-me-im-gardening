@@ -21,11 +21,19 @@ async function request(query) {
     });
 }
 
-export async function createGarden(fields) {
+export async function createGarden(name, columns, rows) {
+  const timestamp = Math.floor(new Date().getTime() / 1000.0);
+  let fields = new OperationFields({
+    name,
+    columns,
+    rows,
+    timestamp,
+  });
   return await window.session.create(fields, { schemaId: GARDEN_SCHEMA_ID });
 }
 
-export async function createTile(pos_x, pos_y, timestamp, spriteId, gardenId) {
+export async function createTile(pos_x, pos_y, spriteId, gardenId) {
+  const timestamp = Math.floor(new Date().getTime() / 1000.0);
   let fields = new OperationFields({
     pos_x: Math.floor(pos_x),
     pos_y: Math.floor(pos_y),
@@ -40,9 +48,12 @@ export async function createTile(pos_x, pos_y, timestamp, spriteId, gardenId) {
 
 export async function createSprite(description, blob) {
   const blobId = await window.session.createBlob(blob);
+
+  const timestamp = Math.floor(new Date().getTime() / 1000.0);
   let fields = new OperationFields();
   fields.insert('img', 'relation', blobId);
   fields.insert('description', 'str', description);
+  fields.insert('timestamp', 'int', timestamp);
 
   return await window.session.create(fields, { schemaId: SPRITE_SCHEMA_ID });
 }
@@ -74,8 +85,9 @@ export async function getGarden(id) {
     ${GARDEN_SCHEMA_ID}(id: "${id}") {
       fields {
         name
-        width
-        height
+        rows
+        columns
+        timestamp
       }
       meta {
         documentId
@@ -95,8 +107,9 @@ export async function getAllGardens(options) {
     cursor
     fields {
       name
-      width
-      height
+      rows
+      columns
+      timestamp
     }
     meta {
       documentId
@@ -142,6 +155,7 @@ export async function getGardenTiles(gardenId, first, after) {
 
 export async function getAllSprites(options) {
   options.schema = SPRITE_SCHEMA_ID;
+  options.orderBy = `timestamp`;
   options.fields = `{
       cursor
       fields {

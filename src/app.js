@@ -20,11 +20,21 @@ export const getKeyPair = () => {
 
 export const setGardenId = (id) => {
   window.GARDEN_ID = id;
+  
+  // Set the id attribute on `garden-main`
   const garden = document.querySelector('garden-main');
   if (id) {
     garden.setAttribute('id', id);
   } else {
     garden.removeAttribute('id');
+  }
+
+  // Set the selected attribute on `#garden-list`
+  const gardenList = document.querySelector('#garden-list');
+  if (id) {
+    gardenList.setAttribute('selected', id);
+  } else {
+    gardenList.removeAttribute('selected');
   }
 };
 

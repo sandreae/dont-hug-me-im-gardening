@@ -3,8 +3,9 @@ description = "A garden where plants and animals can live"
 
 [garden.fields]
 name = { type = "str" }
-width = { type = "int" }
-height = { type = "int" }
+rows = { type = "int" }
+columns = { type = "int" }
+timestamp = { type = "int" }
 
 [garden_tile]
 description = "A single tile in the garden occupied by a sprite"
@@ -17,8 +18,9 @@ sprite = { type = "pinned_relation", schema = { name = "garden_sprite" } }
 timestamp = { type = "int" }
 
 [garden_sprite]
-description = "An item that can be placed in the garden"
+description = "An sprite that can be placed on a tile in the garden"
 
 [garden_sprite.fields]
 img = { type = "relation", schema = { id = "blob_v1" } }
 description = { type = "str" }
+timestamp = { type = "int" }

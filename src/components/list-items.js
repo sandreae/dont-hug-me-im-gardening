@@ -12,13 +12,13 @@ export class GardenListItem extends HTMLElement {
 
   connectedCallback() {
     if (this.document) {
-      const { name, width, height } = this.document.fields;
+      const { name, columns, rows } = this.document.fields;
       const { documentId, owner } = this.document.meta;
 
       this.shadow.querySelector('#name').innerText = name;
       this.shadow.querySelector(
         '#dimensions',
-      ).innerText = `${width} x ${height}`;
+      ).innerText = `${columns} x ${rows}`;
 
       const item = this.shadow.querySelector('div');
       item.id = documentId;

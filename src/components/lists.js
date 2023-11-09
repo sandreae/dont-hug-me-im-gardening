@@ -307,9 +307,6 @@ export class AnimatedList extends PaginatedList {
       const item = document.createElement(this.itemTag);
       item.id = documentId;
       item.document = doc;
-      if (documentId === this.selected) {
-        item.setAttribute('selected', true);
-      }
 
       item.onclick = (e) => {
         e.preventDefault();
@@ -322,6 +319,11 @@ export class AnimatedList extends PaginatedList {
       const height = this.height / (this.pageSize / this.rows);
       div.style.height = `${height}px`;
       div.style.width = `${this.width / this.rows}px`;
+
+      if (documentId === this.selected) {
+        div.setAttribute('selected', true);
+      }
+
       div.appendChild(item);
 
       newPage.appendChild(div);

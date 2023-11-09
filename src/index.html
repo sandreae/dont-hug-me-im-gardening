@@ -27,14 +27,12 @@
 
     :host>div {
       position: relative;
-      background-color: rgb(24, 218, 153, 0.6);
       height: 100%;
       width: 100%;
       display: flex;
       flex-direction: column;
       justify-content: center;
       text-align: center;
-      font-size: x-large;
       overflow: hidden;
     }
 
@@ -43,6 +41,14 @@
       position: absolute;
       top: 0px;
       right: 0px;
+    }
+
+    #name {
+      font-size: x-large;
+    }
+
+    #dimensions {
+      font-size: large;
     }
   </style>
   <div>
@@ -71,12 +77,9 @@
 <template id="garden-main">
   <style>
     #garden {
-      position: relative;
       display: grid;
       grid-template-columns: repeat(auto-fill, 75px);
       grid-auto-rows: 75px;
-      background-color: rgb(168, 248, 93);
-      border: 5px solid black;
       font-size: large;
     }
 
@@ -118,16 +121,33 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 10px;
+    }
+
+    label {
+      font-size: x-large;
+    }
+
+    input {
+      text-align: center;
+      height: 30px;
+      width: 100%;
+    }
+
+    input[type="submit"] {
+      width: 100px;
+      margin-top: 10px;
+      padding: 0px;
     }
   </style>
   <form>
-    <label for="name">Name: </label>
-    <input type="text" name="name" maxlength="60" minlength="1" required />
-    <label for="rows">Rows: </label>
-    <input type="number" min="1" max="1000" name="rows" required />
-    <label for="columns">Columns: </label>
-    <input type="number" min="1" max="1000" name="columns" required />
-    <input type="submit" value="create garden" />
+    <label for="name">== name ==</label>
+    <input type="text" name="name" maxlength="60" minlength="1" required placeholder="Name" />
+    <label for="rows">== rows ==</label>
+    <input type="number" min="1" max="1000" name="rows" required placeholder="Rows" />
+    <label for="columns">== columns ==</label>
+    <input type="number" min="1" max="1000" name="columns" required placeholder="Columns" />
+    <input type="submit" value="create" />
   </form>
 </template>
 
@@ -140,20 +160,60 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 10px;
+    }
+
+    label {
+      font-size: x-large;
+    }
+
+    input {
+      height: 30px;
+      width: 100%;
+    }
+
+    #image-input-wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    input::file-selector-button {
+      height: 30px;
+    }
+
+    input[type="submit"] {
+      width: 100px;
+      margin-top: 10px;
+      padding: 0px;
+    }
+
+    img {
+      display: none;
+      height: 30px;
     }
   </style>
   <form>
-    <input type="file" id="sprite" name="sprite" accept="image/*" required />
-    <input type="submit" value="add garden item" />
+    <label for="image">== image ==</label>
+    <div id="image-input-wrapper">
+      <input type="file" id="image" name="image" accept="image/*" required placeholder="Sprite
+      image" />
+      <img src="" alt="preview of selected sprite image">
+    </div>
+    <label for="description">== description ==</label>
+    <input type="text" name="description" maxlength="60" minlength="1" required placeholder="Description" />
+    <input type="submit" value="create" />
   </form>
 </template>
 
 <template id="garden-search">
-  <input placeholder="search" type="text" name="garden-search" />
-</template>
-
-<template id="garden-search">
-  <input type="text" name="" id="">
+  <style>
+    input {
+      height: 30px;
+      width: 100%;
+    }
+  </style>
+  <input placeholder="search" id="search" type="text" name="garden-search" />
 </template>
 
 <template id="arrow-button">
@@ -274,7 +334,7 @@
     <div id="right-menu" class="menu">
       <garden-form class="menu-section"></garden-form>
       <garden-search list-id="garden-list" class="menu-section"></garden-search>
-      <animated-list id="garden-list" class="menu-section" height="500" width="200" rows="1" page-size="8"
+      <animated-list id="garden-list" class="menu-section" height="300" width="200" rows="1" page-size="6"
         item-tag="garden-list-item" query="gardens"></animated-list>
     </div>
   </div>

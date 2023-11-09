@@ -35,8 +35,6 @@ export class GardenForm extends HTMLElement {
           break;
         }
       }
-      console.log(e.target);
-      console.log(e.target.name);
     };
 
     form.onsubmit = async (e) => {
@@ -45,17 +43,19 @@ export class GardenForm extends HTMLElement {
       const rows = e.target.querySelector('input[name="rows"]');
       const columns = e.target.querySelector('input[name="columns"]');
 
-      const id = await createGarden({
-        name: name.value,
-        width: Number(columns.value),
-        height: Number(rows.value),
-      });
+      const id = await createGarden(
+        name.value,
+        Number(columns.value),
+        Number(rows.value),
+      );
 
       console.log('Created garden: ', id);
+
       name.value = null;
       rows.value = null;
       columns.value = null;
 
+      setGardenId(id);
       document.querySelector('#garden-list').refresh();
     };
   }
@@ -74,14 +74,27 @@ export class SpriteForm extends HTMLElement {
 
   connectedCallback() {
     const form = this.shadow.querySelector('form');
+    const img = this.shadow.querySelector('img');
+    const imageInput = this.shadow.querySelector('input[name="image"]');
+    imageInput.oninput = (e) => {
+      let file = e.target.files[0];
+      let reader = new FileReader();
+
+      reader.readAsDataURL(file);
+      reader.onload = function () {
+        img.src = reader.result;
+        img.style.display = 'inline';
+      };
+    };
 
     form.onsubmit = async (e) => {
       e.preventDefault();
-      const input = this.shadow.querySelector('input');
-      const id = await createSprite('My cute sprite', input.files[0]);
+      const image = this.shadow.querySelector('input[name="image"');
+      const description = this.shadow.querySelector('input[name="image"');
+      const id = await createSprite(description.value, image.files[0]);
 
       console.log('Created sprite: ', id);
-      input.value = '';
+      description.value = '';
 
       document.querySelector('#sprite-list').refresh();
     };
