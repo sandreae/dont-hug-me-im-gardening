@@ -26,6 +26,18 @@ export class GardenTile extends HTMLElement {
       const pos_x = target.pos_x;
       const pos_y = target.pos_y;
       const currentSpeciesId = window.SPRITE_ID;
+
+      let currentSprite = target.shadow.querySelector('img');
+
+      if (!currentSprite) {
+        currentSprite = document.createElement('img');
+        target.shadow.appendChild(currentSprite);
+      }
+
+      if (currentSprite.src == window.SPRITE_IMG) {
+        return;
+      }
+
       const tileId = await createTile(
         pos_x,
         pos_y,
@@ -35,16 +47,7 @@ export class GardenTile extends HTMLElement {
 
       console.log('Created tile: ', tileId);
 
-      const currentImage = target.shadow.querySelector('img');
-
-      if (!currentImage) {
-        const newImage = document.createElement('img');
-        newImage.src = window.SPRITE_IMG;
-        target.shadow.appendChild(newImage);
-        return;
-      } else {
-        currentImage.src = window.SPRITE_IMG;
-      }
+      currentSprite.src = window.SPRITE_IMG;
     };
   }
 }
