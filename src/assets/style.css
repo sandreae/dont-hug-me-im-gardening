@@ -14,13 +14,6 @@ body {
 garden-main {
   z-index: -1;
   position: fixed;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  overflow: scroll;
 }
 
 #left-menu {
@@ -29,12 +22,6 @@ garden-main {
 
 #right-menu {
   right: 5px;
-}
-
-#heading {
-  color: white;
-  text-align: center;
-  width: 1200px;
 }
 
 .menu {
