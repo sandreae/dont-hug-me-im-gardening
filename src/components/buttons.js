@@ -14,7 +14,13 @@ export class ArrowButton extends HTMLElement {
 
   connectedCallback() {
     const img = this.shadow.querySelector('img');
-    img.style.transform = this.hasAttribute('down') ? 'rotate(180deg)' : '';
+    if (this.hasAttribute('down')) {
+      img.style.transform = 'rotate(180deg)';
+    } else if (this.hasAttribute('left')) {
+      img.style.transform = 'rotate(-90deg)';
+    } else if (this.hasAttribute('right')) {
+      img.style.transform = 'rotate(90deg)';
+    }
   }
 }
 
