@@ -3,11 +3,11 @@ import {
   GARDEN_SCHEMA_ID,
   TILE_SCHEMA_ID,
   SPRITE_SCHEMA_ID,
-  ENDPOINT,
+  GRAPHQL_ENDPOINT,
 } from './constants.js';
 
 async function request(query) {
-  return fetch(ENDPOINT, {
+  return fetch(GRAPHQL_ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -33,6 +33,7 @@ export async function createGarden(name, columns, rows) {
 }
 
 export async function createTile(pos_x, pos_y, spriteId, gardenId) {
+  console.log(pos_x, pos_y, spriteId, gardenId);
   const timestamp = Math.floor(new Date().getTime() / 1000.0);
   let fields = new OperationFields({
     pos_x: Math.floor(pos_x),
@@ -100,6 +101,28 @@ export async function getGarden(id) {
   return result.data[GARDEN_SCHEMA_ID];
 }
 
+export async function getSprite(id) {
+  const query = `query {
+    ${SPRITE_SCHEMA_ID}(id: "${id}") {
+      fields {
+        description
+        img {
+          meta {
+            documentId
+          }
+        }
+      }
+      meta {
+        documentId
+        owner
+      }
+    }
+  }`;
+
+  const result = await request(query);
+  return result.data[SPRITE_SCHEMA_ID];
+}
+
 export async function getAllGardens(options) {
   options.schema = GARDEN_SCHEMA_ID;
   options.orderBy = `name`;
@@ -136,6 +159,7 @@ export async function getGardenTiles(gardenId, first, after) {
         pos_y
         sprite {
           fields {
+            description
             img {
               meta {
                 documentId

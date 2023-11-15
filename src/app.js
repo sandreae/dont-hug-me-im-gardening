@@ -48,14 +48,6 @@ export const setGardenId = (id) => {
   }
 };
 
-export const setSpriteId = (id) => {
-  window.SPRITE_ID = id;
-};
-
-export const setSpriteImg = (url) => {
-  window.SPRITE_IMG = url;
-};
-
 export const app = async () => {
   const keyPair = getKeyPair();
 

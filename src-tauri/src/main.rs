@@ -12,7 +12,7 @@ use tauri::async_runtime;
 
 use crate::key_pair::generate_or_load_key_pair;
 
-const ENDPOINT: &str = "http://localhost:2020/graphql";
+const GRAPHQL_ENDPOINT: &str = "http://localhost:2020/graphql";
 const APP_DATA_DIR: &str = "p2p-garden";
 const BLOBS_DIR: &str = "blobs";
 
@@ -64,10 +64,10 @@ fn main() {
 
         // Read and publish all commits contained in the schema.lock file.
         //
-        // This pre-populates the node with the schemas required by the p2p-garden application. 
+        // This pre-populates the node with the schemas required by the p2p-garden application.
         let lock_file: LockFile = toml::from_str(&data).expect("error reading schema.lock file");
         let commits = lock_file.commits();
-        let client = Client::new(&ENDPOINT);
+        let client = Client::new(&GRAPHQL_ENDPOINT);
         for commit in commits.iter() {
             let _ = client.publish(commit.clone()).await;
         }

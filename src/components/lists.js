@@ -56,12 +56,6 @@ class PaginatedList extends HTMLElement {
     return this.currentPage;
   }
 
-  reset() {
-    this.currentPage = [];
-    this.hasNextPage = false;
-    this.hasPreviousPage = false;
-  }
-
   get hasPreviousPage() {
     return this.getAttribute('has-previous-page');
   }
@@ -310,7 +304,7 @@ export class AnimatedList extends PaginatedList {
 
       item.onclick = (e) => {
         e.preventDefault();
-        this.selected = e.target.id;
+        this.selected = item.id;
       };
 
       const div = document.createElement('div');
@@ -334,9 +328,13 @@ export class AnimatedList extends PaginatedList {
 
   async refresh() {
     this.loading = true;
+    this.currentPage = [];
+    this.hasNextPage = false;
+    this.hasPreviousPage = false;
+
     this.shadow.querySelector('#list-wrapper').innerHTML = '';
-    this.reset();
     const newDocuments = await this.nextPage();
+    
     if (newDocuments.length > 0) {
       const newPage = this.createNewPage(newDocuments);
       this.pushBack(newPage);

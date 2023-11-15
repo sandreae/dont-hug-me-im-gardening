@@ -1,4 +1,5 @@
-import { setGardenId, setSpriteId, setSpriteImg, getKeyPair } from '../app.js';
+import { setGardenId, getKeyPair } from '../app.js';
+import { BLOBS_ENDPOINT } from '../constants.js';
 
 export class GardenListItem extends HTMLElement {
   constructor() {
@@ -56,12 +57,8 @@ export class SpriteListItem extends HTMLElement {
     const { documentId } = this.document.meta;
 
     const image = this.shadow.querySelector('img');
-    image.src = `http://localhost:2020/blobs/${img.meta.documentId}`;
+    image.src = BLOBS_ENDPOINT + img.meta.documentId;
     image.alt = description;
     image.id = documentId;
-    image.onclick = (e) => {
-      setSpriteId(e.target.id);
-      setSpriteImg(e.target.src);
-    };
   }
 }

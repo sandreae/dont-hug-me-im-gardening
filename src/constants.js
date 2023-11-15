@@ -9,7 +9,9 @@ export const SPRITE_SCHEMA_ID =
   'garden_sprite_00203671fa7ef4e5784e993936478019d30d10e0452c7728c19a6b3950fb16a49e77';
 
 // URL of your local aquadoggo node
-export const ENDPOINT = 'http://localhost:2020/graphql';
+const NODE_ENDPOINT = `http://localhost:2020/`;
+export const GRAPHQL_ENDPOINT = NODE_ENDPOINT + 'graphql';
+export const BLOBS_ENDPOINT = NODE_ENDPOINT + 'blobs/';
 
 export const GARDEN_WIDTH = 16;
 export const GARDEN_HEIGHT = 12;

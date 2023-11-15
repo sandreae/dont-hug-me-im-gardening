@@ -1,9 +1,9 @@
 import fs from 'fs';
 import toml from 'toml';
-import { ENDPOINT } from './src/constants.js';
+import { GRAPHQL_ENDPOINT } from './src/constants.js';
 
 async function publish(entry, operation) {
-  return fetch(ENDPOINT, {
+  return fetch(GRAPHQL_ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
