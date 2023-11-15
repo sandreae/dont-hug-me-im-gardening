@@ -56,7 +56,10 @@ export class GardenForm extends HTMLElement {
       columns.value = null;
 
       setGardenId(id);
-      document.querySelector('#garden-list').refresh();
+
+      setTimeout(() => {
+        document.querySelector('#garden-list').refresh();
+      }, 200);
     };
   }
 }
@@ -89,14 +92,26 @@ export class SpriteForm extends HTMLElement {
 
     form.onsubmit = async (e) => {
       e.preventDefault();
-      const image = this.shadow.querySelector('input[name="image"');
-      const description = this.shadow.querySelector('input[name="image"');
-      const id = await createSprite(description.value, image.files[0]);
+      const imageInput = this.shadow.querySelector('input[name="image"');
+      const descriptionInput = this.shadow.querySelector(
+        'input[name="description"',
+      );
+
+      const id = await createSprite(
+        descriptionInput.value,
+        imageInput.files[0],
+      );
 
       console.log('Created sprite: ', id);
-      description.value = '';
+      imageInput.value = '';
+      descriptionInput.value = '';
+      const img = this.shadow.querySelector('img');
+      img.style.display = 'hidden';
+      img.src = '';
 
-      document.querySelector('#sprite-list').refresh();
+      setTimeout(() => {
+        document.querySelector('#sprite-list').refresh();
+      }, 200);
     };
   }
 }

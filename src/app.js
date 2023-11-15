@@ -5,9 +5,15 @@ import { GardenForm, GardenSearch, SpriteForm } from './components/forms.js';
 import { ArrowButton, DeleteGardenButton } from './components/buttons.js';
 import { SpriteListItem, GardenListItem } from './components/list-items.js';
 
-// TODO: delay requests after data published.
-// TODO: refactor all templates into components.
-// TODO: comments everywhere.
+// TODO: delay requests after data published
+// TODO: refactor all templates into components
+// TODO: comments everywhere
+// TODO: a better name
+// TODO: only allow adding to authors own garden
+// TODO: allow setting a garden as "open"
+// TODO: refresh button
+// TODO: limit sprite image size
+// TODO: pre-populate app with sprites
 
 const LOCAL_STORAGE_KEY = 'privateKey';
 
@@ -24,7 +30,7 @@ export const getKeyPair = () => {
 
 export const setGardenId = (id) => {
   window.GARDEN_ID = id;
-  
+
   // Set the id attribute on `garden-main`
   const garden = document.querySelector('garden-main');
   if (id) {
