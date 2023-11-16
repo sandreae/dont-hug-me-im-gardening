@@ -1,6 +1,3 @@
-import { setGardenId } from '../app.js';
-import { deleteGarden } from '../queries.js';
-
 export class ArrowButton extends HTMLElement {
   constructor() {
     super();
@@ -33,20 +30,5 @@ export class DeleteGardenButton extends HTMLElement {
 
     this.shadow = this.attachShadow({ mode: 'open' });
     this.shadow.appendChild(templateContent.cloneNode(true));
-  }
-
-  connectedCallback() {
-    const button = this.shadow.querySelector('button');
-    button.onclick = async (e) => {
-      e.preventDefault();
-      const result = confirm('Are you sure you want to delete this garden?');
-      if (result) {
-        await deleteGarden(this.documentId);
-        if (window.GARDEN_ID == this.documentId) {
-          setGardenId(null);
-        }
-        document.querySelector('#garden-list').refresh();
-      }
-    };
   }
 }

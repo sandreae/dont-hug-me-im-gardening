@@ -1,4 +1,5 @@
 import { setGardenId, getKeyPair } from '../app.js';
+import { deleteGarden } from '../queries.js';
 import { BLOBS_ENDPOINT } from '../constants.js';
 
 export class GardenListItem extends HTMLElement {
@@ -29,6 +30,19 @@ export class GardenListItem extends HTMLElement {
       if (owner == keyPair.publicKey()) {
         const deleteButton = document.createElement('delete-garden-button');
         deleteButton.documentId = documentId;
+        deleteButton.onclick = async (e) => {
+          e.preventDefault();
+          const result = confirm(
+            'Are you sure you want to delete this garden?',
+          );
+          if (result) {
+            await deleteGarden(this.documentId);
+            if (window.GARDEN_ID == this.documentId) {
+              setGardenId(null);
+            }
+            document.querySelector('#garden-list').refresh();
+          }
+        };
 
         item.appendChild(deleteButton);
       }
