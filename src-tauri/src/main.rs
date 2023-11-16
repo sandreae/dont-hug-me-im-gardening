@@ -2,11 +2,11 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 use std::fs::DirBuilder;
 
+mod bootstrap;
 mod key_pair;
 
 use aquadoggo::{Configuration, Node};
-use fishy::lock_file::LockFile;
-use fishy::Client;
+use gql_client::Client;
 use tauri::api::path;
 use tauri::async_runtime;
 
@@ -61,16 +61,9 @@ fn main() {
 
         // Load schema.lock file, by using the include macro, this file is included in compiled binaries.
         let data = include_str!("../schemas/schema.lock");
-
-        // Read and publish all commits contained in the schema.lock file.
-        //
-        // This pre-populates the node with the schemas required by the p2p-garden application.
-        let lock_file: LockFile = toml::from_str(&data).expect("error reading schema.lock file");
-        let commits = lock_file.commits();
         let client = Client::new(&GRAPHQL_ENDPOINT);
-        for commit in commits.iter() {
-            let _ = client.publish(commit.clone()).await;
-        }
+
+        bootstrap::deploy(&client, &data).await;
 
         node.on_exit().await;
         node.shutdown().await;
