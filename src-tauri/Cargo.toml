@@ -13,9 +13,9 @@ edition = "2021"
 tauri-build = { version = "1.5", features = [] }
 
 [dependencies]
-aquadoggo = { git = 'https://github.com/p2panda/aquadoggo', rev = 'fda1ae93d8362a8050d546485fc09a3b5037799b' }
+aquadoggo = { git = 'https://github.com/p2panda/aquadoggo', tag = "v0.6.0" }
 p2panda-rs = "0.8.0"
-tauri = { version = "1.5", features = [ "dialog-all", "fs-all", "shell-open"] }
+tauri = { version = "1.5", features = ["dialog-all", "fs-all", "shell-open"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 toml = "0.8.6"
