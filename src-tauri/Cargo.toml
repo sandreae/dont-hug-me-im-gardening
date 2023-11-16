@@ -16,7 +16,7 @@ tauri-build = { version = "1.5", features = [] }
 aquadoggo = { git = 'https://github.com/p2panda/aquadoggo', rev = 'fda1ae93d8362a8050d546485fc09a3b5037799b' }
 fishy = { git = 'https://github.com/p2panda/fishy', rev = "4d7052518a62c9cef28ceb6b348b35b1706a75c7" }
 p2panda-rs = "0.8.0"
-tauri = { version = "1.5", features = [ "fs-all", "notification-all", "shell-open"] }
+tauri = { version = "1.5", features = [ "dialog-all", "fs-all", "shell-open"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 toml = "0.8.6"

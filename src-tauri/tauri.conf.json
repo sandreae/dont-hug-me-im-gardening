@@ -17,7 +17,7 @@
         "all": true,
         "scope": ["$APPDATA/p2p-garden/*"]
       },
-      "notification": {
+      "dialog": {
         "all": true
       },
       "shell": {
