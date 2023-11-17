@@ -159,14 +159,19 @@ export class Garden extends HTMLElement {
         this.shadow.querySelector('#heading').textContent = newValue;
         break;
       }
-      case 'rows': {
+      case 'columns': {
         if (newValue != oldValue) {
+          const garden = this.shadow.querySelector('#garden');
+          garden.style.height = `${newValue * 75}px`;
           this.renderTiles();
         }
         break;
       }
-      case 'columns': {
+      case 'rows': {
         if (newValue != oldValue) {
+          const garden = this.shadow.querySelector('#garden');
+          garden.style.width = `${newValue * 75}px`;
+          garden.style.minWidth = `${newValue * 75}px`;
           this.renderTiles();
         }
         break;
@@ -212,8 +217,6 @@ export class Garden extends HTMLElement {
   renderTiles() {
     const garden = this.shadow.querySelector('#garden');
     garden.innerHTML = '';
-    garden.style.width = `${this.columns * 75}px`;
-    garden.style.height = `${this.rows * 75}px`;
 
     for (let pos_x = 0; pos_x < this.columns; pos_x++) {
       for (let pos_y = 0; pos_y < this.rows; pos_y++) {
