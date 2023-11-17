@@ -1,4 +1,4 @@
-import { setGardenId, getKeyPair } from '../app.js';
+import { setCurrentGarden, getKeyPair, setCurrentSprite } from '../app.js';
 import { deleteGarden } from '../queries.js';
 import { BLOBS_ENDPOINT } from '../constants.js';
 
@@ -10,6 +10,10 @@ export class GardenListItem extends HTMLElement {
 
     this.shadow = this.attachShadow({ mode: 'open' });
     this.shadow.appendChild(templateContent.cloneNode(true));
+
+    this.cb = () => {
+      setCurrentGarden(this.document);
+    };
   }
 
   connectedCallback() {
@@ -38,7 +42,7 @@ export class GardenListItem extends HTMLElement {
           if (result) {
             await deleteGarden(this.documentId);
             if (window.GARDEN_ID == this.documentId) {
-              setGardenId(null);
+              setCurrentGarden(null);
             }
             document.querySelector('#garden-list').refresh();
           }
@@ -46,11 +50,6 @@ export class GardenListItem extends HTMLElement {
 
         item.appendChild(deleteButton);
       }
-
-      item.onclick = (e) => {
-        e.preventDefault();
-        setGardenId(documentId);
-      };
     }
   }
 }
@@ -64,6 +63,10 @@ export class SpriteListItem extends HTMLElement {
 
     this.shadow = this.attachShadow({ mode: 'open' });
     this.shadow.appendChild(templateContent.cloneNode(true));
+
+    this.cb = () => {
+      setCurrentSprite(this.document);
+    };
   }
 
   connectedCallback() {

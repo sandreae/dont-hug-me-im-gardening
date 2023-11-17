@@ -305,6 +305,9 @@ export class AnimatedList extends PaginatedList {
       item.onclick = (e) => {
         e.preventDefault();
         this.selected = item.id;
+        if (item.cb) {
+          item.cb();
+        }
       };
 
       const div = document.createElement('div');
@@ -334,7 +337,7 @@ export class AnimatedList extends PaginatedList {
 
     this.shadow.querySelector('#list-wrapper').innerHTML = '';
     const newDocuments = await this.nextPage();
-    
+
     if (newDocuments.length > 0) {
       const newPage = this.createNewPage(newDocuments);
       this.pushBack(newPage);

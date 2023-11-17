@@ -1,10 +1,5 @@
 import { BLOBS_ENDPOINT } from '../constants.js';
-import {
-  createTile,
-  getGarden,
-  getGardenTiles,
-  getSprite,
-} from '../queries.js';
+import { createTile, getGardenTiles } from '../queries.js';
 
 export class GardenTile extends HTMLElement {
   constructor() {
@@ -17,44 +12,61 @@ export class GardenTile extends HTMLElement {
     this.shadow.appendChild(templateContent.cloneNode(true));
   }
 
-  connectedCallback() {
-    this.render();
+  get id() {
+    return this.getAttribute('id');
+  }
 
+  set id(val) {
+    if (val && val.length != 0) {
+      this.setAttribute('id', val);
+    } else {
+      this.removeAttribute('id');
+    }
+  }
+
+  static get observedAttributes() {
+    return ['id'];
+  }
+
+  attributeChangedCallback(name) {
+    switch (name) {
+      case 'id': {
+        let img = this.shadow.querySelector('img');
+        if (this.sprite) {
+          img.src = BLOBS_ENDPOINT + this.sprite.fields.img.meta.documentId;
+          img.alt = this.sprite.fields.description;
+          img.style.opacity = 1;
+        } else {
+          img.style.opacity = 0;
+        }
+        break;
+      }
+    }
+  }
+
+  connectedCallback() {
     this.onclick = async (e) => {
       e.preventDefault();
 
-      const spriteList = document.querySelector(
-        'animated-list[id="sprite-list"]',
-      );
-      const selectedSpriteId = spriteList.getAttribute('selected');
-      console.log(selectedSpriteId);
-      if (!window.GARDEN_ID || !selectedSpriteId) {
+      if (!window.CURRENT_GARDEN || !window.CURRENT_SPRITE) {
         window.alert(
           'Oops! Create a garden and choose a sprite before placing tiles.',
         );
         return;
       }
 
+      this.sprite = window.CURRENT_SPRITE;
+      this.id = this.sprite.meta.documentId;
+
       const tileId = await createTile(
         this.pos_x,
         this.pos_y,
-        selectedSpriteId,
-        window.GARDEN_ID,
+        window.CURRENT_SPRITE.meta.documentId,
+        window.CURRENT_GARDEN.meta.documentId,
       );
 
       console.log('Created tile: ', tileId);
-
-      this.sprite = await getSprite(selectedSpriteId);
-      this.render();
     };
-  }
-
-  render() {
-    if (this.sprite) {
-      let img = this.shadow.querySelector('img');
-      img.src = BLOBS_ENDPOINT + this.sprite.fields.img.meta.documentId;
-      img.alt = this.sprite.fields.description;
-    }
   }
 }
 
@@ -133,56 +145,71 @@ export class Garden extends HTMLElement {
     return ['id', 'name', 'columns', 'rows'];
   }
 
-  attributeChangedCallback(name) {
+  attributeChangedCallback(name, oldValue, newValue) {
     switch (name) {
       case 'id': {
-        this.refresh();
+        this.tiles = [];
+        this.renderTiles();
+        if (this.id) {
+          this.fetch();
+        }
         break;
       }
       case 'name': {
-        this.render();
+        this.shadow.querySelector('#heading').textContent = newValue;
         break;
       }
       case 'rows': {
-        this.render();
+        if (newValue != oldValue) {
+          this.renderTiles();
+        }
         break;
       }
       case 'columns': {
-        this.render();
+        if (newValue != oldValue) {
+          this.renderTiles();
+        }
         break;
       }
     }
   }
 
   async fetch() {
-    if (!this.id) {
+    if (!this.id || !window.CURRENT_GARDEN) {
       this.tiles = [];
       return;
     }
 
-    const gardenResponse = await getGarden(this.id);
-    let { name, columns, rows } = gardenResponse.fields;
+    let { name, columns, rows } = window.CURRENT_GARDEN.fields;
 
     this.name = name;
     this.columns = columns;
     this.rows = rows;
 
-    const tilesResponse = await getGardenTiles(this.id, 100);
-    let { hasNextPage, endCursor, documents } = tilesResponse;
-    let tiles = documents;
+    const baseTiles = this.shadow.querySelectorAll('garden-tile');
+
+    let hasNextPage = true;
+    let endCursor = null;
+    let documents = [];
 
     while (hasNextPage) {
-      const tilesResponse = await getGardenTiles(this.id, 100, endCursor);
+      const tilesResponse = await getGardenTiles(this.id, 5, endCursor);
       ({ hasNextPage, endCursor, documents } = tilesResponse);
-      tiles = tiles.concat(documents);
-    }
+      for (let tileDocument of documents) {
+        let baseTile = Array.from(baseTiles).find((tile) => {
+          return (
+            tileDocument.fields.pos_x === Number(tile.pos_x) &&
+            tileDocument.fields.pos_y === Number(tile.pos_y)
+          );
+        });
 
-    this.tiles = tiles;
+        baseTile.sprite = tileDocument.fields.sprite;
+        baseTile.id = tileDocument.meta.documentId;
+      }
+    }
   }
 
-  render() {
-    this.shadow.querySelector('#heading').textContent = this.name;
-
+  renderTiles() {
     const garden = this.shadow.querySelector('#garden');
     garden.innerHTML = '';
     garden.style.width = `${this.columns * 75}px`;
@@ -190,30 +217,12 @@ export class Garden extends HTMLElement {
 
     for (let pos_x = 0; pos_x < this.columns; pos_x++) {
       for (let pos_y = 0; pos_y < this.rows; pos_y++) {
-        let tileDocument = this.tiles.find((tiles) => {
-          return (
-            tiles.fields.pos_x === Number(pos_x) &&
-            tiles.fields.pos_y === Number(pos_y)
-          );
-        });
-
         let tile = document.createElement('garden-tile');
         tile.pos_x = pos_x;
         tile.pos_y = pos_y;
-        tile.sprite = tileDocument ? tileDocument.fields.sprite : null;
 
         garden.appendChild(tile);
       }
     }
-  }
-
-  async refresh() {
-    if (!this.id) {
-      this.name = null;
-      this.columns = null;
-      this.rows = null;
-    }
-    await this.fetch();
-    this.render();
   }
 }

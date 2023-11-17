@@ -150,7 +150,7 @@ export async function getGardenTiles(gardenId, first, after) {
     first,
     after,
     orderBy: `timestamp`,
-    orderDirection: `DESC`,
+    orderDirection: `ASC`,
     filter: `{ garden: { eq: "${gardenId}" } }`,
     fields: `{
       cursor

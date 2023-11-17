@@ -28,24 +28,28 @@ export const getKeyPair = () => {
   return keyPair;
 };
 
-export const setGardenId = (id) => {
-  window.GARDEN_ID = id;
+export const setCurrentGarden = (gardenDocument) => {
+  window.CURRENT_GARDEN = gardenDocument;
 
   // Set the id attribute on `garden-main`
   const garden = document.querySelector('garden-main');
-  if (id) {
-    garden.setAttribute('id', id);
+  if (gardenDocument) {
+    garden.setAttribute('id', gardenDocument.meta.documentId);
   } else {
     garden.removeAttribute('id');
   }
 
   // Set the selected attribute on `#garden-list`
   const gardenList = document.querySelector('#garden-list');
-  if (id) {
-    gardenList.setAttribute('selected', id);
+  if (gardenDocument) {
+    gardenList.setAttribute('selected', gardenDocument.meta.documentId);
   } else {
     gardenList.removeAttribute('selected');
   }
+};
+
+export const setCurrentSprite = (spriteDocument) => {
+  window.CURRENT_SPRITE = spriteDocument;
 };
 
 export const app = async () => {
