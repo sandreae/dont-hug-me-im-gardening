@@ -13,8 +13,5 @@ const NODE_ENDPOINT = `http://localhost:2020/`;
 export const GRAPHQL_ENDPOINT = NODE_ENDPOINT + 'graphql';
 export const BLOBS_ENDPOINT = NODE_ENDPOINT + 'blobs/';
 
-export const GARDEN_WIDTH = 16;
-export const GARDEN_HEIGHT = 12;
-
-export const GARDENS_PAGE_SIZE = 6;
-export const SPRITES_PAGE_SIZE = 4;
+// Max upload size in kB.
+export const MAX_UPLOAD_SIZE = 50 * 1000;

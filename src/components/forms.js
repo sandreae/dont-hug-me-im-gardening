@@ -1,4 +1,5 @@
 import { setCurrentGarden } from '../app.js';
+import { MAX_UPLOAD_SIZE } from '../constants.js';
 import { createGarden, createSprite, getGarden } from '../queries.js';
 
 export class GardenForm extends HTMLElement {
@@ -42,6 +43,7 @@ export class GardenForm extends HTMLElement {
         Number(rows.value),
       );
 
+      alert(`Congratulations! "${name.value}" has been created :-)`);
       console.log('Created garden: ', id);
 
       name.value = null;
@@ -72,8 +74,16 @@ export class SpriteForm extends HTMLElement {
     const form = this.shadow.querySelector('form');
     const img = this.shadow.querySelector('img');
     const imageInput = this.shadow.querySelector('input[name="image"]');
+
     imageInput.oninput = (e) => {
       let file = e.target.files[0];
+
+      if (file.size > MAX_UPLOAD_SIZE) {
+        alert('Max image size (50kB) exceeded.');
+        e.target.value = '';
+        return;
+      }
+
       let reader = new FileReader();
 
       reader.readAsDataURL(file);
@@ -95,7 +105,9 @@ export class SpriteForm extends HTMLElement {
         imageInput.files[0],
       );
 
+      alert(`Congratulations! You created a new sprite :-)`);
       console.log('Created sprite: ', id);
+
       imageInput.value = '';
       descriptionInput.value = '';
       const img = this.shadow.querySelector('img');
