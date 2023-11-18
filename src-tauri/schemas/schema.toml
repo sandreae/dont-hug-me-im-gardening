@@ -11,10 +11,10 @@ timestamp = { type = "int" }
 description = "A single tile in the garden occupied by a sprite"
 
 [tiles.fields]
-garden = { type = "relation", schema = { name = "garden" } }
+garden = { type = "relation", schema = { name = "gardens" } }
 pos_x = { type = "int" }
 pos_y = { type = "int" }
-sprite = { type = "pinned_relation", schema = { name = "garden_sprite" } }
+sprite = { type = "pinned_relation", schema = { name = "sprites" } }
 timestamp = { type = "int" }
 
 [sprites]

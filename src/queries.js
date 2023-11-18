@@ -1,8 +1,8 @@
 import { OperationFields } from './libs/shirokuma.min.js';
 import {
-  GARDEN_SCHEMA_ID,
-  TILE_SCHEMA_ID,
-  SPRITE_SCHEMA_ID,
+  GARDENS_SCHEMA_ID,
+  TILES_SCHEMA_ID,
+  SPRITES_SCHEMA_ID,
   GRAPHQL_ENDPOINT,
 } from './constants.js';
 
@@ -29,7 +29,7 @@ export async function createGarden(name, columns, rows) {
     rows,
     timestamp,
   });
-  return await window.session.create(fields, { schemaId: GARDEN_SCHEMA_ID });
+  return await window.session.create(fields, { schemaId: GARDENS_SCHEMA_ID });
 }
 
 export async function createTile(pos_x, pos_y, spriteId, gardenId) {
@@ -43,7 +43,7 @@ export async function createTile(pos_x, pos_y, spriteId, gardenId) {
   fields.insert('garden', 'relation', gardenId);
   fields.insert('sprite', 'pinned_relation', [spriteId]);
 
-  return await window.session.create(fields, { schemaId: TILE_SCHEMA_ID });
+  return await window.session.create(fields, { schemaId: TILES_SCHEMA_ID });
 }
 
 export async function createSprite(description, blob) {
@@ -55,7 +55,7 @@ export async function createSprite(description, blob) {
   fields.insert('description', 'str', description);
   fields.insert('timestamp', 'int', timestamp);
 
-  return await window.session.create(fields, { schemaId: SPRITE_SCHEMA_ID });
+  return await window.session.create(fields, { schemaId: SPRITES_SCHEMA_ID });
 }
 
 export async function deleteGarden(gardenId) {
@@ -73,16 +73,16 @@ export async function deleteGarden(gardenId) {
     await deleteTile(document.meta.viewId);
   }
 
-  return await window.session.delete(gardenId, { schemaId: GARDEN_SCHEMA_ID });
+  return await window.session.delete(gardenId, { schemaId: GARDENS_SCHEMA_ID });
 }
 
 export async function deleteTile(id) {
-  return await window.session.delete(id, { schemaId: TILE_SCHEMA_ID });
+  return await window.session.delete(id, { schemaId: TILES_SCHEMA_ID });
 }
 
 export async function getGarden(id) {
   const query = `query {
-    ${GARDEN_SCHEMA_ID}(id: "${id}") {
+    ${GARDENS_SCHEMA_ID}(id: "${id}") {
       fields {
         name
         rows
@@ -97,12 +97,12 @@ export async function getGarden(id) {
   }`;
 
   const result = await request(query);
-  return result.data[GARDEN_SCHEMA_ID];
+  return result.data[GARDENS_SCHEMA_ID];
 }
 
 export async function getSprite(id) {
   const query = `query {
-    ${SPRITE_SCHEMA_ID}(id: "${id}") {
+    ${SPRITES_SCHEMA_ID}(id: "${id}") {
       fields {
         description
         img {
@@ -119,11 +119,11 @@ export async function getSprite(id) {
   }`;
 
   const result = await request(query);
-  return result.data[SPRITE_SCHEMA_ID];
+  return result.data[SPRITES_SCHEMA_ID];
 }
 
 export async function getAllGardens(options) {
-  options.schema = GARDEN_SCHEMA_ID;
+  options.schema = GARDENS_SCHEMA_ID;
   options.orderBy = `name`;
   options.fields = `{
     cursor
@@ -145,7 +145,7 @@ export async function getAllGardens(options) {
 
 export async function getGardenTiles(gardenId, first, after) {
   const options = {
-    schema: TILE_SCHEMA_ID,
+    schema: TILES_SCHEMA_ID,
     first,
     after,
     orderBy: `timestamp`,
@@ -177,7 +177,7 @@ export async function getGardenTiles(gardenId, first, after) {
 }
 
 export async function getAllSprites(options) {
-  options.schema = SPRITE_SCHEMA_ID;
+  options.schema = SPRITES_SCHEMA_ID;
   options.orderBy = `timestamp`;
   options.fields = `{
       cursor

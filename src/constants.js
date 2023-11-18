@@ -1,12 +1,12 @@
 export const LOCAL_STORAGE_KEY = 'privateKey';
 
 // Schema this application uses
-export const GARDEN_SCHEMA_ID =
-  'garden_0020d128cfc331adadb4d496a4276e4663b45d9fdd361b5310b9c59f56b36db44498';
-export const TILE_SCHEMA_ID =
-  'garden_tile_00204bcdfbb0aa1b6ab7e146c925f3ff64b53f1f4c19675ff4e1b63d6b90afd2803d';
-export const SPRITE_SCHEMA_ID =
-  'garden_sprite_00203671fa7ef4e5784e993936478019d30d10e0452c7728c19a6b3950fb16a49e77';
+export const GARDENS_SCHEMA_ID =
+  'gardens_002048de60bb7ef5a1e88b7b7b32da976cef927d083afb4132cbe631beb47ccb293b';
+export const TILES_SCHEMA_ID =
+  'tiles_0020c1b8203a112c4184bed03a8781fbfc9562bbc46cb92a88592b91e34648709c60';
+export const SPRITES_SCHEMA_ID =
+  'sprites_00201215a0932e2ae043620979e5b0cde2522e8e6279a3efa5955491e8ad5796d655';
 
 // URL of your local aquadoggo node
 const NODE_ENDPOINT = `http://localhost:2020/`;
