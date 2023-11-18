@@ -8,8 +8,8 @@
   <title>It's gardening time!</title>
 
   <script type="module">
+    import { initWebAssembly } from './libs/shirokuma.min.js';
     import { app } from './app.js';
-    import { initWebAssembly, KeyPair } from './libs/shirokuma.min.js';
 
     initWebAssembly().then(() => {
       app();

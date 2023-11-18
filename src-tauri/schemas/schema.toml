@@ -1,26 +1,26 @@
-[garden]
+[gardens]
 description = "A garden where plants and animals can live"
 
-[garden.fields]
+[gardens.fields]
 name = { type = "str" }
 rows = { type = "int" }
 columns = { type = "int" }
 timestamp = { type = "int" }
 
-[garden_tile]
+[tiles]
 description = "A single tile in the garden occupied by a sprite"
 
-[garden_tile.fields]
+[tiles.fields]
 garden = { type = "relation", schema = { name = "garden" } }
 pos_x = { type = "int" }
 pos_y = { type = "int" }
 sprite = { type = "pinned_relation", schema = { name = "garden_sprite" } }
 timestamp = { type = "int" }
 
-[garden_sprite]
-description = "An sprite that can be placed on a tile in the garden"
+[sprites]
+description = "A sprite that can be placed on a tile in the garden"
 
-[garden_sprite.fields]
+[sprites.fields]
 img = { type = "relation", schema = { id = "blob_v1" } }
 description = { type = "str" }
 timestamp = { type = "int" }

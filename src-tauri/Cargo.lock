@@ -139,7 +139,7 @@ checksum = "a4668cab20f66d8d020e1fbc0ebe47217433c1b6c8f2040faf858554e394ace6"
 [[package]]
 name = "aquadoggo"
 version = "0.6.0"
-source = "git+https://github.com/p2panda/aquadoggo?tag=v0.6.0#467ee6f493ec005b9b278f0365aa65949c7c0b1d"
+source = "git+https://github.com/p2panda/aquadoggo?rev=58e67941b4403c1e14ed943d2aaca80dc857c942#58e67941b4403c1e14ed943d2aaca80dc857c942"
 dependencies = [
  "anyhow",
  "async-graphql",

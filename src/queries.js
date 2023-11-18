@@ -33,7 +33,6 @@ export async function createGarden(name, columns, rows) {
 }
 
 export async function createTile(pos_x, pos_y, spriteId, gardenId) {
-  console.log(pos_x, pos_y, spriteId, gardenId);
   const timestamp = Math.floor(new Date().getTime() / 1000.0);
   let fields = new OperationFields({
     pos_x: Math.floor(pos_x),
