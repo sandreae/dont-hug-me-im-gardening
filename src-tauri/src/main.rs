@@ -32,8 +32,6 @@ fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error +
             .expect("error resolving app data dir path")
     };
 
-    println!("{app_data_dir:?}");
-
     async_runtime::spawn(async move {
         // Enable logging if set via `RUST_LOG` environment variable.
         if std::env::var("RUST_LOG").is_ok() {
@@ -42,8 +40,6 @@ fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error +
 
         // Construct node configuration and set database url and blobs path.
         let mut config = Configuration::default();
-
-        // If not in dev mode then configure node with tauri app data directory for persistence.
         config.database_url = format!(
             "sqlite:{}/p2p-garden.sqlite3",
             app_data_dir.to_str().expect("invalid character in path")
@@ -60,14 +56,8 @@ fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error +
         //
         // This key pair is used to identify the node on the network, it is not used for signing
         // any application data.
-        let key_pair = if cfg!(dev) {
-            // If we're in dev mode we always generate a temporary key pair.
-            KeyPair::new()
-        } else {
-            // Otherwise we try and load an existing one.
-            generate_or_load_key_pair(app_data_dir.join("secret.txt"))
-                .expect("error generating or loading node key pair")
-        };
+        let key_pair = generate_or_load_key_pair(app_data_dir.join("secret.txt"))
+            .expect("error generating or loading node key pair");
 
         // Start the node.
         let node = Node::start(key_pair, config).await;
