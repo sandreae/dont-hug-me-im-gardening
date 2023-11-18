@@ -159,7 +159,7 @@ export class Garden extends HTMLElement {
         this.shadow.querySelector('#heading').textContent = newValue;
         break;
       }
-      case 'columns': {
+      case 'rows': {
         if (newValue != oldValue) {
           const garden = this.shadow.querySelector('#garden');
           garden.style.height = `${newValue * 75}px`;
@@ -167,7 +167,7 @@ export class Garden extends HTMLElement {
         }
         break;
       }
-      case 'rows': {
+      case 'columns': {
         if (newValue != oldValue) {
           const garden = this.shadow.querySelector('#garden');
           garden.style.width = `${newValue * 75}px`;
