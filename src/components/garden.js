@@ -208,8 +208,10 @@ export class Garden extends HTMLElement {
           );
         });
 
-        baseTile.sprite = tileDocument.fields.sprite;
-        baseTile.id = tileDocument.meta.documentId;
+        if (!baseTile.sprite) {
+          baseTile.sprite = tileDocument.fields.sprite;
+          baseTile.id = tileDocument.meta.documentId;
+        }
       }
     }
   }

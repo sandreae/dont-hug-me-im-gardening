@@ -7,7 +7,6 @@ mod key_pair;
 
 use aquadoggo::{Configuration, Node};
 use gql_client::Client;
-use p2panda_rs::identity::KeyPair;
 use tauri::async_runtime;
 
 use crate::key_pair::generate_or_load_key_pair;
