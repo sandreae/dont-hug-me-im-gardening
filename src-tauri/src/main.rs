@@ -8,7 +8,7 @@ mod key_pair;
 use aquadoggo::{Configuration, Node};
 use gql_client::Client;
 use p2panda_rs::identity::KeyPair;
-use tauri::{async_runtime, AppHandle};
+use tauri::async_runtime;
 
 use crate::key_pair::generate_or_load_key_pair;
 
@@ -21,19 +21,18 @@ fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
-#[cfg(not(dev))]
-fn get_app_data_dir(app_handle: &AppHandle) -> Option<PathBuf> {
-    app_handle.path_resolver().app_data_dir()
-}
-
-#[cfg(dev)]
-fn get_app_data_dir(app_handle: &AppHandle) -> Option<PathBuf> {
-    None
-}
-
 fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error + 'static>> {
     let app_handle = app.handle();
-    let app_data_dir = get_app_data_dir(&app_handle).unwrap_or(std::path::PathBuf::new());
+    let app_data_dir = if cfg!(dev) {
+        PathBuf::from("./tmp")
+    } else {
+        app_handle
+            .path_resolver()
+            .app_data_dir()
+            .expect("error resolving app data dir path")
+    };
+
+    println!("{app_data_dir:?}");
 
     async_runtime::spawn(async move {
         // Enable logging if set via `RUST_LOG` environment variable.
@@ -45,19 +44,17 @@ fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error +
         let mut config = Configuration::default();
 
         // If not in dev mode then configure node with tauri app data directory for persistence.
-        if !cfg!(dev) {
-            config.database_url = format!(
-                "sqlite:{}/p2p-garden.sqlite3",
-                app_data_dir.to_str().expect("invalid character in path")
-            );
-            config.blobs_base_path = app_data_dir.join(BLOBS_DIR);
+        config.database_url = format!(
+            "sqlite:{}/p2p-garden.sqlite3",
+            app_data_dir.to_str().expect("invalid character in path")
+        );
+        config.blobs_base_path = app_data_dir.join(BLOBS_DIR);
 
-            // Create blobs sub directory.
-            DirBuilder::new()
-                .recursive(true)
-                .create(app_data_dir.join(BLOBS_DIR))
-                .expect("error creating app data directories");
-        }
+        // Create blobs sub directory.
+        DirBuilder::new()
+            .recursive(true)
+            .create(app_data_dir.join(BLOBS_DIR))
+            .expect("error creating app data directories");
 
         // Create a KeyPair or load it from secret.txt file in app data directory.
         //
@@ -67,7 +64,7 @@ fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error +
             // If we're in dev mode we always generate a temporary key pair.
             KeyPair::new()
         } else {
-            // Otherwise we try and load an existing one. 
+            // Otherwise we try and load an existing one.
             generate_or_load_key_pair(app_data_dir.join("secret.txt"))
                 .expect("error generating or loading node key pair")
         };
