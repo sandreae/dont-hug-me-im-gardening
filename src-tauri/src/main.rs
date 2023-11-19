@@ -1,6 +1,6 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-use std::{fs::{DirBuilder, File}, path::PathBuf, thread::sleep, time::Duration};
+use std::{fs::DirBuilder, path::PathBuf, thread::sleep, time::Duration};
 
 mod key_pair;
 
@@ -70,7 +70,7 @@ fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error +
         //
         // @TODO: don't include this in the compiled binary, rather offer the possibility to
         // specify a data file on the cli. 
-        let data = File::open(PathBuf::from("../data/data.lock"));
+        let data = include_str!("../data/data.lock");
         let lock_file: LockFile = toml::from_str(&data).expect("error parsing data.lock file");
         let _ = node.migrate(lock_file).await.is_ok();
 
