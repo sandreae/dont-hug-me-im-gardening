@@ -9,7 +9,6 @@ use tauri::async_runtime;
 
 use crate::key_pair::generate_or_load_key_pair;
 
-const GRAPHQL_ENDPOINT: &str = "http://localhost:2020/graphql";
 const BLOBS_DIR: &str = "blobs";
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
