@@ -1,6 +1,6 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-use std::{fs::DirBuilder, path::PathBuf, thread::sleep, time::Duration};
+use std::{fs::{DirBuilder, File}, path::PathBuf, thread::sleep, time::Duration};
 
 mod key_pair;
 
@@ -59,13 +59,19 @@ fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error +
         // Start the node.
         let node = Node::start(key_pair, config).await;
 
-        // Load schema.lock file. By using the include macro, this file is included in compiled binaries.
+        // Migrate the required schemas
+        //
+        // Loading with the `include_str` macro means they are included in any compiled binaries
         let data = include_str!("../schemas/schema.lock");
         let lock_file: LockFile = toml::from_str(&data).expect("error parsing schema.lock file");
         let _ = node.migrate(lock_file).await.is_ok();
 
-        let data = include_str!("../data/data.lock");
-        let lock_file: LockFile = toml::from_str(&data).expect("error parsing schema.lock file");
+        // Migrate seed data
+        //
+        // @TODO: don't include this in the compiled binary, rather offer the possibility to
+        // specify a data file on the cli. 
+        let data = File::open(PathBuf::from("../data/data.lock"));
+        let lock_file: LockFile = toml::from_str(&data).expect("error parsing data.lock file");
         let _ = node.migrate(lock_file).await.is_ok();
 
         node.on_exit().await;
