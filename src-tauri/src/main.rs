@@ -24,7 +24,6 @@ fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
-
 /// Load data from a toml file following `LockFile` format.
 fn load_seed_data(path: &Path) -> Option<LockFile> {
     let absolute_path = if path.is_absolute() {
