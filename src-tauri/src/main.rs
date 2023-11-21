@@ -103,7 +103,7 @@ fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error +
         //
         // Loading with the `include_str` macro means they are included in any compiled binaries
         let data = include_str!("../schemas/schema.lock");
-        let lock_file: LockFile = toml::from_str(&data).expect("error parsing schema.lock file");
+        let lock_file: LockFile = toml::from_str(data).expect("error parsing schema.lock file");
         let did_migrate_schemas = node.migrate(lock_file).await.expect("Migrate schemas");
         if did_migrate_schemas {
             println!(
