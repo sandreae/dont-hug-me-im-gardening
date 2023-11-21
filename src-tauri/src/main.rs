@@ -62,13 +62,14 @@ fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error +
     // If `--seed-data-path` cli arg was passed then load the seed data file.
     let seed_data = match &app.get_cli_matches()?.args.get("seed-data-path") {
         Some(arg) => {
-            let path = Path::new(
-                arg.value
-                    .as_str()
-                    .expect("Path passed to `--seed-data-path`"),
-            );
-
-            load_seed_data(path)
+            let path_str = arg.value.as_str();
+            match path_str {
+                Some(path_str) => {
+                    let path = Path::new(path_str);
+                    load_seed_data(path)
+                }
+                None => None,
+            }
         }
         None => None,
     };
