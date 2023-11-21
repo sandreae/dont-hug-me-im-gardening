@@ -1,7 +1,7 @@
 {
-  "name": "p2p-garden",
+  "name": "dont-hug-me-im-gardening",
   "version": "0.0.0",
-  "description": "Your very own p2p garden",
+  "description": "Create and share hand crafted gardens and custom sprite sets. Powered by p2panda.",
   "type": "module",
   "scripts": {
     "tauri": "tauri",

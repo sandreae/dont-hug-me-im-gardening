@@ -7,7 +7,7 @@
     "withGlobalTauri": true
   },
   "package": {
-    "productName": "p2p-garden",
+    "productName": "dont-hug-me-im-gardening",
     "version": "0.0.0"
   },
   "tauri": {
@@ -15,7 +15,7 @@
       "all": false,
       "fs": {
         "all": true,
-        "scope": ["$APPDATA/p2p-garden/*"]
+        "scope": ["$APPDATA/dont-hug-me-im-gardening/*"]
       },
       "dialog": {
         "all": true
@@ -28,7 +28,27 @@
     "bundle": {
       "active": true,
       "targets": "all",
-      "identifier": "p2p-garden"
+      "identifier": "dont-hug-me-im-gardening",
+      "icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/icon.icns",
+        "icons/icon.ico"
+      ]  
+    },
+    "cli": {
+      "description": "Create and share hand crafted gardens and custom sprite sets. Powered by p2panda.",
+      "args": [
+        {
+          "name": "seed-data-path",
+          "description": "Path to seed data file",
+          "longDescription": "Relative path to seed data file containing entries to be loaded onto the node at runtime",
+          "short": "s",
+          "takesValue": true,
+          "multiple": false
+        }
+      ]  
     },
     "security": {
       "csp": null
@@ -37,7 +57,7 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "p2p-garden",
+        "title": "Don't Hug Me I'm Gardening!",
         "maximized": true
       }
     ]
