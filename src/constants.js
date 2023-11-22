@@ -8,10 +8,10 @@ export const TILES_SCHEMA_ID =
 export const SPRITES_SCHEMA_ID =
   'sprites_00201215a0932e2ae043620979e5b0cde2522e8e6279a3efa5955491e8ad5796d655';
 
-// URL of your local aquadoggo node
-const NODE_ENDPOINT = `http://localhost:2020/`;
-export const GRAPHQL_ENDPOINT = NODE_ENDPOINT + 'graphql';
-export const BLOBS_ENDPOINT = NODE_ENDPOINT + 'blobs/';
+// Address of your aquadoggo node
+const NODE_ADDRESS = `http://localhost:2020/`;
+export const GRAPHQL_ENDPOINT = NODE_ADDRESS + 'graphql';
+export const BLOBS_ENDPOINT = NODE_ADDRESS + 'blobs/';
 
-// Max upload size in kB.
+// Max upload size (50kB).
 export const MAX_UPLOAD_SIZE = 50 * 1000;

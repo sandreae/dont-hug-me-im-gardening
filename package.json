@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "tauri": "tauri",
+    "deploy": "node deploy.js",
+    "serve": "npx http-server ./src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "contact@samandreae.com",
