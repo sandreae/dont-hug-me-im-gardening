@@ -1,6 +1,81 @@
 # Don't Hug Me I'm Gardening!
 
+A p2p sprite creating garden building tile game! Create tile packs, share them with your friends,
+build gardens, _share them with your friends!!_
+
+There are lots of interesting p2p shenanegans going on in the background (you can read about them
+below), but primarily this is a game, where (see above) you can create sprites and build gardens.
+
+Powered by p2panda.
+
+## Install
+
+Go to the [releases](https://github.com/sandreae/dont-hug-me-im-gardening/releases) page and
+download the latest binary/package compiled for your system. 
+
+On a Linux machine there are two options:
+
+### `.deb`
+
+```bash
+# download the latest deb file from the releases page 
+wget https://github.com/sandreae/dont-hug-me-im-gardening/releases/download/<VERSION>/dont-hug-me-im-gardening_<VERSION>_amd64.deb
+
+# install using `apt`
+sudo apt install <VERSION>/dont-hug-me-im-gardening_<VERSION>_amd64.deb
+
+# now you can run `dont-hug-me-im-gardening` from the command line like so
+dont-hug-me-im-gardening
+
+```
+
+### `AppImage`
+
+```bash
+# download the latest AppImage from the releases page 
+wget https://github.com/sandreae/dont-hug-me-im-gardening/releases/download/<VERSION>/dont-hug-me-im-gardening_<VERSION>_amd64.AppImage
+
+# set executable permission
+chmod +x dont-hug-me-im-gardening_<VERSION>_amd64.AppImage
+
+# run the AppImage
+./dont-hug-me-im-gardening_<VERSION>_amd64.AppImage
+```
+
+I'll update with instructions for other platforms once I've been able to test them myself. If
+anyone does this before me, I'd be very happy to hear from you.
+
 ## Run
+
+Whichever installation method you use, behavior when running the app is the same. In the
+instructions below I assume `.deb` installation was performed, if you followed a different method
+please adjust the commands accordingly.
+
+### Quick start
+
+All you need to do is launch the app, no configuration required:
+```
+dont-hug-me-im-gardening
+```
+
+This will launch the app and you can get started creating your sprite packs and building your
+gardens! 
+
+As the app doesn't come pre-packaged with any sprite pack, on a first time launch things look a
+little sad, no sprites, no gardens, nothing... all very empty. Follow the next steps to change this!
+
+### Deploy existing sprite pack
+
+In order to get garden building, you need sprite packs to use. You can create them yourself by
+uploading images and gifs yourself. To get you up and running quickly, and offer some inspiration,
+I'll provide some starter pack. The first is by Mio Ebisu and you can load them in with the
+following commands:
+
+```
+wget https://github.com/sandreae/dont-hug-me-im-gardening-sprite-sets/path_to_sprite_set.toml
+
+dont-hug-me-im-scared --load-sprite-pack ./path_to_sprite_set.toml
+```
 
 ### Tauri
 
@@ -26,6 +101,13 @@ Then you can serve the apps static assets and visit it in the browser at `localh
 `npx http-server ./src`
 
 This will deploy the relevant schema to your
+
+## TODOs
+- [] change logo
+- [] remove all cli options except `--load-sprite-pack`
+- [] configure node via config file
+- [] graceful cli errors
+- [] fix cli help
 
 ## Next Steps
 
