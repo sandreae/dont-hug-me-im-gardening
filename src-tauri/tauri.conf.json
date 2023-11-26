@@ -41,12 +41,26 @@
       "description": "Create and share hand crafted gardens and custom sprite sets. Powered by p2panda.",
       "args": [
         {
-          "name": "seed-data-path",
+          "name": "load-sprite-set",
           "description": "Path to seed data file",
           "longDescription": "Relative path to seed data file containing entries to be loaded onto the node at runtime",
           "short": "s",
           "takesValue": true,
           "multiple": false
+        },
+        {
+          "name": "peers",
+          "description": "Addresses of known peers",
+          "short": "p",
+          "takesValue": true,
+          "multiple": true
+        },
+        {
+          "name": "relays",
+          "description": "Addresses of relay nodes",
+          "short": "r",
+          "takesValue": true,
+          "multiple": true
         }
       ]  
     },

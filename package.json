@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "tauri": "tauri",
-    "deploy": "node deploy.js",
+    "deploy-schema": "node deploy.js ./schemas/schema.lock",
+    "deploy-seed-data": "node deploy.js ./data.toml",
     "serve": "npx http-server ./src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

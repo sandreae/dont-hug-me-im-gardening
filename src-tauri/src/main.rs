@@ -7,6 +7,8 @@ use std::env;
 use std::fs::DirBuilder;
 use std::fs::File;
 use std::io::Read;
+use std::net::SocketAddr;
+use std::net::ToSocketAddrs;
 use std::path::Path;
 use std::path::PathBuf;
 use std::time::Duration;
@@ -59,8 +61,16 @@ fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error +
         let _ = env_logger::builder().try_init();
     }
 
-    // If `--seed-data-path` cli arg was passed then load the seed data file.
-    let seed_data = match &app.get_cli_matches()?.args.get("seed-data-path") {
+    let cli = match app.get_cli_matches() {
+        Ok(cli) => Ok(cli),
+        Err(e) => {
+            println!("error: unexpected cli args found");
+            Err(e)
+        },
+    }?;
+
+    // If `--load-sprite-pack` cli arg was passed then load the seed data file.
+    let seed_data = match &cli.args.get("load-sprite-pack") {
         Some(arg) => {
             let path_str = arg.value.as_str();
             match path_str {
@@ -74,6 +84,50 @@ fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error +
         None => None,
     };
 
+    let peers: Option<Vec<SocketAddr>> = match &cli.args.get("peers") {
+        Some(arg) => {
+            if arg.occurrences == 0 {
+                None
+            } else {
+                Some(
+                    arg.value
+                        .as_array()
+                        .expect("Peers arg value is an array")
+                        .clone()
+                        .iter()
+                        .map(|value| {
+                            let addr_str = value.as_str().expect("Value to be string");
+                            addr_str.parse().expect("valid socket address")
+                        })
+                        .collect(),
+                )
+            }
+        }
+        None => None,
+    };
+
+    let relays: Option<Vec<SocketAddr>> = match &cli.args.get("relays") {
+        Some(arg) => {
+            if arg.occurrences == 0 {
+                None
+            } else {
+                Some(
+                    arg.value
+                        .as_array()
+                        .expect("Relays arg value is an array")
+                        .clone()
+                        .iter()
+                        .map(|value| {
+                            let addr_str = value.as_str().expect("Value to be string");
+                            addr_str.parse().expect("valid socket address")
+                        })
+                        .collect(),
+                )
+            }
+        }
+        None => None,
+    };
+
     // Construct node configuration and set database url and blobs path.
     let mut config = Configuration::default();
     config.database_url = format!(
@@ -81,6 +135,8 @@ fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error +
         app_data_dir.to_str().expect("invalid character in path")
     );
     config.blobs_base_path = app_data_dir.join(BLOBS_DIR);
+    config.network.direct_node_addresses = peers.unwrap_or_default();
+    config.network.relay_addresses = relays.unwrap_or_default();
 
     // Create blobs sub directory.
     DirBuilder::new()
@@ -103,7 +159,7 @@ fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error +
         // Migrate the required schemas
         //
         // Loading with the `include_str` macro means they are included in any compiled binaries
-        let data = include_str!("../schemas/schema.lock");
+        let data = include_str!("../../schemas/schema.lock");
         let lock_file: LockFile = toml::from_str(data).expect("error parsing schema.lock file");
         let did_migrate_schemas = node.migrate(lock_file).await.expect("Migrate schemas");
         if did_migrate_schemas {

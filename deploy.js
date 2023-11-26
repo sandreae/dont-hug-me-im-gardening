@@ -1,3 +1,4 @@
+import process from 'process';
 import fs from 'fs';
 import toml from 'toml';
 import { GRAPHQL_ENDPOINT } from './src/constants.js';
@@ -19,7 +20,7 @@ async function publish(entry, operation) {
     });
 }
 
-fs.readFile('./src-tauri/schemas/schema.lock', 'utf-8', async (err, data) => {
+fs.readFile(process.argv[2], 'utf-8', async (err, data) => {
   if (err) throw err;
 
   const schemaLock = toml.parse(data);
