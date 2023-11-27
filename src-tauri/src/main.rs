@@ -1,11 +1,11 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod config;
 mod key_pair;
 
 use std::env;
-use std::fs::DirBuilder;
-use std::fs::File;
+use std::fs::{self, DirBuilder, File};
 use std::io::Read;
 use std::net::SocketAddr;
 use std::net::ToSocketAddrs;
@@ -15,7 +15,9 @@ use std::time::Duration;
 
 use aquadoggo::{Configuration, LockFile, Node};
 use tauri::async_runtime;
+use tauri::Config;
 
+use crate::config::{load_config, Configuration as NodeConfiguration};
 use crate::key_pair::generate_or_load_key_pair;
 
 const BLOBS_DIR: &str = "blobs";
@@ -61,82 +63,30 @@ fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error +
         let _ = env_logger::builder().try_init();
     }
 
-    let cli = match app.get_cli_matches() {
-        Ok(cli) => Ok(cli),
-        Err(e) => {
-            println!("error: unexpected cli args found");
-            Err(e)
-        },
-    }?;
+    let default_config_path = app
+        .path_resolver()
+        .resolve_resource("assets/config.toml")
+        .expect("failed to resolve resource");
 
-    // If `--load-sprite-pack` cli arg was passed then load the seed data file.
-    let seed_data = match &cli.args.get("load-sprite-pack") {
-        Some(arg) => {
-            let path_str = arg.value.as_str();
-            match path_str {
-                Some(path_str) => {
-                    let path = Path::new(path_str);
-                    load_seed_data(path)
-                }
-                None => None,
-            }
-        }
-        None => None,
-    };
+    let schema_lock_path = app
+        .path_resolver()
+        .resolve_resource("schemas/schema.lock")
+        .expect("failed to resolve resource");
 
-    let peers: Option<Vec<SocketAddr>> = match &cli.args.get("peers") {
-        Some(arg) => {
-            if arg.occurrences == 0 {
-                None
-            } else {
-                Some(
-                    arg.value
-                        .as_array()
-                        .expect("Peers arg value is an array")
-                        .clone()
-                        .iter()
-                        .map(|value| {
-                            let addr_str = value.as_str().expect("Value to be string");
-                            addr_str.parse().expect("valid socket address")
-                        })
-                        .collect(),
-                )
-            }
-        }
-        None => None,
-    };
+    let config_path = app_data_dir.join("config.toml");
+    if fs::read(&config_path).is_err() {
+        fs::copy(default_config_path, &config_path)?;
+    }
 
-    let relays: Option<Vec<SocketAddr>> = match &cli.args.get("relays") {
-        Some(arg) => {
-            if arg.occurrences == 0 {
-                None
-            } else {
-                Some(
-                    arg.value
-                        .as_array()
-                        .expect("Relays arg value is an array")
-                        .clone()
-                        .iter()
-                        .map(|value| {
-                            let addr_str = value.as_str().expect("Value to be string");
-                            addr_str.parse().expect("valid socket address")
-                        })
-                        .collect(),
-                )
-            }
-        }
-        None => None,
-    };
+    let node_config: NodeConfiguration = load_config(&config_path)?;
+    let mut config: Configuration = node_config.try_into()?;
 
-    // Construct node configuration and set database url and blobs path.
-    let mut config = Configuration::default();
+    // Set storage paths based on tauri defaults.
     config.database_url = format!(
-        "sqlite:{}/p2p-garden.sqlite3",
+        "sqlite:{}/db.sqlite3",
         app_data_dir.to_str().expect("invalid character in path")
     );
     config.blobs_base_path = app_data_dir.join(BLOBS_DIR);
-    config.network.direct_node_addresses = peers.unwrap_or_default();
-    config.network.relay_addresses = relays.unwrap_or_default();
 
     // Create blobs sub directory.
     DirBuilder::new()
@@ -144,11 +94,11 @@ fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error +
         .create(app_data_dir.join(BLOBS_DIR))
         .expect("error creating app data directories");
 
-    // Create a KeyPair or load it from secret.txt file in app data directory.
+    // Create a KeyPair or load it from private-key.txt file in app data directory.
     //
     // This key pair is used to identify the node on the network, it is not used for signing
     // any application data.
-    let key_pair = generate_or_load_key_pair(app_data_dir.join("secret.txt"))
+    let key_pair = generate_or_load_key_pair(app_data_dir.join("private-key.txt"))
         .expect("error generating or loading node key pair");
 
     let (tx, rx) = tokio::sync::oneshot::channel();
@@ -159,25 +109,14 @@ fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error +
         // Migrate the required schemas
         //
         // Loading with the `include_str` macro means they are included in any compiled binaries
-        let data = include_str!("../../schemas/schema.lock");
-        let lock_file: LockFile = toml::from_str(data).expect("error parsing schema.lock file");
+        let data =
+            fs::read_to_string(schema_lock_path).expect("schema.lock to be loaded from resources");
+        let lock_file: LockFile = toml::from_str(&data).expect("error parsing schema.lock file");
         let did_migrate_schemas = node.migrate(lock_file).await.expect("Migrate schemas");
         if did_migrate_schemas {
             println!(
                 "Schema migration: required schemas successfully deployed on initial start-up"
             );
-        }
-
-        // Migrate seed data
-        if let Some(seed_data) = seed_data {
-            if did_migrate_schemas {
-                // If schema migration occurred we wait a little for the graphql endpoints to be build.
-                tokio::time::sleep(Duration::from_secs(1)).await;
-            }
-            let did_migrate_seed = node.migrate(seed_data).await.expect("Migrate seed data");
-            if did_migrate_seed {
-                println!("Seed data: seed data successfully published to node");
-            }
         }
 
         // Wait for any migrated data to be ready
