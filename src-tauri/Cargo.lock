@@ -138,8 +138,9 @@ checksum = "a4668cab20f66d8d020e1fbc0ebe47217433c1b6c8f2040faf858554e394ace6"
 
 [[package]]
 name = "aquadoggo"
-version = "0.6.0"
-source = "git+https://github.com/p2panda/aquadoggo?rev=58e67941b4403c1e14ed943d2aaca80dc857c942#58e67941b4403c1e14ed943d2aaca80dc857c942"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f958b95efe39fb971db03e5787e9d56c05bb1b6d5fd49af60e826cd6b0822e1b"
 dependencies = [
  "anyhow",
  "async-graphql",
@@ -4193,9 +4194,9 @@ dependencies = [
 
 [[package]]
 name = "p2panda-rs"
-version = "0.8.0"
+version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cacd81a36e7fb04d4b6fcea3023885f65fc9f97cfb1739b7e5c9d1c183a83d44"
+checksum = "ea228ef64ba3caa0f77d22bdc21ba7533b989b03aacc921b54b843ea6f0f8d97"
 dependencies = [
  "arrayvec 0.5.2",
  "async-trait",
