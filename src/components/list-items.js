@@ -1,6 +1,7 @@
 import { setCurrentGarden, getKeyPair, setCurrentSprite } from '../app.js';
 import { deleteGarden } from '../queries.js';
 import { BLOBS_ENDPOINT } from '../constants.js';
+import { confirmAction } from '../utils.js';
 
 export class GardenListItem extends HTMLElement {
   constructor() {
@@ -34,16 +35,16 @@ export class GardenListItem extends HTMLElement {
       if (owner == keyPair.publicKey()) {
         const deleteButton = document.createElement('delete-garden-button');
         deleteButton.documentId = documentId;
-        deleteButton.onclick = async (e) => {
-          e.preventDefault();
-          const result = confirm(
-            'Are you sure you want to delete this garden?',
-          );
-          if (result) {
-            await deleteGarden(this.documentId);
-            if (window.GARDEN_ID == this.documentId) {
+        deleteButton.onclick = async () => {
+          console.log('DELETE CLICKED');
+          if (
+            await confirmAction('Are you sure you want to delete this garden?')
+          ) {
+            await deleteGarden(this.id);
+            if (window.GARDEN_ID == this.id) {
               setCurrentGarden(null);
             }
+            console.log('REFRESH GARDEN LIST');
             document.querySelector('#garden-list').refresh();
           }
         };
