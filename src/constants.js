@@ -9,7 +9,7 @@ export const SPRITES_SCHEMA_ID =
   'sprites_00201215a0932e2ae043620979e5b0cde2522e8e6279a3efa5955491e8ad5796d655';
 
 // Address of your aquadoggo node
-const NODE_ADDRESS = `https://dont-hug-me-im-gardening-node.fly.dev/`;
+const NODE_ADDRESS = `http://localhost:2020/`;
 export const GRAPHQL_ENDPOINT = NODE_ADDRESS + 'graphql';
 export const BLOBS_ENDPOINT = NODE_ADDRESS + 'blobs/';
 
