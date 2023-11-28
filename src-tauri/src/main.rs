@@ -65,12 +65,17 @@ fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error +
 
     let default_config_path = app
         .path_resolver()
-        .resolve_resource("assets/config.toml")
+        .resolve_resource("resources/config.toml")
         .expect("failed to resolve resource");
 
     let schema_lock_path = app
         .path_resolver()
-        .resolve_resource("schemas/schema.lock")
+        .resolve_resource("resources/schemas/schema.lock")
+        .expect("failed to resolve resource");
+
+    let sprite_pack_path = app
+        .path_resolver()
+        .resolve_resource("resources/sprite-packs/001.toml")
         .expect("failed to resolve resource");
 
     let config_path = app_data_dir.join("config.toml");
@@ -107,8 +112,6 @@ fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error +
         let node = Node::start(key_pair, config).await;
 
         // Migrate the required schemas
-        //
-        // Loading with the `include_str` macro means they are included in any compiled binaries
         let data =
             fs::read_to_string(schema_lock_path).expect("schema.lock to be loaded from resources");
         let lock_file: LockFile = toml::from_str(&data).expect("error parsing schema.lock file");
@@ -117,10 +120,24 @@ fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error +
             println!(
                 "Schema migration: required schemas successfully deployed on initial start-up"
             );
+            // Sleep for a second to let the schemas and GraphQL API be built
+            tokio::time::sleep(Duration::from_secs(1)).await;
         }
 
-        // Wait for any migrated data to be ready
-        tokio::time::sleep(Duration::from_secs(1)).await;
+        // Load "sprite pack" seed data
+        let data =
+            fs::read_to_string(sprite_pack_path).expect("sprite pack to be loaded from resources");
+        let sprite_pack: LockFile = toml::from_str(&data).expect("error parsing sprite pack file");
+        let did_migrate_schemas = node
+            .migrate(sprite_pack)
+            .await
+            .expect("Publish (migrate) sprite pack");
+        if did_migrate_schemas {
+            println!("Seed data: packaged sprite packs successfully deployed on initial start-up");
+            // Wait for any migrated data to be materialized
+            tokio::time::sleep(Duration::from_secs(1)).await;
+        }
+
         let _ = tx.send(());
 
         node.on_exit().await;

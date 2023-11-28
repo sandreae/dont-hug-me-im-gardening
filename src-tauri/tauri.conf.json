@@ -27,8 +27,7 @@
     },
     "bundle": {
       "resources": [
-        "assets/*",
-        "schemas/*"
+        "resources/*"
       ],
       "active": true,
       "targets": "all",
