@@ -1,5 +1,5 @@
 import { setCurrentSprite } from '../../app.js';
-import { template } from './template.js'
+import { template } from './template.js';
 import { BLOBS_ENDPOINT } from '../../constants.js';
 
 export class SpriteListItem extends HTMLElement {
@@ -12,7 +12,6 @@ export class SpriteListItem extends HTMLElement {
     this.onclick = (e) => {
       e.preventDefault();
       setCurrentSprite(this.document);
-      this.parentElement.selected = this.id;
     };
   }
 

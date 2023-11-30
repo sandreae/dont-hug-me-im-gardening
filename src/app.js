@@ -48,6 +48,14 @@ export const setCurrentGarden = (gardenDocument) => {
 
 export const setCurrentSprite = (spriteDocument) => {
   window.CURRENT_SPRITE = spriteDocument;
+
+  // Set the selected attribute on `#garden-list`
+  const spriteList = document.querySelector('#sprite-list');
+  if (spriteDocument) {
+    spriteList.setAttribute('selected', spriteDocument.meta.documentId);
+  } else {
+    spriteList.removeAttribute('selected');
+  }
 };
 
 export const app = async () => {

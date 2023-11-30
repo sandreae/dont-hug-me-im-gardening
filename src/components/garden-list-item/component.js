@@ -14,7 +14,6 @@ export class GardenListItem extends HTMLElement {
     this.onclick = (e) => {
       e.preventDefault();
       setCurrentGarden(this.document);
-      this.parentElement.selected = this.id;
     };
   }
 
