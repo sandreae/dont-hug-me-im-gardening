@@ -1,7 +1,7 @@
 export const template = document.createElement('template');
 template.innerHTML = /* html */ `
   <style>
-    @import "/components/delete-button/style.css";
+    @import "/components/animated-list/style.css";
   </style>
   <arrow-button id="previous-button" class="disabled"></arrow-button>
   <div id="list-wrapper">

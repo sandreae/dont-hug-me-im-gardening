@@ -1,15 +1,13 @@
 import queries from '../../queries.js';
 import { PaginatedList } from './paginated-list.js';
+import { template } from './template.js';
 
 export class AnimatedList extends PaginatedList {
   constructor() {
     super();
 
-    const template = document.getElementById('animated-list');
-    const templateContent = template.content;
-
     this.shadow = this.attachShadow({ mode: 'open' });
-    this.shadow.appendChild(templateContent.cloneNode(true));
+    this.shadow.appendChild(template.content.cloneNode(true));
 
     this.itemTag = this.getAttribute('item-tag');
     this.setQuery(queries[this.getAttribute('query')]);
