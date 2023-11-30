@@ -1,0 +1,39 @@
+form {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+label {
+  font-size: x-large;
+}
+
+input {
+  height: 30px;
+  width: 100%;
+}
+
+#image-input-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+input::file-selector-button {
+  height: 30px;
+}
+
+input[type='submit'] {
+  width: 100px;
+  margin-top: 10px;
+  padding: 0px;
+}
+
+img {
+  display: none;
+  height: 30px;
+}

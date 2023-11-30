@@ -1,9 +1,16 @@
 import { KeyPair, Session } from './libs/shirokuma.min.js';
-import { AnimatedList } from './components/lists.js';
-import { Garden, GardenTile } from './components/garden.js';
-import { GardenForm, GardenSearch, SpriteForm } from './components/forms.js';
-import { ArrowButton, DeleteGardenButton } from './components/buttons.js';
-import { SpriteListItem, GardenListItem } from './components/list-items.js';
+import {
+  AnimatedList,
+  ArrowButton,
+  DeleteButton,
+  Garden,
+  GardenForm,
+  GardenListItem,
+  GardenSearch,
+  GardenTile,
+  SpriteForm,
+  SpriteListItem,
+} from './components/index.js';
 import { GRAPHQL_ENDPOINT } from './constants.js';
 
 const LOCAL_STORAGE_KEY = 'privateKey';
@@ -48,11 +55,9 @@ export const app = async () => {
 
   // Open a long running connection to a p2panda node and configure it so all
   // calls in this session are executed using that key pair
-  window.session = new Session(GRAPHQL_ENDPOINT).setKeyPair(
-    keyPair,
-  );
+  window.session = new Session(GRAPHQL_ENDPOINT).setKeyPair(keyPair);
 
-  customElements.define('delete-garden-button', DeleteGardenButton);
+  customElements.define('delete-button', DeleteButton);
   customElements.define('arrow-button', ArrowButton);
   customElements.define('garden-search', GardenSearch);
   customElements.define('garden-tile', GardenTile);

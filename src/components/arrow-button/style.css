@@ -1,0 +1,22 @@
+:host {
+  height: 60px;
+}
+
+button:hover {
+  padding: 0px;
+  border: 3px dotted red;
+}
+
+button > img {
+  height: 100%;
+  width: 100%;
+}
+
+button {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 3px;
+  border: none;
+  background: none;
+  cursor: pointer;
+}

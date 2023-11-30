@@ -1,0 +1,18 @@
+:host {
+  height: 20px;
+  width: 20px;
+}
+
+button {
+  height: 100%;
+  width: 100%;
+  padding: 0px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: medium;
+}
+
+button:hover {
+  background-color: red;
+}

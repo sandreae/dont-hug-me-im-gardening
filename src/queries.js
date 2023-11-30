@@ -64,7 +64,7 @@ export async function deleteGarden(gardenId) {
   let tileDocuments = [];
 
   while (hasNextPage) {
-    const response = await getGardenTiles(gardenId, 100, endCursor);
+    const response = await getGardenSpriteTiles(gardenId, 100, endCursor);
     ({ hasNextPage, endCursor } = response);
     tileDocuments = tileDocuments.concat(response.documents);
   }
@@ -143,7 +143,7 @@ export async function getAllGardens(options) {
   return await paginatedQuery(options);
 }
 
-export async function getGardenTiles(gardenId, first, after) {
+export async function getGardenSpriteTiles(gardenId, first, after) {
   const options = {
     schema: TILES_SCHEMA_ID,
     first,
