@@ -5,7 +5,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>It's gardening time!</title>
+  <title>Don't Hug Me I'm Gardening!</title>
 
   <script type="module">
     import { initWebAssembly } from './libs/shirokuma.min.js';
@@ -22,7 +22,9 @@
   <div id="app">
     <garden-main columns="16" rows="12"></garden-main>
     <div id="left-menu" class="menu">
-      <sprite-form class="menu-section"></sprite-form>
+      <sprite-form class="menu-section">
+        Create a sprite
+      </sprite-form>
       <animated-list id="sprite-list" class="menu-section" height="500" width="200" rows=2 page-size="10"
         item-tag="sprite-list-item" query="sprites"></animated-list>
     </div>

@@ -3,6 +3,7 @@ template.innerHTML = /* html */ `
   <style>
     @import "/components/garden-form/style.css";
   </style>
+  <h2><slot>Placeholder Title!</slot></h2>
   <form>
     <label for="name">== name ==</label>
     <input type="text" name="name" maxlength="60" minlength="1" required placeholder="Name" />
