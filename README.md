@@ -9,7 +9,7 @@ There are lots of interesting p2p shenanigans going on in the background (you ca
 below), but first and foremost this is a game, where (see above) you can create sprites and build
 gardens.
 
-Powered by p2panda.
+Powered by [p2panda](https://p2panda.org/).
 
 ## Install
 
