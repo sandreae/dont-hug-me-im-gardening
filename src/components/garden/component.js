@@ -143,7 +143,7 @@ export class Garden extends HTMLElement {
     let documents = [];
 
     while (hasNextPage) {
-      const tilesResponse = await getGardenSpriteTiles(this.id, 5, endCursor);
+      const tilesResponse = await getGardenSpriteTiles(this.id, 50, endCursor);
       ({ hasNextPage, endCursor, documents } = tilesResponse);
       for (let newTile of documents) {
         let currentTile = Array.from(currentTiles).find((tile) => {
