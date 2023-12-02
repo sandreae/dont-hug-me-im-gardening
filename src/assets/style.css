@@ -1,0 +1,48 @@
+@font-face {
+  font-family: 'Rainy Heart';
+  src: url('./rainyhearts.ttf');
+}
+
+body {
+  font-family: 'Rainy Heart';
+  padding: 0px;
+  margin: 0px;
+  background-image: url('background-tile.gif');
+  background-repeat: repeat;
+}
+
+garden-main {
+  z-index: -1;
+  position: fixed;
+}
+
+#left-menu {
+  left: 5px;
+}
+
+#right-menu {
+  right: 5px;
+}
+
+.menu {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: stretch;
+  gap: 20px;
+  box-sizing: border-box;
+  height: 100vh;
+  width: 350px;
+  padding: 20px;
+  overflow: scroll;
+  scrollbar-width: none;
+}
+
+.menu-section {
+  padding: 20px;
+  box-sizing: border-box;
+  border: 5px solid red;
+  border-radius: 15px;
+  background-color: rgb(152, 251, 152, 0.5);
+}
