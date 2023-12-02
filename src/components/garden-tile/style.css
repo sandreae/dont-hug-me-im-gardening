@@ -1,0 +1,13 @@
+:host {
+  cursor: pointer;
+  width: 75px;
+  height: 75px;
+  background-image: url(/assets/grass-tile.jpg);
+  background-size: cover;
+}
+
+img {
+  width: 100%;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}

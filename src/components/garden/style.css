@@ -1,0 +1,26 @@
+#garden-wrapper {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-content: space-around;
+  overflow: scroll;
+}
+
+#garden {
+  padding-left: 300px;
+  padding-right: 300px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 75px);
+  grid-auto-rows: 75px;
+  font-size: large;
+}
+
+#heading {
+  z-index: 1;
+  position: absolute;
+  top: 0px;
+  color: white;
+  text-align: center;
+  width: 100vw;
+}
