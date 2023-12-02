@@ -146,6 +146,8 @@ When you install `dont-hug-me-im-gardening` you get some sprites ready for "plan
 the application. The first (amazing) sprite pack has been contributed by [Mio Ebisu](https://ebisumio.com),
 (thank you!!). I'd like to add more in the future, get in touch if you have something to share.
 
+![Mio Ebisu sprite pack screenshot](./sprite-pack-001-screenshot.png)
+
 ## Development
 
 I chose the tech stack for this app based on tools I already know and care about or ones I'm interested
