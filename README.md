@@ -22,10 +22,10 @@ On a Linux machine there are two options:
 
 ```bash
 # download the latest deb file from the releases page
-wget https://github.com/sandreae/dont-hug-me-im-gardening/releases/download/<VERSION>/dont-hug-me-im-gardening_<VERSION>_amd64.deb
+wget https://github.com/sandreae/dont-hug-me-im-gardening/releases/download/v0.1.0/dont-hug-me-im-gardening_0.1.0_amd64.deb
 
 # install using `apt`
-sudo apt install <VERSION>/dont-hug-me-im-gardening_<VERSION>_amd64.deb
+sudo apt install ./dont-hug-me-im-gardening_0.1.0_amd64.deb
 
 # now you can run `dont-hug-me-im-gardening` from the command line like so (you may need to open a new terminal)
 dont-hug-me-im-gardening
@@ -36,13 +36,13 @@ dont-hug-me-im-gardening
 
 ```bash
 # download the latest AppImage from the releases page
-wget https://github.com/sandreae/dont-hug-me-im-gardening/releases/download/<VERSION>/dont-hug-me-im-gardening_<VERSION>_amd64.AppImage
+wget https://github.com/sandreae/dont-hug-me-im-gardening/releases/download/v0.1.0/dont-hug-me-im-gardening_0.1.0_amd64.AppImage
 
 # set executable permission
-chmod +x dont-hug-me-im-gardening_<VERSION>_amd64.AppImage
+chmod +x dont-hug-me-im-gardening_0.1.0_amd64.AppImage
 
 # run the AppImage
-./dont-hug-me-im-gardening_<VERSION>_amd64.AppImage
+./dont-hug-me-im-gardening_0.1.0_amd64.AppImage
 ```
 
 I'll update with instructions for other platforms once I've been able to test them myself. If
