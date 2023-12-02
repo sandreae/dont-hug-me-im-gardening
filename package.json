@@ -1,0 +1,23 @@
+{
+  "author": "contact@samandreae.com",
+  "name": "dont-hug-me-im-gardening",
+  "version": "0.1.0",
+  "description": "Create and share hand crafted gardens and custom sprite packs. Powered by p2panda.",
+  "type": "module",
+  "license": "AGPL-3.0-or-later",
+  "contributors": ["contact@samandreae.com"],
+  "scripts": {
+    "tauri": "tauri",
+    "deploy-schema": "node deploy.js ./src-tauri/resources/schemas/schema.lock",
+    "deploy-sprite-packs": "node deploy.js .src-tauri/resources/sprites/001.toml",
+    "serve": "npx http-server ./src",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^1.5.0",
+    "eslint": "^8.45.0",
+    "eslint-config-prettier": "^8.8.0",
+    "prettier": "3.0.0",
+    "toml": "^3.0.0"
+  }
+}
