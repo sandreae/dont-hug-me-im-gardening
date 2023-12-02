@@ -79,17 +79,19 @@ accordingly (see below).
 
 If you want to discover new peers and/or share remotely, you need to configure your app to do so.
 There are two options:
-- you know the direct address of a remote peer who you can connect to directly (this could be
-  because you are on the same VPN)
+
+- you know address of a remote peer who you can connect to directly (this could be because you
+  are on the same VPN)
 - you know the address of a `p2panda` node configured to run as a relay, this node will help you
   discover and connect with new peers who are also interested in _creating and sharing sprite
   packs and gardens!_
 
-Both these approaches require that some infrastructure (beyond simply downloading the app) exists,
-and it's understandable if not all users have access to this. If you're interested in trying to
-deploy your own p2panda relay, there are deployment resources
-[here](https://github.com/sandreae/aquadoggo-deployment-resources). I may provide a public relay
-at some point in the future, until then please enjoy sharing with local friends!
+Both these approaches require that network infrastructure (beyond simply downloading the app) is
+already in place, this may well not be the case for everyone, I may provide a public relay at some
+point in the future, until then please enjoy sharing with local friends!
+
+_If you're interested in trying to deploy your own p2panda relay, there are deployment resources
+[here](https://github.com/sandreae/aquadoggo-deployment-resources)._
 
 ## Configuration
 
@@ -152,9 +154,9 @@ core maintainer), so that was a given (and it's great for building web apps like
 this, I chose [Web Components](https://developer.mozilla.org/en-US/docs/Web/API/Web_Components)
 for building the UI. I like using browser native tech, and I was interested to see how using pure
 Web Components in place of common front-end frameworks would feel. This meant I got seduced by the idea of doing a
-"no-build" front-end, which is great ;-> (gotta love `npx http-server ./src`), there is only
+"no-build" front-end (gotta love `npx http-server ./src`), there is only
 one dependency, this being the p2panda web client library `shirokuma`, which is included. I'm not so
-hardcore that i wanna lose my basic dev tools though, so there linting and formatting dev
+hardcore that I wanna lose my basic dev tools though, there are still linting and formatting dev
 dependencies. The final goal was to be able to cross-compile and bundle the app for all common desktop platforms. I chose
 [`tauri`](https://tauri.app) for this, which is a framework I've wanted to use more for a while.
 
