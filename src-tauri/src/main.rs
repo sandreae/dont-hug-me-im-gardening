@@ -9,10 +9,10 @@ use std::fs::{self, DirBuilder};
 use std::path::PathBuf;
 use std::time::Duration;
 
-use aquadoggo::{Configuration, LockFile, Node};
+use aquadoggo::{LockFile, Node};
 use tauri::async_runtime;
 
-use crate::config::{load_config, Configuration as NodeConfiguration};
+use crate::config::load_config;
 use crate::key_pair::generate_or_load_key_pair;
 
 const BLOBS_DIR: &str = "blobs";
@@ -59,8 +59,7 @@ fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error +
         fs::copy(default_config_path, &config_path)?;
     }
 
-    let node_config: NodeConfiguration = load_config(&config_path)?;
-    let mut config: Configuration = node_config.try_into()?;
+    let mut config = load_config(&config_path)?;
 
     // Set storage paths based on tauri defaults.
     config.database_url = format!(
