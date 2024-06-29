@@ -27,12 +27,10 @@ fn http_port_command(state: State<HttpPort>) -> u16 {
 
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-use std::{fs, path::PathBuf};
+use std::fs;
 
 use aquadoggo::LockFile;
 use tauri::AppHandle;
-
-use crate::consts::{RESOURCES_DIR, SCHEMA_LOCK_FILE};
 
 pub fn load_sprite_pack(app: &AppHandle) -> anyhow::Result<LockFile> {
     let sprite_pack_path = app
