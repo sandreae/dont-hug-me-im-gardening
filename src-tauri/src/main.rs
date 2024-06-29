@@ -1,133 +1,140 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod config;
+mod consts;
 mod key_pair;
+mod schema;
 
-use std::env;
-use std::fs::{self, DirBuilder};
-use std::path::PathBuf;
 use std::time::Duration;
 
-use aquadoggo::{LockFile, Node};
-use tauri::async_runtime;
+use aquadoggo::Node;
+use tauri::{async_runtime, Manager, State};
 
-use crate::config::load_config;
+use crate::config::{app_data_dir, load_config};
 use crate::key_pair::generate_or_load_key_pair;
+use crate::schema::load_schema_lock;
 
-const BLOBS_DIR: &str = "blobs";
+struct HttpPort(u16);
 
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+// Tauri command for passing the http port used by the node to the frontend code.
 #[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
+fn http_port_command(state: State<HttpPort>) -> u16 {
+    state.0
 }
 
-fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error + 'static>> {
-    let app_handle = app.handle();
-    let app_data_dir = if cfg!(dev) {
-        PathBuf::from("./tmp")
-    } else {
-        app_handle
-            .path_resolver()
-            .app_data_dir()
-            .expect("error resolving app data dir path")
-    };
+// SPDX-License-Identifier: AGPL-3.0-or-later
 
-    // Enable logging if set via `RUST_LOG` environment variable.
-    if std::env::var("RUST_LOG").is_ok() {
-        let _ = env_logger::builder().try_init();
-    }
+use std::{fs, path::PathBuf};
 
-    let default_config_path = app
-        .path_resolver()
-        .resolve_resource("resources/config.toml")
-        .expect("failed to resolve resource");
+use aquadoggo::LockFile;
+use tauri::AppHandle;
 
-    let schema_lock_path = app
-        .path_resolver()
-        .resolve_resource("resources/schemas/schema.lock")
-        .expect("failed to resolve resource");
+use crate::consts::{RESOURCES_DIR, SCHEMA_LOCK_FILE};
 
+pub fn load_sprite_pack(app: &AppHandle) -> anyhow::Result<LockFile> {
     let sprite_pack_path = app
         .path_resolver()
         .resolve_resource("resources/sprite-packs/001.toml")
         .expect("failed to resolve resource");
+    let data = fs::read_to_string(sprite_pack_path)?;
+    let lock_file = toml::from_str(&data)?;
+    Ok(lock_file)
+}
 
-    let config_path = app_data_dir.join("config.toml");
-    if fs::read(&config_path).is_err() {
-        fs::copy(default_config_path, &config_path)?;
-    }
-
-    let mut config = load_config(&config_path)?;
-
-    // Set storage paths based on tauri defaults.
-    config.database_url = format!(
-        "sqlite:{}/db.sqlite3",
-        app_data_dir.to_str().expect("invalid character in path")
-    );
-    config.blobs_base_path = app_data_dir.join(BLOBS_DIR);
-
-    // Create blobs sub directory.
-    DirBuilder::new()
-        .recursive(true)
-        .create(app_data_dir.join(BLOBS_DIR))
-        .expect("error creating app data directories");
+/// Launch node with configuration of persistent storage for SQLite database and blobs.
+fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error + 'static>> {
+    // Get a handle on the running application which gives us access to global state.
+    let app = app.handle();
+    // Get app data dir path and create the directory if this is the first time the app runs.
+    let app_data_dir = app_data_dir(&app)?;
 
     // Create a KeyPair or load it from private-key.txt file in app data directory.
     //
     // This key pair is used to identify the node on the network, it is not used for signing
     // any application data.
-    let key_pair = generate_or_load_key_pair(app_data_dir.join("private-key.txt"))
-        .expect("error generating or loading node key pair");
+    let key_pair = generate_or_load_key_pair(&app_data_dir)?;
 
+    // Load the config from the app data directory. If this is the first time the app is
+    // being run then the default aquadoggo config file is copied into place and used.
+    //
+    // Environment variables are also parsed and will take priority over values in the config
+    // file.
+    let config = load_config(&app, &app_data_dir)?;
+
+    // Add the configured nodes http port to the app state so we can access it from the frontend.
+    app.manage(HttpPort(config.http_port));
+
+    // Manually construct the app WebView window as we want to set a custom data directory.
+    tauri::WindowBuilder::new(&app, "main", tauri::WindowUrl::App("index.html".into()))
+        .data_directory(app_data_dir)
+        .resizable(false)
+        .fullscreen(false)
+        .inner_size(800.0, 600.0)
+        .title("p2panda-tauri-example")
+        .build()?;
+
+    // Load the schema.lock file containing our app schema which will be published to the node.
+    let schema_lock = load_schema_lock(&app)?;
+
+    // Load the sprite pack file containing our sprites which will be published to the node.
+    let sprite_pack = load_sprite_pack(&app)?;
+
+    // Channel for signaling that the node is ready.
     let (tx, rx) = tokio::sync::oneshot::channel();
-    async_runtime::spawn(async move {
+
+    // Spawn aquadoggo in own async task.
+    async_runtime::spawn(async {
         // Start the node.
         let node = Node::start(key_pair, config).await;
 
-        // Migrate the required schemas
-        let data =
-            fs::read_to_string(schema_lock_path).expect("schema.lock to be loaded from resources");
-        let lock_file: LockFile = toml::from_str(&data).expect("error parsing schema.lock file");
-        let did_migrate_schemas = node.migrate(lock_file).await.expect("Migrate schemas");
+        // Migrate the app schemas, returns true if schema were migrated, false if no migration was required.
+        let did_migrate_schemas = node
+            .migrate(schema_lock)
+            .await
+            .expect("failed to migrate app schema");
+
         if did_migrate_schemas {
-            println!(
-                "Schema migration: required schemas successfully deployed on initial start-up"
-            );
-            // Sleep for a second to let the schemas and GraphQL API be built
+            println!("Schema migration: app schemas successfully deployed on initial start-up");
+            // If schema were migrated it may take some time for the GraphQL API to rebuild.
             tokio::time::sleep(Duration::from_secs(1)).await;
         }
 
-        // Load "sprite pack" seed data
-        let data =
-            fs::read_to_string(sprite_pack_path).expect("sprite pack to be loaded from resources");
-        let sprite_pack: LockFile = toml::from_str(&data).expect("error parsing sprite pack file");
-        let did_migrate_schemas = node
+        // Migrate the app schemas, returns true if schema were migrated, false if no migration was required.
+        let did_publish_sprites = node
             .migrate(sprite_pack)
             .await
-            .expect("Publish (migrate) sprite pack");
-        if did_migrate_schemas {
-            println!("Seed data: packaged sprite packs successfully deployed on initial start-up");
-            // Wait for any migrated data to be materialized
+            .expect("failed to migrate app schema");
+
+        if did_publish_sprites {
+            println!("Sprite packs published");
             tokio::time::sleep(Duration::from_secs(1)).await;
         }
 
+        // Signal that schema are migrated so that tauri will progress to launch the app.
         let _ = tx.send(());
 
         node.on_exit().await;
         node.shutdown().await;
     });
 
+    // Block until schema are migrated.
     let _ = rx.blocking_recv();
 
     Ok(())
 }
 
 fn main() {
+    // Enable logging if set via `RUST_LOG` environment variable.
+    if std::env::var("RUST_LOG").is_ok() {
+        let _ = env_logger::builder().try_init();
+    }
+
     tauri::Builder::default()
         .setup(setup_handler)
-        .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(tauri::generate_handler![http_port_command])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
