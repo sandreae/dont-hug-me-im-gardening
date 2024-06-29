@@ -70,10 +70,10 @@ fn setup_handler(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error +
     // Manually construct the app WebView window as we want to set a custom data directory.
     tauri::WindowBuilder::new(&app, "main", tauri::WindowUrl::App("index.html".into()))
         .data_directory(app_data_dir)
-        .resizable(false)
+        .resizable(true)
         .fullscreen(false)
-        .inner_size(800.0, 600.0)
-        .title("p2panda-tauri-example")
+        .inner_size(1200.0, 1000.0)
+        .title("Don't hug me I'm gardening!")
         .build()?;
 
     // Load the schema.lock file containing our app schema which will be published to the node.
