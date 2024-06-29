@@ -20,7 +20,7 @@ env_logger = "0.10.1"
 figment = { version = "0.10.14", features = ["toml", "env"] }
 hex = "0.4.3"
 p2panda-rs = "0.8.1"
-tauri = { version = "1.4", features = [ "shell-open", "config-toml"] }
+tauri = { version = "1.4", features = [ "dialog-all", "shell-open", "config-toml"] }
 tempdir = "0.3.7"
 tokio = "1.34.0"
 toml = "0.8.8"

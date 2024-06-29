@@ -15,6 +15,9 @@ all = false
 all = false
 open = true
 
+[tauri.allowlist.dialog]
+all = true
+
 [tauri.bundle]
 active = true
 targets = "all"
